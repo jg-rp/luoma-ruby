@@ -1,0 +1,4 @@
+module Luoma
+  class Environment
+  end
+end

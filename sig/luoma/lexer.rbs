@@ -1,0 +1,42 @@
+module Luoma
+  class BaseLexer
+    @env: Environment
+
+    @source: String
+
+    @scanner: StringScanner
+
+    @start: Integer
+
+    @tokens: Array[t_token]
+
+    attr_reader tokens: Array[t_token]
+
+    def self.tokenize: (Environment env, String source) -> Array[t_token]
+
+    def initialize: (Environment env, String source) -> void
+
+    def go: () -> void
+
+    #  () -> Symbol?
+    def scan_markup: () -> Symbol?
+
+    #  (t_token_kind) -> void
+    def emit: (t_token_kind kind) -> void
+
+    #  (Regexp) -> Integer?
+    def index: (Regexp pattern) -> Integer?
+
+    #  (Regexp) -> String?
+    def scan: (Regexp pattern) -> String?
+
+    #  (Regexp) -> bool
+    def scan_until: (Regexp pattern) -> bool
+
+    #  (Regexp) -> bool
+    def skip: (Regexp pattern) -> bool
+
+    #  (Regexp) -> bool
+    def skip_until: (Regexp pattern) -> bool
+  end
+end

@@ -1,0 +1,79 @@
+module Luoma 
+  type t_token = {kind: Symbol, start: Integer, stop: Integer }
+               
+  type t_token_kind = (
+    :token_add |
+    :token_and |
+    :token_arrow |
+    :token_assign |
+    :token_colon |
+    :token_comma |
+    :token_comment |
+    :token_comment_end |
+    :token_comment_start |
+    :token_contains |
+    :token_div |
+    :token_dot |
+    :token_double_dot |
+    :token_double_escaped |
+    :token_double_quote |
+    :token_double_quoted |
+    :token_else |
+    :token_eq |
+    :token_false |
+    :token_float |
+    :token_ge |
+    :token_gt |
+    :token_ident |
+    :token_if |
+    :token_in |
+    :token_int |
+    :token_interpolation_end |
+    :token_interpolation_start |
+    :token_lbrace |
+    :token_lbracket |
+    :token_le |
+    :token_lparen |
+    :token_lt |
+    :token_mod |
+    :token_mul |
+    :token_ne |
+    :token_nil |
+    :token_not |
+    :token_null |
+    :token_or_else |
+    :token_or |
+    :token_out_end |
+    :token_out_start |
+    :token_pipe |
+    :token_question |
+    :token_rbrace |
+    :token_rbracket |
+    :token_rparen |
+    :token_single_escaped |
+    :token_single_quote |
+    :token_single_quoted |
+    :token_sub |
+    :token_tag_end |
+    :token_tag_name |
+    :token_tag_start |
+    :token_text |
+    :token_triple_dot |
+    :token_true |
+    :token_wc |
+    :token_eoi |
+    :token_unknown |
+    :token_hash |
+    :token_span |
+    :token_blank |
+    :token_empty |
+    :token_for |
+    :token_with |
+    :token_as
+  )
+
+  def self.get_token_value: (t_token token, String source) -> String
+                          
+  def self.span: (t_token start, t_token stop) -> t_token
+
+end
