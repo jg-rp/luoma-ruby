@@ -1,0 +1,381 @@
+module Luoma
+  type t_path_segment = Name | StringLiteral | IndexSelector | Variable
+
+  interface _Traversable
+    def children: (RenderContext context) -> Array[_Traversable]
+  end
+
+  class Expression
+    @token: t_token
+
+    @span: t_token
+
+    attr_reader token: t_token
+
+    attr_reader span: t_token
+
+    #  (t_token) -> void
+    def initialize: (t_token token) -> void
+
+    #  (RenderContext) -> untyped
+    def evaluate: (RenderContext context) -> untyped
+
+    #  (RenderContext) -> Array[_Traversable]
+    def children: (RenderContext context) -> Array[_Traversable]
+                
+    def to_s: () -> String
+  end
+
+  class FilteredExpression < Expression
+    @left: Expression
+
+    @filter: Filter
+
+    @span: t_token
+
+    def initialize: (t_token token, Expression left, Filter filter) -> void
+  end
+
+  class InfixExpression < Expression
+    @left: untyped
+
+    @right: untyped
+
+    @span: untyped
+
+    #  (t_token, Expression, Expression) -> void
+    def initialize: (t_token token, Expression left, Expression right) -> void
+  end
+
+  class OrExpression < InfixExpression
+    #  (RenderContext) -> untyped
+    def evaluate: (RenderContext context) -> untyped
+
+    #  () -> String
+    def to_s: () -> ::String
+  end
+
+  class AndExpression < InfixExpression
+    #  (RenderContext) -> untyped
+    def evaluate: (RenderContext context) -> untyped
+
+    #  () -> String
+    def to_s: () -> ::String
+  end
+
+  class EqExpression < InfixExpression
+    #  (RenderContext) -> untyped
+    def evaluate: (RenderContext context) -> untyped
+
+    #  () -> String
+    def to_s: () -> ::String
+  end
+
+  class NeExpression < InfixExpression
+    #  (RenderContext) -> untyped
+    def evaluate: (RenderContext context) -> untyped
+
+    #  () -> String
+    def to_s: () -> ::String
+  end
+
+  class LtExpression < InfixExpression
+    #  (RenderContext) -> untyped
+    def evaluate: (RenderContext context) -> untyped
+
+    #  () -> String
+    def to_s: () -> ::String
+  end
+
+  class LeExpression < InfixExpression
+    #  (RenderContext) -> untyped
+    def evaluate: (RenderContext context) -> untyped
+
+    #  () -> String
+    def to_s: () -> ::String
+  end
+
+  class GtExpression < InfixExpression
+    #  (RenderContext) -> untyped
+    def evaluate: (RenderContext context) -> untyped
+
+    #  () -> String
+    def to_s: () -> ::String
+  end
+
+  class GeExpression < InfixExpression
+    #  (RenderContext) -> untyped
+    def evaluate: (RenderContext context) -> untyped
+
+    #  () -> String
+    def to_s: () -> ::String
+  end
+
+  class ContainsExpression < InfixExpression
+    #  (RenderContext) -> untyped
+    def evaluate: (RenderContext context) -> untyped
+
+    #  () -> String
+    def to_s: () -> ::String
+  end
+
+  class InExpression < InfixExpression
+    #  (RenderContext) -> untyped
+    def evaluate: (RenderContext context) -> untyped
+
+    #  () -> String
+    def to_s: () -> ::String
+  end
+
+  class Variable < Expression
+    @root: Name | StringLiteral | Variable
+
+    @segments: Array[t_path_segment]
+
+    @span: t_token
+
+    attr_reader root: Name | StringLiteral | Variable
+
+    attr_reader segments: Array[t_path_segment]
+
+    #  (t_token, Name | StringLiteral | Variable, Array[PathSegment])
+    def initialize: (t_token token, Name | StringLiteral | Variable, Array[t_path_segment]) -> void
+
+    #  (RenderContext) -> untyped
+    def evaluate: (RenderContext context) -> untyped
+
+    #  (RenderContext) -> Array[_Traversable]
+    def children: (Luoma::RenderContext context) -> Array[Luoma::_Traversable]
+
+    #  () -> String
+    def to_s: () -> String
+
+    private
+
+    #  (Array[PathSegment]) -> String
+    def path: (Array[t_path_segment] segments) -> String
+  end
+
+  class IndexSelector < Expression
+    @value: Integer
+
+    attr_reader value: Integer
+
+    #  (t_token, Integer)
+    def initialize: (t_token token, Integer value) -> void
+
+    #  (RenderContext) -> untyped
+    def evaluate: (RenderContext context) -> untyped
+
+    #  (RenderContext) -> Array[_Traversable]
+    def children: (RenderContext context) -> ::Array[Luoma::_Traversable]
+
+    #  () -> String
+    def to_s: () -> String
+
+    def with: (t_token token) -> self
+  end
+
+  class StringLiteral < Expression
+    @value: String
+
+    attr_reader value: String
+
+    #  (t_token, Integer, t_token)
+    def initialize: (t_token token, String value, t_token end_token) -> void
+
+    #  (RenderContext) -> untyped
+    def evaluate: (RenderContext context) -> untyped
+
+    #  (RenderContext) -> Array[_Traversable]
+    def children: (RenderContext context) -> ::Array[_Traversable]
+
+    #  () -> String
+    def to_s: () -> ::String
+
+    def with: (t_token token) -> self
+  end
+
+  class IntegerLiteral < Expression
+    @value: Integer
+
+    attr_reader value: Integer
+
+    #  (t_token, Integer)
+    def initialize: (t_token token, Integer value) -> void
+
+    #  (RenderContext) -> untyped
+    def evaluate: (RenderContext context) -> untyped
+
+    #  (RenderContext) -> Array[_Traversable]
+    def children: (RenderContext context) -> ::Array[_Traversable]
+
+    #  () -> String
+    def to_s: () -> String
+  end
+
+  class FloatLiteral < Expression
+    @value: Float
+
+    attr_reader value: Float
+
+    #  (t_token, Float)
+    def initialize: (t_token token, Float value) -> void
+
+    #  (RenderContext) -> untyped
+    def evaluate: (RenderContext context) -> untyped
+
+    #  (RenderContext) -> Array[_Traversable]
+    def children: (RenderContext context) -> ::Array[_Traversable]
+
+    #  () -> String
+    def to_s: () -> String
+  end
+
+  class BooleanLiteral < Expression
+    @value: bool
+
+    attr_reader value: bool
+
+    #  (t_token, bool)
+    def initialize: (t_token token, bool value) -> void
+
+    #  (RenderContext) -> untyped
+    def evaluate: (RenderContext context) -> untyped
+
+    #  (RenderContext) -> Array[_Traversable]
+    def children: (RenderContext context) -> ::Array[_Traversable]
+
+    #  () -> String
+    def to_s: () -> String
+  end
+
+  class NullLiteral < Expression
+    #  (RenderContext) -> untyped
+    def evaluate: (RenderContext context) -> untyped
+
+    #  (RenderContext) -> Array[_Traversable]
+    def children: (RenderContext context) -> ::Array[_Traversable]
+
+    #  () -> String
+    def to_s: () -> String
+  end
+
+  class Blank < Expression
+    #  (RenderContext) -> untyped
+    def evaluate: (RenderContext context) -> untyped
+
+    #  (RenderContext) -> Array[_Traversable]
+    def children: (RenderContext context) -> ::Array[_Traversable]
+
+    #  () -> String
+    def to_s: () -> ""
+  end
+
+  class Empty < Expression
+    #  (RenderContext) -> untyped
+    def evaluate: (RenderContext context) -> untyped
+
+    #  (RenderContext) -> Array[_Traversable]
+    def children: (RenderContext context) -> ::Array[Luoma::_Traversable]
+
+    #  () -> String
+    def to_s: () -> ""
+  end
+
+  class RangeLiteral < Expression
+    @start: Expression
+
+    @stop: Expression
+
+    #  (t_token, Expression, Expression) -> void
+    def initialize: (t_token token, Expression start, Expression stop) -> void
+
+    #  (RenderContext) -> untyped
+    def evaluate: (RenderContext context) -> untyped
+
+    #  (RenderContext) -> Array[_Traversable]
+    def children: (RenderContext context) -> ::Array[_Traversable]
+
+    #  () -> String
+    def to_s: () -> ::String
+  end
+
+  class Name
+    @token: t_token
+
+    @value: String
+
+    @span: t_token
+
+    attr_reader token: t_token
+
+    attr_reader span: t_token
+
+    attr_reader value: String
+
+    #  (t_token, String) -> void
+    def initialize: (t_token token, String value) -> void
+
+    #  (RenderContext) -> untyped
+    def evaluate: (RenderContext context) -> untyped
+                
+    #  (RenderContext) -> Array[_Traversable]
+    def children: (RenderContext context) -> ::Array[Luoma::_Traversable]
+
+    #  () -> String
+    def to_s: () -> String
+  end
+
+  class Filter
+    @token: t_token
+
+    @name: Name
+
+    @args: Array[Expression | KeywordArgument]
+
+    @span: t_token
+
+    attr_reader token: t_token
+
+    attr_reader span: t_token
+
+    attr_reader name: Name
+
+    attr_reader args: Array[Expression | KeywordArgument]
+
+    #  (t_token, Name, Array[Expression | KeywordArgument])
+    def initialize: (t_token token, Name name, Array[Expression | KeywordArgument] args) -> void
+
+    def children: (RenderContext context) -> Array[Luoma::_Traversable]
+
+    def to_s: () -> (::String)
+  end
+
+  class KeywordArgument
+    @token: t_token
+
+    @name: Name
+
+    @expression: Expression
+
+    @span: t_token
+
+    attr_reader token: t_token
+
+    attr_reader span: t_token
+
+    attr_reader name: Name
+
+    attr_reader expression: Expression
+
+    #  (t_token, Name, Expression) -> void
+    def initialize: (t_token token, Name name, Expression expression) -> void
+                  
+    #  (RenderContext) -> Array[_Traversable]
+    def children: (RenderContext context) -> ::Array[_Traversable]
+
+    #  () -> String
+    def to_s: () -> ::String
+  end
+end

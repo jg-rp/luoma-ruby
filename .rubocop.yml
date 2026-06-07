@@ -38,4 +38,10 @@ Metrics/ClassLength:
 
 Style/GuardClause:
   Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Lint/UnusedMethodArgument:
+  Enabled: false
   

@@ -1,5 +1,4 @@
 module Luoma 
-  # type t_token = {kind: Symbol, start: Integer, stop: Integer }
   type t_token = [Symbol, Integer, Integer]
                
   type t_token_kind = (

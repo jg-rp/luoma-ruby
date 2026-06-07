@@ -1,0 +1,10 @@
+module Luoma
+  class Template
+    @env: Environment
+
+    attr_reader env: Environment
+
+    #  (Environment) -> void
+    def initialize: (Environment env) -> void
+  end
+end

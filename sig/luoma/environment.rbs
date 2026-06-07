@@ -1,4 +1,13 @@
 module Luoma
   class Environment
+    @filters: Hash[String, [untyped, Integer?]]
+
+    @strict_filters: bool
+
+    attr_reader strict_filters: bool
+
+    attr_reader filters: Hash[String, [untyped, Integer?]]
+
+    def initialize: () -> void
   end
 end

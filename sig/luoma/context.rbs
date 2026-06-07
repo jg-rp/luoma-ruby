@@ -1,0 +1,14 @@
+module Luoma
+  class RenderContext
+    @template: Template
+
+    @env: Environment
+
+    attr_reader env: Environment
+
+    attr_reader template: Template
+
+    #  (Template) -> void
+    def initialize: (Template template) -> void
+  end
+end
