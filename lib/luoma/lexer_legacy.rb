@@ -367,7 +367,7 @@ module Luoma
 
     #: (Integer) -> void
     def accept_string_literal(limit)
-      quote = @scanner.get_byte || raise
+      quote = (@scanner.get_byte || raise).ord
       double = quote == 34
       pattern = double ? RE_DOUBLE_QUOTE : RE_SINGLE_QUOTE
       kind = double ? :token_double_quote : :token_single_quote #: t_token_kind
@@ -384,7 +384,7 @@ module Luoma
       index_ = index(pattern) || limit
       index_ = limit if index_ > limit
       @scanner.pos = index_
-      emit(kind)
+      emit(double ? :token_double_quoted : :token_single_quoted)
 
       if @scanner.peek_byte == quote # steep:ignore
         @scanner.pos += 1

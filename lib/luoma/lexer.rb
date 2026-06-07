@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "strscan"
+
 module Luoma
   # The base class for template source code tokenizers.
   class BaseLexer
@@ -40,7 +42,7 @@ module Luoma
     # Emit a token of `kind` spanning @start to @scanner.pos.
     #: (t_token_kind) -> void
     def emit(kind)
-      @tokens << { kind: kind, start: @start, stop: @scanner.pos }
+      @tokens << { kind: kind, start: @start, stop: @scanner.pos - 1 }
       @start = @scanner.pos
     end
 
@@ -48,7 +50,10 @@ module Luoma
     # advancing the scanner.
     #: (Regexp) -> Integer?
     def index(pattern)
-      @scanner.exist?(pattern)
+      byte_offset = @scanner.exist?(pattern)
+      return nil unless byte_offset
+
+      @scanner.pos + byte_offset - (@scanner.matched_size || raise)
     end
 
     #: (Regexp) -> String?
@@ -63,7 +68,7 @@ module Luoma
       if byte_offset.nil?
         false
       else
-        @scanner.pos = byte_offset
+        @scanner.pos += byte_offset - (@scanner.matched_size || raise)
         true
       end
     end
@@ -85,8 +90,8 @@ module Luoma
       if byte_offset.nil?
         false
       else
-        @scanner.pos = byte_offset
-        @start = byte_offset
+        @scanner.pos += byte_offset - (@scanner.matched_size || raise)
+        @start = @scanner.pos
         true
       end
     end

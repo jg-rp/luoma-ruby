@@ -5,6 +5,7 @@ source "https://rubygems.org"
 # Specify your gem's dependencies in luoma.gemspec
 gemspec
 
+gem "benchmark-ips", "~> 2.15"
 gem "bigdecimal", "~> 4.1"
 gem "irb"
 gem "minitest", "~> 5.16"

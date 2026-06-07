@@ -72,6 +72,8 @@ module Luoma
     :token_as
   )
 
+  TOKEN_KIND_MAP: Hash[t_token_kind, String]
+
   def self.get_token_value: (t_token token, String source) -> String
                           
   def self.span: (t_token start, t_token stop) -> t_token
