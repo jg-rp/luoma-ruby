@@ -42,12 +42,17 @@ module Luoma
     # Emit a token of `kind` spanning @start to @scanner.pos.
     #: (t_token_kind) -> void
     def emit(kind)
-      @tokens << { kind: kind, start: @start, stop: @scanner.pos - 1 }
+      # @tokens << { kind: kind, start: @start, stop: @scanner.pos - 1 }
+      @tokens << [kind, @start, @scanner.pos - 1]
       @start = @scanner.pos
     end
 
-    # Return the index of the next match of `pattern` without
-    # advancing the scanner.
+    # Return the start index of the next match of `pattern` without advancing
+    # the scanner.
+    #
+    # It's faster to use `@scanner.string.byteindex(s, @scanner.pos)` if you
+    # are searching for a string literal instead of a pattern.
+    #
     #: (Regexp) -> Integer?
     def index(pattern)
       byte_offset = @scanner.exist?(pattern)
@@ -58,6 +63,8 @@ module Luoma
 
     #: (Regexp) -> String?
     def scan(pattern)
+      # NOTE: calling @scanner.scan directly yields a significant increase in
+      # performance
       @scanner.scan(pattern)
     end
 

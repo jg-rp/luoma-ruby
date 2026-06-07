@@ -23,9 +23,6 @@ module Luoma
     RE_LINE_COMMENT_SEGMENT = /\n\s*(comment|endcomment).*/
     RE_END_DOC = /\{%-?\s*enddoc\s*-?%\}/
     RE_END_RAW = /\{%-?\s*endraw\s*-?%\}/
-    RE_SINGLE_QUOTE = /'/
-    RE_DOUBLE_QUOTE = /"/
-    RE_NEWLINE = /\n/
 
     # Keywords and symbols that get their own token kind.
     TOKEN_MAP = {
@@ -64,7 +61,7 @@ module Luoma
       limit = nil #: Integer?
 
       loop do
-        case scan(RE_MARKUP)
+        case @scanner.scan(RE_MARKUP)
         when "{{"
           # Output statements can be closed by `}}`, `}` or `%}`.
           # Markup delimiters are greedy and not string literal aware.
@@ -82,7 +79,7 @@ module Luoma
           accept_expression(limit)
           skip(RE_TRIVIA)
           accept_whitespace_control
-          scan(RE_OUT_END)
+          @scanner.scan(RE_OUT_END)
           emit(:token_out_end)
         when "{%"
           # Tags must be closed by `%}`.
@@ -121,7 +118,7 @@ module Luoma
 
     #: (Integer) -> void
     def accept_tag(limit)
-      tag_name = scan(RE_TAG_NAME)
+      tag_name = @scanner.scan(RE_TAG_NAME)
 
       emit(:token_tag_name) unless tag_name.nil?
 
@@ -140,7 +137,7 @@ module Luoma
         accept_expression(limit)
         skip(RE_TRIVIA)
         accept_whitespace_control
-        scan(RE_TAG_END)
+        @scanner.scan(RE_TAG_END)
         emit(:token_tag_end)
       end
     end
@@ -155,25 +152,25 @@ module Luoma
 
         # We assume punctuation does not include markup delimiter characters,
         # and can therefore not exceed `limit`.
-        if (match = scan(RE_PUNCTUATION))
+        if (match = @scanner.scan(RE_PUNCTUATION))
           emit(TOKEN_MAP[match] || :token_unknown)
           next
         end
 
         # We assume identifiers do not allow markup delimiter characters,
         # and can therefore not exceed `limit`.
-        if (match = scan(RE_IDENT))
+        if (match = @scanner.scan(RE_IDENT))
           emit(TOKEN_MAP[match] || :token_ident)
           next
         end
 
         # RE_FLOAT must come before RE_INT
-        if scan(RE_FLOAT)
+        if @scanner.scan(RE_FLOAT)
           emit(:token_float)
           next
         end
 
-        if scan(RE_INT)
+        if @scanner.scan(RE_INT)
           emit(:token_int)
           next
         end
@@ -194,7 +191,7 @@ module Luoma
       @scanner.pos = limit
       emit(:token_comment)
       accept_whitespace_control
-      scan(RE_TAG_END)
+      @scanner.scan(RE_TAG_END)
       emit(:token_tag_end)
     end
 
@@ -204,7 +201,7 @@ module Luoma
       # Ignore any "expression".
       @scanner.pos = limit
       accept_whitespace_control
-      scan(RE_TAG_END)
+      @scanner.scan(RE_TAG_END)
       emit(:token_tag_end)
 
       comment_depth = 1
@@ -255,7 +252,7 @@ module Luoma
       accept_expression(limit)
       skip(RE_TRIVIA)
       accept_whitespace_control
-      scan(RE_TAG_END)
+      @scanner.scan(RE_TAG_END)
       emit(:token_tag_end)
       emit(:token_comment) if scan_until(RE_END_DOC)
     end
@@ -266,7 +263,7 @@ module Luoma
       accept_expression(limit)
       skip(RE_TRIVIA)
       accept_whitespace_control
-      scan(RE_TAG_END)
+      @scanner.scan(RE_TAG_END)
       emit(:token_tag_end)
       emit(:token_text) if scan_until(RE_END_RAW)
     end
@@ -275,12 +272,12 @@ module Luoma
     def accept_line_statements(limit)
       while @scanner.pos < limit
         skip(RE_TRIVIA)
-        line_limit = index(RE_NEWLINE) || limit
+        line_limit = @scanner.string.byteindex("\n", @scanner.pos) || limit
         line_limit = limit if line_limit > limit
 
         emit(:token_tag_start)
 
-        case scan(RE_TAG_NAME)
+        case @scanner.scan(RE_TAG_NAME)
         when "#"
           emit(:token_tag_name)
           @scanner.pos = line_limit
@@ -311,7 +308,7 @@ module Luoma
 
       skip(RE_TRIVIA)
       accept_whitespace_control
-      scan(RE_TAG_END)
+      @scanner.scan(RE_TAG_END)
       emit(:token_tag_end)
     end
 
@@ -320,13 +317,6 @@ module Luoma
       comment_depth = 1
 
       while @scanner.pos < limit
-        index_ = index(RE_LINE_COMMENT_SEGMENT)
-
-        if index_.nil? || index_ >= limit
-          emit(:token_unknown)
-          break
-        end
-
         unless skip_until(RE_LINE_COMMENT_SEGMENT)
           emit(:token_unknown)
           break
@@ -367,13 +357,13 @@ module Luoma
 
     #: (Integer) -> void
     def accept_string_literal(limit)
-      quote = (@scanner.get_byte || raise).ord
-      double = quote == 34
-      pattern = double ? RE_DOUBLE_QUOTE : RE_SINGLE_QUOTE
+      quote = @scanner.get_byte || raise
+      byte = quote.ord
+      double = byte == 34
       kind = double ? :token_double_quote : :token_single_quote #: t_token_kind
       emit(kind)
 
-      if @scanner.peek_byte == quote # steep:ignore
+      if @scanner.peek_byte == byte # steep:ignore
         # Empty string
         @scanner.pos += 1
         emit(kind)
@@ -381,12 +371,12 @@ module Luoma
       end
 
       # Jump to the next quote or limit, whichever is closer.
-      index_ = index(pattern) || limit
+      index_ = @scanner.string.byteindex(quote, @scanner.pos) || limit
       index_ = limit if index_ > limit
       @scanner.pos = index_
       emit(double ? :token_double_quoted : :token_single_quoted)
 
-      if @scanner.peek_byte == quote # steep:ignore
+      if @scanner.peek_byte == byte # steep:ignore
         @scanner.pos += 1
         emit(kind)
       end

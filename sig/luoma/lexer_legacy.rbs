@@ -9,7 +9,11 @@ module Luoma
 
     RE_OUT_END: ::Regexp
 
+    RE_UP_TO_OUT_END: ::Regexp
+
     RE_TAG_END: ::Regexp
+
+    RE_UP_TO_TAG_END: ::Regexp
 
     RE_TRIVIA: ::Regexp
 
@@ -32,12 +36,6 @@ module Luoma
     RE_END_DOC: ::Regexp
 
     RE_END_RAW: ::Regexp
-
-    RE_SINGLE_QUOTE: ::Regexp
-
-    RE_DOUBLE_QUOTE: ::Regexp
-
-    RE_NEWLINE: ::Regexp
 
     TOKEN_MAP: Hash[String, t_token_kind]
 

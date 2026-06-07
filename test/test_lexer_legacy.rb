@@ -6,7 +6,7 @@ require "test_helper"
 def tokenize(source)
   Luoma::LegacyLexer
     .tokenize(Luoma::Environment.new, source)
-    .map { |t| [Luoma::TOKEN_KIND_MAP[t[:kind]], Luoma.get_token_value(t, source)] }
+    .map { |t| [Luoma::TOKEN_KIND_MAP[t.first], Luoma.get_token_value(t, source)] }
 end
 
 class TestLexerLegacy < Minitest::Test
