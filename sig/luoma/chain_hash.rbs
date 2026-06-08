@@ -1,0 +1,26 @@
+module Luoma
+  # Combine multiple hashes for sequential lookup.
+  class ChainHash
+    @hashes: Array[Luoma::t_namespace]
+
+    #  (*t_namespace) -> void
+    def initialize: (*t_namespace hashes) -> void
+
+    #  (String) -> untyped
+    def []: (String key) -> untyped
+
+    #  (String) -> bool
+    def key?: (String key) -> untyped
+
+    #  (String, untyped) -> untyped
+    def fetch: (String key, ?untyped default) -> untyped
+
+    def size: () -> Integer
+
+    def push: (t_namespace hash) -> void
+
+    alias << push
+
+    def pop: () -> t_namespace?
+  end
+end

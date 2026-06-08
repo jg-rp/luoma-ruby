@@ -1,4 +1,108 @@
 module Luoma
   class Parser
+    @env: Environment
+
+    @source: String
+
+    @template_name: String
+
+    @tokens: Array[t_token]
+
+    @pos: Integer
+
+    @eoi: t_token
+
+    @whitespace_control_carry: "-" | "+" | "~" | nil
+
+    TERMINATE_EXPRESSION: Set[t_token_kind]
+
+    #  (Environment, String, String, Array[t_token]) -> t_block
+    def self.parse: (Environment env, String source, String template_name, Array[t_token] tokens) -> t_block
+
+    #  (Environment, String, String, Array[t_token]) -> void
+    def initialize: (Environment env, String source, String template_name, Array[t_token] tokens) -> void
+
+    #  () -> void
+    def carry_whitespace_control: () -> void
+
+    #  () -> t_token
+    def current: () -> t_token
+
+    #  () -> t_token_kind
+    def kind: () -> t_token_kind
+
+    #  () -> String
+    def current_value: () -> String
+
+    #  () -> t_token
+    def next: () -> t_token
+
+    def peek: (?::Integer offset) -> t_token
+
+    #  (t_token_kind, ?message: String?) -> t_token
+    def eat: (t_token_kind kind, ?message: String?) -> t_token
+
+    #  (String) -> t_token
+    def eat_empty_tag: (String name) -> t_token
+
+    #  (Set[t_token_kind]) -> t_token
+    def eat_one_of: (Set[t_token_kind] kinds) -> t_token
+
+    #  (String) -> t_token
+    def eat_tag: (String name) -> t_token
+
+    # Raise an error if we're not at the start of an expression.
+    #  () -> void
+    def expect_expression: () -> void
+
+    #  (?require_commas: bool?) -> Array[Expression | KeywordArgument]
+    def parse_arguments: (?require_commas: bool?) -> Array[Expression | KeywordArgument]
+
+    #  (?end: Set[String]?) -> t_block
+    def parse_block: (?end: Set[String]?) -> t_block
+
+    #  (?precedence: Integer?, ?infix: bool?) -> Expression
+    def parse_expression: (?precedence: Integer?, ?infix: bool?) -> Expression
+
+    # Parse an expression with optional filters.
+    #  (?precedence: Integer?, ?infix: bool?) -> Expression
+    def parse_filtered_expression: (?precedence: Integer?, ?infix: bool?) -> Expression
+
+    #  () -> Name
+    def parse_ident: () -> Name
+
+    #  (?require_commas: bool?) -> Array[KeywordArgument]
+    def parse_keyword_arguments: (?require_commas: bool?) -> Array[KeywordArgument]
+
+    #  () -> t_block
+    def parse_line_statements: () -> t_block
+
+    # Parse an identifier, possibly surrounded by quotes.
+    #  () -> Name
+    def parse_name: () -> Name
+
+    #  (?require_commas: bool?) -> Array[Expression]
+    def parse_positional_arguments: (?require_commas: bool?) -> Array[Expression]
+
+    #  () -> StringLiteral
+    def parse_string_literal: () -> StringLiteral
+
+    #  () -> String
+    def peek_tag_name: () -> String
+
+    #  () -> String?
+    def peek_whitespace_control: () -> String?
+
+    #  () -> void
+    def skip_whitespace_control: () -> void
+
+    # Return `true` if we're at the start of a tag named `name`.
+    #  (String) -> bool
+    def tag?: (String name) -> bool
+
+    # Return `true` if we're at the start of a tag and that tag's name is in
+    # `names`.
+    #  (Set[String]) -> bool
+    def tags?: (Set[String] names) -> bool
   end
 end

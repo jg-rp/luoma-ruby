@@ -1,14 +1,104 @@
 module Luoma
   class RenderContext
+    # The template being rendered.
     @template: Template
 
+    # The Liquid environment this render context and associated template is
+    # bound to.
     @env: Environment
+
+    # Developer-defined template variables passed down from the environment
+    # and template.
+    @globals: t_namespace
+
+    # The namespace for variables defined with `{% assign %}` and
+    # `{% capture %}`.
+    @locals: t_namespace
+
+    # A namespace for `{% increment %}` and `{% decrement %}`.
+    @counters: t_namespace
+
+    # The current template scope including `locals`, `globals` and `counters`.
+    # New block-scoped namespaces get pushed onto and popped off this chain
+    # map.
+    #
+    # Scopes are searched from right to left. New scopes are push on the
+    # right.
+    @scopes: ChainHash
+
+    # Names of tags that are disallowed in this context.
+    @disabled_tags: Set[String]?
+
+    # The number of times this render context has been extended or copied.
+    @context_depth: Integer
+
+    # A non-specific indicator of template local scope usage.
+    @assign_score: Integer
+
+    # A non-specific indicator of template local scope usage for the current
+    # template and all partial templates combined.
+    @assign_score_cumulative: Integer
+
+    # The number of nodes rendered for the current template.
+    @render_score: Integer
+
+    # The number of nodes rendered for the current template and all partial
+    # templates.
+    @render_score_cumulative: Integer
+
+    # A stack of interrupt signals used by `{% break %}` and
+    # `{% continue %}`, for example.
+    @interrupts: Array[Symbol]
+
+    # A stack of `ForLoop` drops used to populate `forloop.parent`
+    @forloops: Array[ForLoop]
+
+    # Registers supporting stateful tags. It's OK to use this map for storing
+    # custom tag state.
+    @registers: Hash[Symbol, untyped]
 
     attr_reader env: Environment
 
     attr_reader template: Template
 
+    attr_reader disabled_tags: Set[String]?
+
+    attr_reader context_depth: Integer
+
+    attr_reader assign_score: Integer
+
+    attr_reader assign_score_cumulative: Integer
+
+    attr_reader render_score: Integer
+
+    attr_reader render_score_cumulative: Integer
+
+    attr_reader interrupts: Array[Symbol]
+
+    attr_reader registers: Hash[Symbol, untyped]
+
     #  (Template, ?globals: t_namespace?) -> void
-    def initialize: (Template template, ?globals: t_namespace?) -> void
+    def initialize: (Template template, ?globals: t_namespace?, ?disabled_tags: Set[String]?, ?context_depth: Integer?, ?assign_score_cumulative: Integer?, ?render_score_cumulative: Integer?) -> void
+
+    #  (String) -> untyped
+    def resolve: (String name) -> untyped
+
+    #  (untyped, Array[untyped]) -> untyped
+    def resolve_path: (untyped obj, untyped segments) -> untyped
+
+    #  (String, untyped) -> void
+    def assign: (String name, untyped value) -> void
+
+    #  (t_namespace, bool?, Set[String]?, Template?) -> RenderContext
+    def copy: (t_namespace namespace, ?block_scope: bool?, ?disabled_tags: Set[String]?, ?template: Template?) -> RenderContext
+
+    #  (t_namespace, ?template: Template?) { () -> untyped } -> void
+    def extends: (t_namespace namespace, ?template: Template?) { () -> untyped } -> void
+
+    #  (String) -> Integer
+    def decrement: (String name) -> Integer
+
+    #  (String) -> Integer
+    def increment: (String name) -> Integer
   end
 end
