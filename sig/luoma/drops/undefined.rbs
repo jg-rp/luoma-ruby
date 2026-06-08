@@ -1,4 +1,30 @@
 module Luoma
+  attr_reader path: String
+
+  # The default and base "undefined" type.
   class UndefinedDrop < Drop
+    @path: String
+
+    @token: t_token
+
+    @source: String
+
+    @template_name: String
+
+    #  (String, t_token, String, String) -> void
+    def initialize: (String path, t_token token, String source, String template_name) -> void
+
+    #  (String, RenderContext) -> untyped
+    def []: (String name, RenderContext context) -> untyped
+
+    #  (untyped, RenderContext) -> bool
+    def eq?: (untyped obj, RenderContext context) -> bool
+  end
+
+  class StrictUndefinedDrop < UndefinedDrop
+    def error: () -> untyped
+  end
+
+  class FalsyStrictUndefinedDrop < StrictUndefinedDrop
   end
 end

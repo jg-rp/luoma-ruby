@@ -1,4 +1,34 @@
 module Luoma
   class Drop
+    #  (untyped, RenderContext) -> bool
+    def key?: (untyped obj, Luoma::RenderContext context) -> bool
+
+    #  (String, RenderContext) -> untyped
+    def []: (untyped name, Luoma::RenderContext context) -> untyped
+
+    def each: () -> void
+
+    #  (untyped, RenderContext) -> bool
+    def eq?: (untyped obj, Luoma::RenderContext context) -> bool
+
+    #  (untyped, RenderContext) -> bool
+    def lt?: (untyped obj, Luoma::RenderContext context) -> bool
+
+    # Return the length of this object.
+    # Along with `#slice`,  `#length` is part of the iterator protocol.
+    #  (RenderContext) -> Integer
+    def length: (Luoma::RenderContext context) -> Integer
+
+    #  (Integer?, Integer?, bool?) -> Enumerable[untyped]
+    def slice: (Integer? offset, Integer? limit, bool? reversed) -> untyped
+
+    #  (:data | :numeric | :string | :boolean, RenderContext) -> untyped
+    def to_primitive: (:data | :numeric | :string | :boolean hint, Luoma::RenderContext context) -> untyped
+
+    #  () -> String
+    def to_s: () -> String
+
+    #  () -> String?
+    def to_html_safe_s: () -> String?
   end
 end
