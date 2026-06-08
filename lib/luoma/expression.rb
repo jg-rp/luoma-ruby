@@ -68,7 +68,12 @@ module Luoma
         func.call(left, *args, **kwargs) # steep:ignore
       end
     rescue ArgumentError, TypeError => e
-      raise FilterArgumentError.new(e.message, @token)
+      raise FilterArgumentError.new(
+        e.message,
+        @token,
+        context.template.name,
+        context.template.source
+      )
     end
 
     #: (RenderContext) -> Array[_Traversable]
@@ -226,7 +231,7 @@ module Luoma
   class Variable < Expression
     attr_reader :root, :segments
 
-    #: (t_token, Name | StringLiteral | Variable, Array[t_path_segment])
+    #: (t_token, Name | StringLiteral | Variable, Array[t_path_segment]) -> void
     def initialize(token, root, segments)
       super(token)
       @root = root
@@ -236,7 +241,7 @@ module Luoma
 
     #: (RenderContext) -> untyped
     def evaluate(context)
-      root_segment = @root.is_a?(Variable) ? @root.evaluate(context) : @root.value
+      root_segment = @root.is_a?(Variable) ? @root.evaluate(context) : @root.value # steep:ignore
       root = root_segment.is_a?(String) ? context.resolve(root_segment) : :nothing
 
       obj, index = context.resolve_path(root, @segments.map { |s| s.evaluate(context) })

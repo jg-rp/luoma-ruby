@@ -1,0 +1,4 @@
+module Luoma
+  class UndefinedDrop < Drop
+  end
+end

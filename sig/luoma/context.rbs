@@ -8,7 +8,7 @@ module Luoma
 
     attr_reader template: Template
 
-    #  (Template) -> void
-    def initialize: (Template template) -> void
+    #  (Template, ?globals: t_namespace?) -> void
+    def initialize: (Template template, ?globals: t_namespace?) -> void
   end
 end

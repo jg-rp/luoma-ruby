@@ -1,0 +1,55 @@
+module Luoma
+  # The base class for all template errors.
+  class LuomaError < StandardError
+  end
+
+  class DetailedLuomaError < LuomaError
+    @token: t_token
+
+    @template_name: String
+
+    @source: String
+
+    attr_accessor token: t_token
+
+    attr_accessor template_name: String
+
+    attr_accessor source: String
+
+    def initialize: (String message, t_token token, String template_name, String source) -> void
+
+    def detailed_message: (?highlight: bool, **untyped kwargs) -> String
+
+    def error_context: (String source, Integer index) -> [Integer, Integer, String]
+  end
+
+  class DisabledTagError < DetailedLuomaError
+  end
+
+  class FilterArgumentError < DetailedLuomaError
+  end
+
+  class FilterNotFoundError < DetailedLuomaError
+  end
+
+  class RequiredBlockError < TemplateInheritanceError
+  end
+
+  class ResourceLimitError < LuomaError
+  end
+
+  class TemplateInheritanceError < DetailedLuomaError
+  end
+
+  class TemplateNotFoundError < LuomaError
+  end
+
+  class TemplateSyntaxError < DetailedLuomaError
+  end
+
+  class TemplateTypeError < DetailedLuomaError
+  end
+
+  class UndefinedVariableError < DetailedLuomaError
+  end
+end

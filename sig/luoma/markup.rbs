@@ -1,0 +1,61 @@
+module Luoma
+  # The base class for all tag nodes and the output statement.
+  class Markup
+    @token: t_token
+
+    @blank: bool
+
+    @tag: String
+
+    attr_reader token: t_token
+
+    attr_reader blank: bool
+
+    attr_reader tag: String
+
+    #  (t_token) -> void
+    def initialize: (t_token token) -> void
+
+    #  (RenderContext, String) -> void
+    def render: (RenderContext context, String buffer) -> void
+
+    #  (RenderContext) -> Array[Markup]
+    def children: (RenderContext static_context) -> ::Array[Markup]
+
+    #  () -> Array[Expression]
+    def expressions: () -> ::Array[Expression]
+
+    #  () -> Array[Name]
+    def block_scope: () -> ::Array[Name]
+
+    #  (RenderContext) -> Partial?
+    def partial: (RenderContext static_context) -> Partial?
+  end
+
+  class Partial
+    @template: Template
+
+    @scope_kind: (:shared | :isolated | :inherited)
+
+    @in_scope: Array[Name]
+
+    @key: Integer
+
+    attr_reader template: Template
+
+    attr_reader scope_kind: :shared | :isolated | :inherited
+
+    attr_reader in_scope: Array[Name]
+
+    attr_reader key: Integer
+
+    #  (Template, :shared | :isolated | :inherited, Array[Name], Integer) -> void
+    def initialize: (Template template, :shared | :isolated | :inherited scope_kind, Array[Name] in_scope, Integer key) -> void
+  end
+
+  #  (t_block, RenderContext, String) -> void
+  def self.render_block: (t_block block, RenderContext context, String buffer) -> void
+
+  #  (t_block) -> bool
+  def self.blank_block?: (t_block block) -> bool
+end

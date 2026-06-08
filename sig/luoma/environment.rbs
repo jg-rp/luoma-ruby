@@ -1,13 +1,115 @@
 module Luoma
+  interface _Lexer
+    def tokenize: (Environment, String) -> Array[t_token]
+  end
+
+  interface _Parser
+    def parse: (Environment, String, String, Array[t_token]) -> t_block
+  end
+
   class Environment
-    @filters: Hash[String, [untyped, Integer?]]
+    @auto_trim: '-' | '~' | nil
+
+    @globals: t_namespace?
+
+    @lexer: _Lexer
+
+    @loader: TemplateLoader
+
+    @parser: _Parser
 
     @strict_filters: bool
 
-    attr_reader strict_filters: bool
+    @suppress_blank_control_flow_blocks: bool
+
+    @undefined: singleton(UndefinedDrop)
+
+    @tags: Hash[String, _Tag]
+
+    @filters: Hash[String, [untyped, Integer?]]
 
     attr_reader filters: Hash[String, [untyped, Integer?]]
 
-    def initialize: () -> void
+    attr_reader strict_filters: bool
+
+    attr_reader undefined: singleton(UndefinedDrop)
+
+    def initialize: (?auto_trim: ('-' | '~' | nil), ?globals: t_namespace?, ?lexer: _Lexer, ?loader: TemplateLoader?, ?parser: _Parser, ?strict_filters: bool, ?suppress_blank_control_flow_blocks: bool, ?undefined: singleton(UndefinedDrop)) -> void
+
+    #  (String,
+    #   ?globals: t_namespace?,
+    #   ?name: String?,
+    #   ?overlay: t_namespace?,
+    #   ?up_to_date: Proc::_Callable?) -> Template
+    def parse: (String source, ?globals: t_namespace?, ?name: String?, ?overlay: t_namespace?, ?up_to_date: untyped?) -> Template
+
+    #  (String, ?data: t_namespace?) -> String
+    def render: (String source, ?data: t_namespace?) -> String
+
+    #  (String, ?globals: t_namespace?, ?context: RenderContext?, **untyped) -> Template
+    def get_template: (String name, ?globals: t_namespace?, ?context: RenderContext?, **untyped kwargs) -> Template
+
+    # Add or replace a filter. The same callable can be registered multiple times with
+    # different names.
+    #
+    # If _callable_ accepts a keyword parameter called `context`, the active render
+    # context will be passed to `#call`.
+    #
+    # @param name [String] The name of the filter, as used by template authors.
+    # @param callable [responds to call] An object that responds to `#call(left, ...)`
+    #   and `#parameters`. Like a Proc or Method.
+    def register_filter: (String name, untyped callable) -> void
+
+    # Remove a filter from the filter register.
+    # @param name [String] The name of the filter.
+    # @return [callable | nil] The callable implementing the removed filter, or nil
+    #    if _name_ did not exist in the filter register.
+    def delete_filter: (String name) -> untyped
+
+    # Add or replace a tag.
+    # @param name [String] The tag's name, as used by template authors.
+    # @param tag [responds to parse: ([Symbol, String?, Integer], Parser) -> Tag]
+    def register_tag: (String name, _Tag tag) -> void
+
+    # Remove a tag from the tag register.
+    # @param name [String] The name of the tag.
+    # @return [_Tag | nil]
+    def delete_tag: (String name) -> _Tag?
+
+    #  () -> void
+    def setup_tags_and_filters: () -> void
+
+    #  (untyped, untyped, RenderContext, t_token) -> bool
+    def contains?: (untyped left, untyped right, RenderContext context, t_token token) -> bool
+
+    #  (untyped, untyped, RenderContext, t_token) -> bool
+    def eq?: (untyped left, untyped right, RenderContext context, t_token token) -> bool
+
+    #  (untyped, untyped, RenderContext, t_token) -> bool
+    def lt?: (untyped left, untyped right, RenderContext context, t_token token) -> bool
+
+    #  (untyped) -> bool
+    def nothing?: (untyped obj) -> bool
+
+    #  (untyped, RenderContext) -> bool
+    def truthy?: (untyped obj, RenderContext context) -> bool
+
+    #  (untyped, RenderContext, t_token) -> String
+    def serialize: (untyped obj, RenderContext context, t_token token) -> String
+                 
+    #  (untyped, RenderContext, t_token) -> Array[untyped]
+    def to_a: (untyped obj, RenderContext context, t_token token) -> Array[untyped]
+
+    #  (untyped, RenderContext, t_token) -> Integer
+    def to_i: (untyped obj, RenderContext context, t_token token) -> Integer
+
+    #  (untyped, RenderContext, t_token) -> String
+    def to_string: (untyped obj, RenderContext context, t_token token) -> String
+
+    #  (String, String?, String?) -> String
+    def trim: (String value, String? left, String? right) -> String
+
+    #  (t_namespace?) -> t_namespace?
+    def make_globals: (t_namespace? namespace) -> t_namespace?
   end
 end

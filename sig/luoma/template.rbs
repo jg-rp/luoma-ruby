@@ -1,10 +1,53 @@
 module Luoma
+  type t_block = Array[String | Luoma::Markup]
   class Template
     @env: Environment
 
+    @source: String
+
+    @nodes: t_block
+
+    @globals: t_namespace?
+
+    @name: String
+
+    @overlay: t_namespace?
+
+    @up_to_date: untyped
+
     attr_reader env: Environment
 
-    #  (Environment) -> void
-    def initialize: (Environment env) -> void
+    attr_reader source: String
+
+    attr_reader nodes: t_block
+
+    attr_reader globals: t_namespace?
+
+    attr_reader name: String
+
+    attr_reader overlay: t_namespace?
+
+    attr_reader up_to_date: untyped
+
+    #  (Environment,
+    #   String,
+    #   t_block,
+    #   ?globals: Hash[String, untyped]?,
+    #   ?name: String?,
+    #   ?overlay: Hash[String, untyped]?,
+    #   ?up_to_date: Proc::_Callable?) -> void
+    def initialize: (Environment env, String source, t_block nodes, ?globals: t_namespace?, ?name: String?, ?overlay: t_namespace?, ?up_to_date: untyped?) -> void
+
+    #  (t_namespace?) -> String
+    def render: (t_namespace? data) -> String
+
+    #  (RenderContext, String) -> String
+    def render_with_context: (RenderContext context, String buffer) -> String
+
+    #  (t_namespace) -> Template
+    def with_globals: (t_namespace namespace) -> Template
+
+    #  (t_namespace?) -> t_namespace?
+    def make_globals: (t_namespace? namespace) -> t_namespace?
   end
 end
