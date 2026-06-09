@@ -1,0 +1,13 @@
+module Luoma
+  class OutputStatement < Markup
+    @expression: Expression
+
+    def initialize: (t_token token, Expression expression) -> void
+
+    #  (RenderContext, String) -> void
+    def render: (RenderContext context, String buffer) -> void
+
+    #  () -> Array[Expression]
+    def expressions: () -> ::Array[Expression]
+  end
+end

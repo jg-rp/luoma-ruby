@@ -15,6 +15,8 @@ require_relative "luoma/parser_legacy"
 require_relative "luoma/template"
 require_relative "luoma/token"
 require_relative "luoma/version"
+require_relative "luoma/tags/output"
 
 module Luoma
+  # TODO:
 end

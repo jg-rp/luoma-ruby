@@ -60,6 +60,16 @@ module Luoma
       :token_double_quoted
     ].freeze #: Set[t_token_kind]
 
+    PATH_ROOT_KINDS = Set[
+      :token_ident,
+      :token_blank,
+      :token_empty,
+      :token_false,
+      :token_true,
+      :token_null,
+      :token_nil
+    ].freeze #: Set[t_token_kind]
+
     #: (?require_commas: bool?) -> Array[Expression | KeywordArgument]
     def parse_arguments(require_commas: nil)
       args = [] #: Array[Expression | KeywordArgument]
@@ -327,74 +337,224 @@ module Luoma
       tag.parse(token, self)
     end
 
-    #: () -> Expression
+    #: () -> Variable
     def parse_path
-      raise "TODO:"
+      token = current
+
+      root = if PATH_ROOT_KINDS.include?(token.first)
+               Name.new(token, Luoma.get_token_value(token, @source))
+             else
+               eat(:token_lbracket)
+               if kind == :token_ident
+                 path = parse_path
+                 eat(:token_rbracket)
+                 path
+               else
+                 parse_string_literal.with(eat(:token_rbracket))
+               end
+             end
+
+      Variable.new(token, root, parse_path_segments)
     end
 
     #: () -> Array[t_path_segment]
     def parse_path_segments
-      raise "TODO:"
+      segments = [] #: Array[t_path_segment]
+
+      loop do
+        case kind
+        when :token_lbracket
+          segments << parse_bracketed_segment
+        when :token_dot
+          @pos += 1
+          token = eat(:token_ident)
+          segments << Name.new(token, Luoma.get_token_value(token, @source))
+        else
+          break
+        end
+      end
+
+      segments
     end
 
     #: () -> t_path_segment
     def parse_bracketed_segment
-      raise "TODO:"
+      eat(:token_lbracket)
+      token = self.next
+
+      case token.first
+      when :token_int
+        IndexSelector.new(token, Luoma.get_token_value(token, @source).to_i)
+      when :token_ident, :token_blank, :token_empty, :token_false, :token_true, :token_null, :token_nil
+        @pos += 1
+        path = parse_path
+        eat(:token_rbracket)
+        path
+      when :token_double_quote, :token_single_quote
+        @pos += 1
+        parse_string_literal.with(eat(:token_rbracket))
+      when :token_rbracket
+        raise TemplateSyntaxError.new(
+          "empty bracketed segment",
+          token,
+          @source,
+          @template_name
+        )
+      else
+        raise TemplateSyntaxError.new(
+          "expected an integer, identifier or string",
+          token,
+          @source,
+          @template_name
+        )
+      end
     end
 
     #: () -> Expression
     def parse_range_literal
-      raise "TODO:"
+      token = eat(:token_lparen)
+      start = parse_expression(infix: false)
+      eat(:token_double_dot)
+      stop = parse_expression(infix: false)
+      eat(:token_rparen)
+      RangeLiteral.new(token, start, stop)
     end
 
     #: () -> Expression
     def parse_true_literal
-      raise "TODO:"
+      token = self.next
+      if PATH_PUNCTUATION.include?(token.first)
+        @pos -= 1
+        parse_path
+      else
+        BooleanLiteral.new(token, true)
+      end
     end
 
     #: () -> Expression
     def parse_false_literal
-      raise "TODO:"
+      token = self.next
+      if PATH_PUNCTUATION.include?(token.first)
+        @pos -= 1
+        parse_path
+      else
+        BooleanLiteral.new(token, false)
+      end
     end
 
     #: () -> Expression
     def parse_null_literal
-      raise "TODO:"
+      token = self.next
+      if PATH_PUNCTUATION.include?(token.first)
+        @pos -= 1
+        parse_path
+      else
+        NullLiteral.new(token)
+      end
     end
 
     #: () -> Expression
     def parse_int_literal
-      raise "TODO:"
+      token = self.next
+      IntegerLiteral.new(token, Luoma.get_token_value(token, @source).to_i)
     end
 
     #: () -> Expression
     def parse_float_literal
-      raise "TODO:"
+      token = self.next
+      FloatLiteral.new(token, Float(Luoma.get_token_value(token, @source)))
     end
 
     #: () -> Expression
     def parse_blank
-      raise "TODO"
+      token = self.next
+      if PATH_PUNCTUATION.include?(token.first)
+        @pos -= 1
+        parse_path
+      else
+        Blank.new(token)
+      end
     end
 
     #: () -> Expression
     def parse_empty
-      raise "TODO:"
+      token = self.next
+      if PATH_PUNCTUATION.include?(token.first)
+        @pos -= 1
+        parse_path
+      else
+        Empty.new(token)
+      end
     end
 
     #: (Expression) -> FilteredExpression
     def parse_filters(left)
-      raise "TODO:"
+      expr = parse_filter(left)
+      expr = parse_filter(expr) while kind == :token_pipe
+      expr
     end
 
     #: (Expression) -> FilteredExpression
     def parse_filter(left)
-      raise "TODO:"
+      token = eat(:token_pipe)
+      name_token = eat(:token_ident, message: "missing or malformed filter name")
+
+      if TERMINATE_FILTER.include?(kind)
+        # No arguments
+        return FilteredExpression.new(
+          token,
+          left,
+          Filter.new(
+            name_token,
+            Name.new(name_token, Luoma.get_token_value(name_token, @source)),
+            []
+          )
+        )
+      end
+
+      eat(:token_colon, message: "missing colon or pipe")
+      args = [] #: Array[Expression | KeywordArgument]
+
+      loop do
+        kind_ = kind
+        break if TERMINATE_FILTER.include?(kind_)
+
+        if kind_ == :token_ident && peek.first == :token_colon
+          # A keyword argument
+          param = parse_ident
+          eat(:token_colon)
+          args << KeywordArgument.new(param.token, param, parse_expression)
+        else
+          args << parse_expression
+        end
+
+        break if TERMINATE_FILTER.include?(kind)
+
+        eat(:token_comma, message: "missing comma or pipe")
+      end
+
+      FilteredExpression.new(
+        token,
+        left,
+        Filter.new(
+          name_token,
+          Name.new(name_token, Luoma.get_token_value(name_token, @source)),
+          args
+        )
+      )
     end
 
     #: (Expression) -> Expression
     def parse_infix(left)
-      raise "TODO:"
+      op_token = self.next
+      kind_ = op_token.first
+
+      right = parse_expression(
+        precedence: PRECEDENCES[kind_] || Precedence::LOWEST,
+        infix: true
+      )
+
+      INFIX_OPERATORS[kind_].new(op_token, left, right)
     end
   end
 end

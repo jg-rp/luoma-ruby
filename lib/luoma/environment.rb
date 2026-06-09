@@ -5,6 +5,8 @@ module Luoma
     attr_accessor :auto_trim, :globals, :lexer, :loader, :parser, :strict_filters, :suppress_blank_control_flow_blocks,
                   :undefined, :filters, :tags
 
+    # TODO: resource limits
+
     def initialize(
       auto_trim: nil,
       globals: nil,

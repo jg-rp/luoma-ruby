@@ -22,6 +22,8 @@ module Luoma
 
     STRING_LITERAL_KINDS: Set[t_token_kind]
 
+    PATH_ROOT_KINDS: Set[t_token_kind]
+
     #  (?require_commas: bool?) -> Array[Expression | KeywordArgument]
     def parse_arguments: (?require_commas: bool?) -> Array[Expression | KeywordArgument]
 
@@ -60,8 +62,8 @@ module Luoma
     #  () -> Markup
     def parse_tag: () -> Markup
 
-    #  () -> Expression
-    def parse_path: () -> Expression
+    #  () -> Variable
+    def parse_path: () -> Variable
 
     #  () -> Array[t_path_segment]
     def parse_path_segments: () -> Array[t_path_segment]
