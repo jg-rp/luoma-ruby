@@ -3,16 +3,21 @@
 module Luoma
   class Environment
     attr_accessor :auto_trim, :globals, :lexer, :loader, :parser, :strict_filters, :suppress_blank_control_flow_blocks,
-                  :undefined, :filters, :tags
-
-    # TODO: resource limits
+                  :undefined, :filters, :tags, :max_assign_score_cumulative, :max_assign_score, :max_context_depth,
+                  :max_render_score_cumulative, :max_render_score, :max_render_size
 
     def initialize(
       auto_trim: nil,
       globals: nil,
-      lexer: BaseLexer,
+      lexer: LegacyLexer,
       loader: nil,
-      parser: Parser,
+      max_assign_score_cumulative: nil,
+      max_assign_score: nil,
+      max_context_depth: 30,
+      max_render_score_cumulative: nil,
+      max_render_score: nil,
+      max_render_size: nil,
+      parser: LegacyParser,
       strict_filters: true,
       suppress_blank_control_flow_blocks: true,
       undefined: UndefinedDrop
@@ -21,6 +26,12 @@ module Luoma
       @globals = globals
       @lexer = lexer
       @loader = loader || HashLoader.new({})
+      @max_assign_score = max_assign_score
+      @max_assign_score_cumulative = max_assign_score_cumulative
+      @max_context_depth = max_context_depth
+      @max_render_score = max_render_score
+      @max_render_score_cumulative = max_render_score_cumulative
+      @max_render_size = max_render_size
       @parser = parser
       @strict_filters = strict_filters
       @suppress_blank_control_flow_blocks = suppress_blank_control_flow_blocks
@@ -28,7 +39,6 @@ module Luoma
 
       @tags = {} #: Hash[String, _Tag]
       @filters = {} #: Hash[String, [untyped, Integer?]]
-
       setup_tags_and_filters
     end
 

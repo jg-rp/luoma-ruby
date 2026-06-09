@@ -15,6 +15,10 @@ require_relative "luoma/parser_legacy"
 require_relative "luoma/template"
 require_relative "luoma/token"
 require_relative "luoma/version"
+require_relative "luoma/drops/blank"
+require_relative "luoma/drops/empty"
+require_relative "luoma/drops/range"
+require_relative "luoma/drops/undefined"
 require_relative "luoma/tags/output"
 
 module Luoma

@@ -28,6 +28,18 @@ module Luoma
 
     @filters: Hash[String, [untyped, Integer?]]
 
+    @max_assign_score_cumulative: Integer?
+
+    @max_assign_score: Integer?
+
+    @max_context_depth: Integer?
+
+    @max_render_score_cumulative: Integer?
+
+    @max_render_score: Integer?
+    
+    @max_render_size: Integer?
+
     attr_reader filters: Hash[String, [untyped, Integer?]]
 
     attr_reader strict_filters: bool
@@ -36,7 +48,34 @@ module Luoma
 
     attr_reader undefined: singleton(UndefinedDrop)
 
-    def initialize: (?auto_trim: ('-' | '~' | nil), ?globals: t_namespace?, ?lexer: _Lexer, ?loader: TemplateLoader?, ?parser: _Parser, ?strict_filters: bool, ?suppress_blank_control_flow_blocks: bool, ?undefined: singleton(UndefinedDrop)) -> void
+    attr_reader max_assign_score_cumulative: Integer?
+
+    attr_reader max_assign_score: Integer?
+
+    attr_reader max_context_depth: Integer?
+
+    attr_reader max_render_score_cumulative: Integer?
+
+    attr_reader max_render_score: Integer?
+
+    attr_reader max_render_size: Integer?
+
+    def initialize: (
+      ?auto_trim: ('-' | '~' | nil), 
+      ?globals: t_namespace?, 
+      ?lexer: _Lexer, 
+      ?loader: TemplateLoader?, 
+      ?parser: _Parser, 
+      ?strict_filters: bool, 
+      ?suppress_blank_control_flow_blocks: bool, 
+      ?undefined: singleton(UndefinedDrop),
+      ?max_assign_score_cumulative: Integer?,
+      ?max_assign_score: Integer?,
+      ?max_context_depth: Integer?,
+      ?max_render_score_cumulative: Integer?,
+      ?max_render_score: Integer?,
+      ?max_render_size: Integer?
+    ) -> void
 
     #  (String,
     #   ?globals: t_namespace?,

@@ -69,11 +69,11 @@ module Luoma
 
     attr_reader assign_score_cumulative: Integer
 
-    attr_reader render_score: Integer
+    attr_accessor render_score: Integer
 
-    attr_reader render_score_cumulative: Integer
+    attr_accessor render_score_cumulative: Integer
 
-    attr_reader interrupts: Array[Symbol]
+    attr_accessor interrupts: Array[Symbol]
 
     attr_reader registers: Hash[Symbol, untyped]
 

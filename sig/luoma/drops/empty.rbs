@@ -1,0 +1,6 @@
+module Luoma
+  EMPTY: EmptyDrop
+
+  class EmptyDrop < Drop
+  end
+end

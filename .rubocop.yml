@@ -45,6 +45,9 @@ Style/GuardClause:
 Style/Documentation:
   Enabled: false
 
+Style/RaiseArgs:
+  Enabled: false
+
 Lint/UnusedMethodArgument:
   Enabled: false
   

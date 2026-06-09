@@ -52,11 +52,42 @@ module Luoma
 
   #: (t_block, RenderContext, String) -> void
   def self.render_block(block, context, buffer)
-    raise "TODO:"
+    if context.env.max_render_score || context.env.max_render_score_cumulative
+      context.render_score += block.length
+      context.render_score_cumulative += block.length
+
+      if (context.env.max_render_score && context.render_score > context.env.max_render_score) ||
+         (context.env.max_render_score_cumulative &&
+          context.render_score_cumulative > context.env.max_render_score_cumulative)
+        raise ResourceLimitError.new("memory limits reached")
+      end
+    end
+
+    block.each do |node|
+      if node.is_a?(String)
+        buffer << node
+      elsif context.disabled_tags&.include?(node.tag)
+        raise DisabledTagError.new(
+          "#{node.tag.inspect} is not allowed in this context",
+          node.token,
+          context.template.source,
+          context.template.name
+        )
+      end
+
+      unless context.interrupts.empty?
+        context.interrupts.pop if context.interrupts.last == :stop_render
+        break # steep:ignore
+      end
+
+      if context.env.max_render_size && buffer.bytesize > context.env.max_render_size
+        raise ResourceLimitError.new("memory limits exceeded")
+      end
+    end
   end
 
   #: (t_block) -> bool
   def self.blank_block?(block)
-    raise "TODO:"
+    block.all? { |node| node.is_a?(String) ? node.match?(/\A\s*\Z/) : node.blank }
   end
 end
