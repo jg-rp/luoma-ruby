@@ -32,6 +32,8 @@ module Luoma
 
     attr_reader strict_filters: bool
 
+    attr_reader tags: Hash[String, _Tag]
+
     attr_reader undefined: singleton(UndefinedDrop)
 
     def initialize: (?auto_trim: ('-' | '~' | nil), ?globals: t_namespace?, ?lexer: _Lexer, ?loader: TemplateLoader?, ?parser: _Parser, ?strict_filters: bool, ?suppress_blank_control_flow_blocks: bool, ?undefined: singleton(UndefinedDrop)) -> void

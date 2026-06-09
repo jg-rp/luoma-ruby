@@ -166,14 +166,14 @@ module Luoma
       raise "not implemented"
     end
 
-    #: (?precedence: Integer?, ?infix: bool?) -> Expression
-    def parse_expression(precedence: nil, infix: nil)
+    #: (?precedence: Integer, ?infix: bool?) -> Expression
+    def parse_expression(precedence: 1, infix: nil)
       raise "not implemented"
     end
 
     # Parse an expression with optional filters.
-    #: (?precedence: Integer?, ?infix: bool?) -> Expression
-    def parse_filtered_expression(precedence: nil, infix: nil)
+    #: (?precedence: Integer, ?infix: bool?) -> Expression
+    def parse_filtered_expression(precedence: 1, infix: nil)
       raise "not implemented"
     end
 

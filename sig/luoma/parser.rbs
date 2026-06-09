@@ -61,12 +61,12 @@ module Luoma
     #  (?stop: Set[String]?) -> t_block
     def parse_block: (?stop: Set[String]?) -> t_block
 
-    #  (?precedence: Integer?, ?infix: bool?) -> Expression
-    def parse_expression: (?precedence: Integer?, ?infix: bool?) -> Expression
+    #  (?precedence: Integer, ?infix: bool?) -> Expression
+    def parse_expression: (?precedence: Integer, ?infix: bool?) -> Expression
 
     # Parse an expression with optional filters.
-    #  (?precedence: Integer?, ?infix: bool?) -> Expression
-    def parse_filtered_expression: (?precedence: Integer?, ?infix: bool?) -> Expression
+    #  (?precedence: Integer, ?infix: bool?) -> Expression
+    def parse_filtered_expression: (?precedence: Integer, ?infix: bool?) -> Expression
 
     #  () -> Name
     def parse_ident: () -> Name

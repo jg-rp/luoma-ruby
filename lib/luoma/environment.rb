@@ -3,7 +3,7 @@
 module Luoma
   class Environment
     attr_accessor :auto_trim, :globals, :lexer, :loader, :parser, :strict_filters, :suppress_blank_control_flow_blocks,
-                  :undefined, :filters
+                  :undefined, :filters, :tags
 
     def initialize(
       auto_trim: nil,
