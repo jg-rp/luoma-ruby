@@ -64,28 +64,96 @@ module Luoma
 
     #: (t_token_kind, ?message: String?) -> t_token
     def eat(kind, message: nil)
-      raise "TODO"
+      token = @tokens[@pos] || @eoi
+      unless token.first == kind
+        kind_ = Luoma::TOKEN_KIND_MAP[token.first]
+        value = Luoma.get_token_value(token, @source).inspect
+        raise TemplateSyntaxError.new(
+          message || "unexpected #{kind_} (#{value})",
+          token,
+          @source,
+          @template_name
+        )
+      end
+
+      @pos += 1
+      token
     end
 
     #: (String) -> t_token
     def eat_empty_tag(name)
-      raise "TODO:"
+      eat(:token_tag_start, message: "expected tag #{name}")
+      @pos += 1 if kind == :token_wc # steep:ignore
+      token = eat(:token_tag_name, message: "expected tag #{name}")
+      got = Luoma.get_token_value(token, @source)
+
+      unless got == name
+        raise TemplateSyntaxError.new(
+          "unexpected tag #{got.inspect}",
+          token,
+          @source,
+          @template_name
+        )
+      end
+
+      carry_whitespace_control
+      eat(:token_tag_end, message: "expected a closing tag delimiter")
+      token
     end
 
     #: (Set[t_token_kind]) -> t_token
     def eat_one_of(kinds)
-      raise "TODO:"
+      token = @tokens[@pos] || @eoi
+      unless kinds.include?(token.first)
+        kind_ = Luoma::TOKEN_KIND_MAP[token.first]
+        value = Luoma.get_token_value(token, @source).inspect
+        raise TemplateSyntaxError.new(
+          "unexpected #{kind_} (#{value})",
+          token,
+          @source,
+          @template_name
+        )
+      end
+
+      @pos += 1
+      token
     end
 
     #: (String) -> t_token
     def eat_tag(name)
-      raise "TODO:"
+      eat(:token_tag_start, message: "expected tag #{name}")
+      @pos += 1 if kind == :token_wc # steep:ignore
+      token = eat(:token_tag_name, message: "expected tag #{name}")
+      got = Luoma.get_token_value(token, @source)
+
+      unless got == name
+        raise TemplateSyntaxError.new(
+          "unexpected tag #{got.inspect}",
+          token,
+          @source,
+          @template_name
+        )
+      end
+
+      # Ignore everything between the tag name and the closing tag delimiter.
+      @pos += 1 until TERMINATE_EXPRESSION.include?(kind)
+
+      carry_whitespace_control
+      eat(:token_tag_end, message: "expected a closing tag delimiter")
+      token
     end
 
     # Raise an error if we're not at the start of an expression.
     #: () -> void
     def expect_expression
-      raise "TODO:"
+      if TERMINATE_EXPRESSION.include?(kind)
+        raise TemplateSyntaxError.new(
+          "missing expression",
+          current,
+          @source,
+          @template_name
+        )
+      end
     end
 
     #: (?require_commas: bool?) -> Array[Expression | KeywordArgument]
@@ -93,8 +161,8 @@ module Luoma
       raise "not implemented"
     end
 
-    #: (?end: Set[String]?) -> t_block
-    def parse_block(end: nil)
+    #: (?stop: Set[String]?) -> t_block
+    def parse_block(stop: nil)
       raise "not implemented"
     end
 
@@ -142,30 +210,52 @@ module Luoma
 
     #: () -> String
     def peek_tag_name
-      raise "TODO:"
+      token = current
+      token = peek if token.first == :token_wc
+
+      unless token.first == :token_tag_name
+        raise TemplateSyntaxError.new(
+          "missing tag name",
+          token,
+          @source,
+          @template_name
+        )
+      end
+
+      Luoma.get_token_value(token, @source)
     end
 
     #: () -> String?
     def peek_whitespace_control
-      raise "TODO:"
+      token = peek
+      Luoma.get_token_value(token, @source) if token.first == :token_wc
     end
 
     #: () -> void
     def skip_whitespace_control
-      raise "TODO:"
+      @pos += 1 if kind == :token_wc
     end
 
     # Return `true` if we're at the start of a tag named `name`.
     #: (String) -> bool
     def tag?(name)
-      raise "TODO:"
+      token = peek
+      token = peek(2) if token.first == :token_wc
+
+      token.first == :token_tag_name && Luoma.get_token_value(token, @source) == name
     end
 
     # Return `true` if we're at the start of a tag and that tag's name is in
     # `names`.
-    #: (Set[String]) -> bool
+    #: (Set[String]) -> String?
     def tags?(names)
-      raise "TODO:"
+      token = peek
+      token = peek(2) if token.first == :token_wc
+
+      return unless token.first == :token_tag_name
+
+      name = Luoma.get_token_value(token, @source)
+      name if names.include?(name)
     end
   end
 end

@@ -1,5 +1,5 @@
 module Luoma 
-  type t_token = [Symbol, Integer, Integer]
+  type t_token = [t_token_kind, Integer, Integer]
                
   type t_token_kind = (
     :token_add |

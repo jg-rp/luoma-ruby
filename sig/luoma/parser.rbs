@@ -58,8 +58,8 @@ module Luoma
     #  (?require_commas: bool?) -> Array[Expression | KeywordArgument]
     def parse_arguments: (?require_commas: bool?) -> Array[Expression | KeywordArgument]
 
-    #  (?end: Set[String]?) -> t_block
-    def parse_block: (?end: Set[String]?) -> t_block
+    #  (?stop: Set[String]?) -> t_block
+    def parse_block: (?stop: Set[String]?) -> t_block
 
     #  (?precedence: Integer?, ?infix: bool?) -> Expression
     def parse_expression: (?precedence: Integer?, ?infix: bool?) -> Expression
@@ -102,7 +102,7 @@ module Luoma
 
     # Return `true` if we're at the start of a tag and that tag's name is in
     # `names`.
-    #  (Set[String]) -> bool
-    def tags?: (Set[String] names) -> bool
+    #  (Set[String]) -> String?
+    def tags?: (Set[String] names) -> String?
   end
 end
