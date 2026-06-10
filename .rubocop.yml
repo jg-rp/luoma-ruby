@@ -50,4 +50,7 @@ Style/RaiseArgs:
 
 Lint/UnusedMethodArgument:
   Enabled: false
+
+Naming/MethodParameterName:
+  AllowedNames: [op, re, e, s]
   

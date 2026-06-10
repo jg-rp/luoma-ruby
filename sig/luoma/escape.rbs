@@ -1,0 +1,15 @@
+module Luoma
+  RE_ESCAPE: ::Regexp
+
+  ESCAPE_MAP: Hash[String, String]
+
+  RE_UNESCAPE: ::Regexp
+
+  UNESCAPE_MAP: Hash[String, String]
+
+  #  (String) -> String
+  def self.escape: (String s) -> String
+
+  #  (String) -> String
+  def self.unescape: (String s) -> String
+end
