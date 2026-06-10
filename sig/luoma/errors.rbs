@@ -38,6 +38,9 @@ module Luoma
   class ResourceLimitError < LuomaError
   end
 
+  class ContextDepthError < ResourceLimitError
+  end
+
   class TemplateInheritanceError < DetailedLuomaError
   end
 

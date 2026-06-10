@@ -63,6 +63,7 @@ module Luoma
   class FilterNotFoundError < DetailedLuomaError; end
   class RequiredBlockError < TemplateInheritanceError; end
   class ResourceLimitError < LuomaError; end
+  class ContextDepthError < ResourceLimitError; end
   class TemplateInheritanceError < DetailedLuomaError; end
   class TemplateNotFoundError < LuomaError; end
   class TemplateSyntaxError < DetailedLuomaError; end

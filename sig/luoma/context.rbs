@@ -9,14 +9,14 @@ module Luoma
 
     # Developer-defined template variables passed down from the environment
     # and template.
-    @globals: t_namespace
+    @globals: _Namespace
 
     # The namespace for variables defined with `{% assign %}` and
     # `{% capture %}`.
-    @locals: t_namespace
+    @locals: Hash[String, untyped]
 
     # A namespace for `{% increment %}` and `{% decrement %}`.
-    @counters: t_namespace
+    @counters: Hash[String, untyped]
 
     # The current template scope including `locals`, `globals` and `counters`.
     # New block-scoped namespaces get pushed onto and popped off this chain
@@ -77,8 +77,8 @@ module Luoma
 
     attr_reader registers: Hash[Symbol, untyped]
 
-    #  (Template, ?globals: t_namespace?) -> void
-    def initialize: (Template template, ?globals: t_namespace?, ?disabled_tags: Set[String]?, ?context_depth: Integer?, ?assign_score_cumulative: Integer?, ?render_score_cumulative: Integer?) -> void
+    #  (Template, ?globals: _Namespace?) -> void
+    def initialize: (Template template, ?globals: _Namespace?, ?disabled_tags: Set[String]?, ?context_depth: Integer?, ?assign_score_carry: Integer?, ?render_score_carry: Integer?) -> void
 
     #  (String) -> untyped
     def resolve: (String name) -> untyped
@@ -89,16 +89,36 @@ module Luoma
     #  (String, untyped) -> void
     def assign: (String name, untyped value) -> void
 
-    #  (t_namespace, bool?, Set[String]?, Template?) -> RenderContext
-    def copy: (t_namespace namespace, ?block_scope: bool?, ?disabled_tags: Set[String]?, ?template: Template?) -> RenderContext
+    #  (_Namespace, bool?, Set[String]?, Template?) -> RenderContext
+    def copy: (_Namespace namespace, ?block_scope: bool?, ?disabled_tags: Set[String]?, ?template: Template?) -> RenderContext
 
-    #  (t_namespace, ?template: Template?) { () -> untyped } -> void
-    def extends: (t_namespace namespace, ?template: Template?) { () -> untyped } -> void
+    #  (_Namespace, ?template: Template?) { () -> untyped } -> void
+    def extends: (_Namespace namespace, ?template: Template?) { () -> untyped } -> void
 
     #  (String) -> Integer
     def decrement: (String name) -> Integer
 
     #  (String) -> Integer
     def increment: (String name) -> Integer
+                 
+    private
+
+    #  (untyped) -> Integer
+    def assign_score_of: (untyped value) -> Integer
+                       
+    #: () -> void
+    def raise_for_context_depth: () -> void
+                               
+    #  (Array[untyped], untyped) -> untyped
+    def resolve_array_segment: (Array[untyped] obj, untyped segment) -> untyped
+
+    #  (String, untyped) -> untyped
+    def resolve_string_segment: (String obj, untyped segment) -> untyped
+
+    #  (Hash[untyped, untyped], untyped) -> untyped
+    def resolve_hash_segment: (Hash[untyped, untyped] obj, untyped segment) -> untyped
+
+    #  (untyped, untyped) -> untyped
+    def resolve_unknown_segment: (untyped obj, untyped segment) -> untyped
   end
 end

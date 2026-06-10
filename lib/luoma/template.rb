@@ -5,9 +5,9 @@ module Luoma
     #: (Environment,
     #   String,
     #   t_block,
-    #   ?globals: t_namespace?,
+    #   ?globals: _Namespace?,
     #   ?name: String?,
-    #   ?overlay: t_namespace?,
+    #   ?overlay: _Namespace?,
     #   ?up_to_date: Proc::_Callable?) -> void
     def initialize(env, source, nodes, globals: nil, name: nil, overlay: nil, up_to_date: nil)
       @env = env
@@ -19,7 +19,7 @@ module Luoma
       @up_to_date = up_to_date
     end
 
-    #: (t_namespace?) -> String
+    #: (_Namespace?) -> String
     def render(data)
       buffer = +""
       context = RenderContext.new(self, globals: make_globals(data))
@@ -34,7 +34,7 @@ module Luoma
       buffer
     end
 
-    #: (t_namespace) -> Template
+    #: (_Namespace) -> Template
     def with_globals(namespace)
       raise "TODO:"
     end
@@ -43,7 +43,7 @@ module Luoma
 
     protected
 
-    #: (t_namespace?) -> t_namespace?
+    #: (_Namespace?) -> _Namespace?
     def make_globals(namespace)
       raise "TODO:"
     end

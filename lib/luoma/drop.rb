@@ -10,7 +10,7 @@ module Luoma
     end
 
     #: (String, RenderContext) -> untyped
-    def [](name, context)
+    def fetch(name, context)
       :nothing
     end
 

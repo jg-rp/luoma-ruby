@@ -1,10 +1,10 @@
 module Luoma
   # Combine multiple hashes for sequential lookup.
   class ChainHash
-    @hashes: Array[Luoma::t_namespace]
+    @hashes: Array[Luoma::_Namespace]
 
-    #  (*t_namespace) -> void
-    def initialize: (*t_namespace hashes) -> void
+    #  (*_Namespace) -> void
+    def initialize: (*_Namespace hashes) -> void
 
     #  (String) -> untyped
     def []: (String key) -> untyped
@@ -17,10 +17,10 @@ module Luoma
 
     def size: () -> Integer
 
-    def push: (t_namespace hash) -> void
+    def push: (_Namespace hash) -> void
 
     alias << push
 
-    def pop: () -> t_namespace?
+    def pop: () -> _Namespace?
   end
 end

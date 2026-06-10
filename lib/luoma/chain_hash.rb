@@ -3,7 +3,7 @@
 module Luoma
   # Combine multiple hashes for sequential lookup.
   class ChainHash
-    #: (*t_namespace) -> void
+    #: (*_Namespace) -> void
     def initialize(*hashes)
       @hashes = hashes.to_a
     end

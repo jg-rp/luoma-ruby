@@ -2,6 +2,8 @@
 
 module Luoma
   class Environment
+    attr_reader :persistent_registers
+
     attr_accessor :auto_trim, :globals, :lexer, :loader, :parser, :strict_filters, :suppress_blank_control_flow_blocks,
                   :undefined, :filters, :tags, :max_assign_score_cumulative, :max_assign_score, :max_context_depth,
                   :max_render_score_cumulative, :max_render_score, :max_render_size
@@ -40,23 +42,27 @@ module Luoma
       @tags = {} #: Hash[String, _Tag]
       @filters = {} #: Hash[String, [untyped, Integer?]]
       setup_tags_and_filters
+
+      # Render context registers that persist when copying an instance of
+      # `RenderContext`.
+      @persistent_registers = Set[:extends_stack] #: Set[Symbol]
     end
 
     #: (String,
-    #   ?globals: t_namespace?,
+    #   ?globals: _Namespace?,
     #   ?name: String?,
-    #   ?overlay: t_namespace?,
+    #   ?overlay: _Namespace?,
     #   ?up_to_date: Proc::_Callable?) -> Template
     def parse(source, globals: nil, name: nil, overlay: nil, up_to_date: nil)
       raise "TODO:"
     end
 
-    #: (String, ?data: t_namespace?) -> String
+    #: (String, ?data: _Namespace?) -> String
     def render(source, data: nil)
       raise "TODO:"
     end
 
-    #: (String, ?globals: t_namespace?, ?context: RenderContext?, **untyped) -> Template
+    #: (String, ?globals: _Namespace?, ?context: RenderContext?, **untyped) -> Template
     def get_template(name, globals: nil, context: nil, **kwargs)
       raise "TODO:"
     end
@@ -156,7 +162,7 @@ module Luoma
 
     protected
 
-    #: (t_namespace?) -> t_namespace?
+    #: (_Namespace?) -> _Namespace?
     def make_globals(namespace)
       raise "TODO:"
     end
