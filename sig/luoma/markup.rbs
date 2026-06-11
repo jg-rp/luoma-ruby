@@ -28,6 +28,9 @@ module Luoma
     #  () -> Array[Name]
     def block_scope: () -> ::Array[Name]
 
+    #  () -> Array[Name]
+    def template_scope: () -> ::Array[Name]
+
     #  (RenderContext) -> Partial?
     def partial: (RenderContext static_context) -> Partial?
   end

@@ -326,8 +326,7 @@ module Luoma
 
     #: (RenderContext) -> untyped
     def evaluate(context)
-      # TODO: auto escape
-      @value
+      context.env.auto_escape ? HTMLSafeDrop.from(@value) : @value
     end
 
     #: (RenderContext) -> Array[_Traversable]

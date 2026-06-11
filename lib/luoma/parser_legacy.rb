@@ -342,6 +342,7 @@ module Luoma
       token = current
 
       root = if PATH_ROOT_KINDS.include?(token.first)
+               @pos += 1
                Name.new(token, Luoma.get_token_value(token, @source))
              else
                eat(:token_lbracket)

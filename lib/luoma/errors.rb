@@ -61,10 +61,10 @@ module Luoma
   class DisabledTagError < DetailedLuomaError; end
   class FilterArgumentError < DetailedLuomaError; end
   class FilterNotFoundError < DetailedLuomaError; end
+  class TemplateInheritanceError < DetailedLuomaError; end
   class RequiredBlockError < TemplateInheritanceError; end
   class ResourceLimitError < LuomaError; end
   class ContextDepthError < ResourceLimitError; end
-  class TemplateInheritanceError < DetailedLuomaError; end
   class TemplateNotFoundError < LuomaError; end
   class TemplateSyntaxError < DetailedLuomaError; end
   class TemplateTypeError < DetailedLuomaError; end

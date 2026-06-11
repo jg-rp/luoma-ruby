@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 module Luoma
-  BLANK = BlankDrop.new.freeze
-
   class BlankDrop < Drop
     #: (untyped, RenderContext) -> bool
     def eq?(obj, context)
@@ -26,4 +24,6 @@ module Luoma
       end
     end
   end
+
+  BLANK = BlankDrop.new.freeze
 end

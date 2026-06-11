@@ -10,4 +10,12 @@ module Luoma
   end
 
   VERSION: String
+
+  DEFAULT_ENVIRONMENT: Environment
+
+  #: (String, ?globals: Hash[String, untyped]?) -> Template 
+  def self.parse: (untyped source, ?globals: untyped?) -> untyped
+
+  #: (String, ?Hash[String, untyped]?) -> String
+  def self.render: (untyped source, ?untyped? data) -> untyped
 end

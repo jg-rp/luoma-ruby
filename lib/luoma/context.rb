@@ -27,7 +27,7 @@ module Luoma
 
       # Developer-defined template variables passed down from the environment
       # and template.
-      @globals = globals || {} #: Hash[String, untyped]
+      @globals = globals || {} # steep:ignore
 
       # The namespace for variables defined with `{% assign %}` and
       # `{% capture %}`.
@@ -276,6 +276,15 @@ module Luoma
 
     #: (untyped, untyped) -> untyped
     def resolve_unknown_segment(obj, segment)
+      if segment == "size" && obj.respond_to?(:size)
+        obj.size
+      elsif segment == "first" && obj.respond_to?(:first)
+        obj.first
+      elsif segment == "last" && obj.respond_to?(:last)
+        obj.last
+      else
+        :nothing
+      end
     end
   end
 end

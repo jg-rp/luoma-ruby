@@ -8,6 +8,8 @@ module Luoma
   end
 
   class Environment
+    @auto_escape: bool?
+
     @auto_trim: '-' | '~' | nil
 
     @globals: _Namespace?
@@ -42,6 +44,8 @@ module Luoma
 
     @persistent_registers: Set[Symbol]
 
+    attr_accessor auto_escape: bool?
+
     attr_accessor auto_trim: '-' | '~' | nil
 
     attr_accessor globals: _Namespace?
@@ -75,6 +79,7 @@ module Luoma
     attr_reader persistent_registers: Set[Symbol]
 
     def initialize: (
+      ?auto_escape: bool?,
       ?auto_trim: ('-' | '~' | nil), 
       ?globals: _Namespace?, 
       ?lexer: _Lexer, 

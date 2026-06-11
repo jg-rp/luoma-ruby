@@ -2,5 +2,6 @@
 
 module Luoma
   class TemplateLoader
+    # TODO:
   end
 end

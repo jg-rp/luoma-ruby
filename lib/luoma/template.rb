@@ -19,6 +19,7 @@ module Luoma
       @up_to_date = up_to_date
     end
 
+    # Render this template with template variables from `data`.
     #: (_Namespace?) -> String
     def render(data)
       buffer = +""
@@ -34,18 +35,28 @@ module Luoma
       buffer
     end
 
+    # Return a copy of this template with different globals.
     #: (_Namespace) -> Template
-    def with_globals(namespace)
-      raise "TODO:"
+    def with_globals(globals)
+      Template.new(
+        @env, @source, @nodes,
+        globals: globals,
+        name: @name,
+        overlay: @overlay,
+        up_to_date: @up_to_date
+      )
     end
 
     # TODO: static analysis methods
 
     protected
 
+    # Return a new namespace including data from `namespace` and other
+    # namespaces pinned to this template.
     #: (_Namespace?) -> _Namespace?
     def make_globals(namespace)
-      raise "TODO:"
+      namespaces = [namespace, @overlay, @globals].compact
+      ChainHash.new(*namespaces) unless namespaces.empty?
     end
   end
 end

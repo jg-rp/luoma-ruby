@@ -1,14 +1,19 @@
 # frozen_string_literal: true
 
+require "bigdecimal"
+require "json"
+
 module Luoma
   class Environment
     attr_reader :persistent_registers
 
-    attr_accessor :auto_trim, :globals, :lexer, :loader, :parser, :strict_filters, :suppress_blank_control_flow_blocks,
-                  :undefined, :filters, :tags, :max_assign_score_cumulative, :max_assign_score, :max_context_depth,
-                  :max_render_score_cumulative, :max_render_score, :max_render_size
+    attr_accessor :auto_escape, :auto_trim, :globals, :lexer, :loader, :parser, :strict_filters,
+                  :suppress_blank_control_flow_blocks, :undefined, :filters, :tags, :max_assign_score_cumulative,
+                  :max_assign_score, :max_context_depth, :max_render_score_cumulative, :max_render_score,
+                  :max_render_size
 
     def initialize(
+      auto_escape: nil,
       auto_trim: nil,
       globals: nil,
       lexer: LegacyLexer,
@@ -24,10 +29,11 @@ module Luoma
       suppress_blank_control_flow_blocks: true,
       undefined: UndefinedDrop
     )
+      @auto_escape = auto_escape
       @auto_trim = auto_trim
       @globals = globals
       @lexer = lexer
-      @loader = loader || HashLoader.new({})
+      @loader = loader || TemplateLoader.new # TODO:
       @max_assign_score = max_assign_score
       @max_assign_score_cumulative = max_assign_score_cumulative
       @max_context_depth = max_context_depth
@@ -54,12 +60,21 @@ module Luoma
     #   ?overlay: _Namespace?,
     #   ?up_to_date: Proc::_Callable?) -> Template
     def parse(source, globals: nil, name: nil, overlay: nil, up_to_date: nil)
-      raise "TODO:"
+      Template.new(
+        self,
+        source,
+        @parser.parse(self, source, name || "", @lexer.tokenize(self, source)),
+        globals: globals,
+        name: name,
+        overlay: overlay,
+        up_to_date: up_to_date
+      )
     end
 
+    # Parse and render template `source` with variables from `data`.
     #: (String, ?data: _Namespace?) -> String
     def render(source, data: nil)
-      raise "TODO:"
+      parse(source).render(data)
     end
 
     #: (String, ?globals: _Namespace?, ?context: RenderContext?, **untyped) -> Template
@@ -107,64 +122,115 @@ module Luoma
 
     #: () -> void
     def setup_tags_and_filters
-      raise "TODO:"
+      @tags["assign"] = AssignTag
     end
 
     #: (untyped, untyped, RenderContext, t_token) -> bool
     def contains?(left, right, context, token)
-      raise "TODO:"
+      return left.contains?(right, context) if left.is_a?(Drop)
+
+      if left && right && left.respond_to?(:include?)
+        left.include?(left.is_a?(String) ? right.to_s : right)
+      else
+        false
+      end
     end
 
     #: (untyped, untyped, RenderContext, t_token) -> bool
     def eq?(left, right, context, token)
-      raise "TODO:"
+      return left.eq?(right, context) if left.is_a?(Drop)
+      return right.eq?(left, context) if right.is_a?(Drop)
+
+      left == right
     end
 
     #: (untyped, untyped, RenderContext, t_token) -> bool
     def lt?(left, right, context, token)
-      raise "TODO:"
+      return left.lt?(right, context) if left.is_a?(Drop)
+
+      # TODO: handle non-orderable
+      left < right
     end
 
     #: (untyped) -> bool
     def nothing?(obj)
-      raise "TODO:"
+      obj.nil? || obj == :nothing || obj.is_a?(UndefinedDrop)
     end
 
     #: (untyped, RenderContext) -> bool
     def truthy?(obj, context)
-      raise "TODO:"
+      obj.is_a?(Drop) ? obj.to_primitive(:boolean, context) : !!obj
     end
 
     #: (untyped, RenderContext, t_token) -> String
     def serialize(obj, context, token)
-      raise "TODO:"
+      if @auto_escape && obj.is_a?(Drop)
+        html_safe = obj.to_html_safe_s
+        return html_safe if html_safe
+      end
+
+      s = obj.is_a?(Array) ? obj.each { |i| serialize(i, context, token) }.join : to_string(obj, context, token)
+      @auto_escape ? Luoma.escape(s) : s
     end
 
     #: (untyped, RenderContext, t_token) -> Array[untyped]
     def to_a(obj, context, token)
-      raise "TODO:"
+      if obj.is_a?(Array)
+        obj
+      elsif nothing?(obj)
+        []
+      elsif obj.respond_to?(:to_a)
+        obj.to_a
+      else
+        []
+      end
     end
 
     #: (untyped, RenderContext, t_token) -> Integer
     def to_i(obj, context, token)
-      raise "TODO:"
+      # TODO: handle invalid integer
+      obj.is_a?(Integer) ? obj : Integer(obj)
     end
 
     #: (untyped, RenderContext, t_token) -> String
     def to_string(obj, context, token)
-      raise "TODO:"
+      case obj
+      when Hash, Array
+        JSON.generate(obj)
+      when BigDecimal
+        obj.to_s("F")
+      when Drop
+        obj.to_primitive(:string, context)
+      else
+        obj.to_s
+      end
     end
 
     #: (String, String?, String?) -> String
     def trim(value, left, right)
-      raise "TODO:"
+      case left || @auto_trim
+      when "-"
+        value.lstrip!
+      when "~"
+        value.sub!(/\A[\r\n]+/, "")
+      end
+
+      case right
+      when "-"
+        value.rstrip!
+      when "~"
+        value.sub!(/[\r\n]+\Z/, "")
+      end
+
+      value
     end
 
     protected
 
     #: (_Namespace?) -> _Namespace?
     def make_globals(namespace)
-      raise "TODO:"
+      namespaces = [namespace, @globals].compact
+      ChainHash.new(*namespaces) unless namespaces.empty?
     end
   end
 end

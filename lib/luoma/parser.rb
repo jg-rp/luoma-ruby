@@ -33,7 +33,7 @@ module Luoma
 
     #: () -> void
     def carry_whitespace_control
-      raise "TODO:"
+      kind == :token_wc ? @whitespace_control_carry = "-" : nil
     end
 
     #: () -> t_token

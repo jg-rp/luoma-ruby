@@ -13,6 +13,9 @@ module Luoma
 
     #  (untyped, RenderContext) -> bool
     def lt?: (untyped obj, Luoma::RenderContext context) -> bool
+           
+    #  (untyped, RenderContext) -> bool
+    def contains?: (untyped obj, Luoma::RenderContext context) -> bool
 
     # Return the length of this object.
     # Along with `#slice`,  `#length` is part of the iterator protocol.

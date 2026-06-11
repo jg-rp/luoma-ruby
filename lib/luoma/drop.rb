@@ -28,6 +28,11 @@ module Luoma
       false
     end
 
+    #: (obj, RenderContext) -> bool
+    def contains?(obj, context)
+      false
+    end
+
     # Return the length of this object.
     # Along with `#slice`,  `#length` is part of the iterator protocol.
     #: (RenderContext) -> Integer

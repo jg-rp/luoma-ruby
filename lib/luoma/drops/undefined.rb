@@ -47,6 +47,10 @@ module Luoma
       error
     end
 
+    def contains?(obj, context)
+      error
+    end
+
     def length(context)
       error
     end

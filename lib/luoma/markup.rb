@@ -32,6 +32,11 @@ module Luoma
       []
     end
 
+    #: () -> Array[Name]
+    def template_scope
+      []
+    end
+
     #: (RenderContext) -> Partial?
     def partial(static_context)
       nil
@@ -66,13 +71,16 @@ module Luoma
     block.each do |node|
       if node.is_a?(String)
         buffer << node
-      elsif context.disabled_tags&.include?(node.tag)
-        raise DisabledTagError.new(
-          "#{node.tag.inspect} is not allowed in this context",
-          node.token,
-          context.template.source,
-          context.template.name
-        )
+      else
+        if context.disabled_tags&.include?(node.tag)
+          raise DisabledTagError.new(
+            "#{node.tag.inspect} is not allowed in this context",
+            node.token,
+            context.template.source,
+            context.template.name
+          )
+        end
+        node.render(context, buffer)
       end
 
       unless context.interrupts.empty?
