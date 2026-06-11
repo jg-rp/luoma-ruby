@@ -5,7 +5,7 @@ require_relative "chain_hash"
 module Luoma
   class RenderContext
     attr_reader :env, :template, :disabled_tags, :context_depth, :assign_score, :assign_score_cumulative,
-                :registers
+                :registers, :globals
 
     attr_accessor :render_score, :render_score_cumulative, :interrupts
 
@@ -21,7 +21,7 @@ module Luoma
       # The template being rendered.
       @template = template
 
-      # The Liquid environment this render context and associated template is
+      # The environment this render context and associated template is
       # bound to.
       @env = template.env
 

@@ -33,7 +33,7 @@ module Luoma
       @auto_trim = auto_trim
       @globals = globals
       @lexer = lexer
-      @loader = loader || TemplateLoader.new # TODO:
+      @loader = loader || HashLoader.new({})
       @max_assign_score = max_assign_score
       @max_assign_score_cumulative = max_assign_score_cumulative
       @max_context_depth = max_context_depth

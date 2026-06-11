@@ -1,4 +1,40 @@
 module Luoma
+  # The base class for all template loaders.
   class TemplateLoader
+    # Load and return template source text and any associated data.
+    #  (Environment, String, ?context: RenderContext?, **untyped) -> TemplateSource
+    def get_source: (Environment env, String name, ?context: RenderContext?, **untyped kwargs) -> TemplateSource
+
+    #  (Environment, String, ?globals: _Namespace?, ?context: RenderContext?, **kwargs) -> Template
+    def load: (Environment env, String name, ?globals: _Namespace?, ?context: RenderContext?, **untyped kwargs) -> Template
+  end
+
+  # Liquid template source text and meta data.
+  class TemplateSource
+    @source: String
+
+    @name: String
+
+    @up_to_date: Proc::_Callable?
+
+    @matter: _Namespace?
+
+    attr_reader source: String
+
+    attr_reader name: String
+
+    attr_reader up_to_date: Proc::_Callable?
+
+    attr_reader matter: _Namespace?
+
+    def initialize: (source: String, name: String, ?up_to_date: Proc::_Callable?, ?matter: _Namespace?) -> void
+  end
+
+  # A template loader that reads templates from a hash.
+  class HashLoader < TemplateLoader
+    @templates: Hash[String, String]
+
+    #: (Hash<String, String>) -> void
+    def initialize: (Hash[String, String] templates) -> void
   end
 end

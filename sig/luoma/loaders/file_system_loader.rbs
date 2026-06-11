@@ -1,0 +1,19 @@
+module Luoma
+  # A template loader that reads template from a file system.
+  class FileSystemLoader < TemplateLoader
+    @search_path: Array[Pathname]
+
+    @default_extension: String?
+
+    def initialize: (String | Array[String] search_path, ?default_extension: String?) -> void
+
+    def resolve_path: (String template_name) -> Pathname
+  end
+
+  # A file system template loader that caches parsed templates.
+  class CachingFileSystemLoader < FileSystemLoader
+    include CachingLoaderMixin
+
+    def initialize: (String | Array[String] search_path, ?default_extension: String?, ?auto_reload: bool, ?namespace_key: ::String, ?capacity: ::Integer, ?thread_safe: bool) -> void
+  end
+end

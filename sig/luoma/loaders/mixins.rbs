@@ -1,0 +1,16 @@
+module Luoma
+  # A mixin that adds caching to a template loader.
+  module CachingLoaderMixin
+    @auto_reload: bool
+
+    @namespace_key: String?
+
+    @cache: LRUCache
+
+    def initialize_cache: (?auto_reload: bool, ?namespace_key: ::String, ?capacity: ::Integer, ?thread_safe: bool) -> untyped
+
+    def load: (Environment env, String name, ?globals: _Namespace?, ?context: RenderContext?, **untyped kwargs) -> Template
+
+    def cache_key: (String name, ?context: RenderContext?, **untyped kwargs) -> String
+  end
+end

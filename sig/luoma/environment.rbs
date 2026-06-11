@@ -90,7 +90,7 @@ module Luoma
       ?undefined: singleton(UndefinedDrop),
       ?max_assign_score_cumulative: Integer?,
       ?max_assign_score: Integer?,
-      ?max_context_depth: Integer?,
+      ?max_context_depth: Integer,
       ?max_render_score_cumulative: Integer?,
       ?max_render_score: Integer?,
       ?max_render_size: Integer?
