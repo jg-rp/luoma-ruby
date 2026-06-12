@@ -125,6 +125,10 @@ module Luoma
       @tags["assign"] = AssignTag
       @tags["capture"] = CaptureTag
       @tags["case"] = CaseTag
+      @tags["cycle"] = CycleTag
+      @tags["decrement"] = DecrementTag
+      @tags["echo"] = EchoTag
+      @tags["increment"] = IncrementTag
     end
 
     #: (untyped, untyped, RenderContext, t_token) -> bool

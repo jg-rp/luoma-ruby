@@ -1,0 +1,15 @@
+module Luoma
+  class CycleTag < Markup
+    @items: Array[Expression]
+
+    @group: Expression?
+
+    @static_key: String
+
+    #  (t_token, String, Parser) -> Markup
+    def self.parse: (t_token token, String tag_name, Parser parser) -> Markup
+
+    #  (t_token, String, Array[Expression], Expression?) -> void
+    def initialize: (t_token token, String tag_name, Array[Expression] items, Expression? group) -> void
+  end
+end

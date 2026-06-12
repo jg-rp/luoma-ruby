@@ -3,7 +3,7 @@
 module Luoma
   # The base class for all tag nodes and the output statement.
   class Markup
-    attr_reader :token, :blank, :tag
+    attr_reader :token, :blank, :tag_name
 
     #: (t_token) -> void
     def initialize(token)

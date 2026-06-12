@@ -16,6 +16,12 @@ module Luoma
 
     TERMINATE_EXPRESSION: Set[t_token_kind]
 
+    attr_reader env: Environment
+
+    attr_reader source: String
+
+    attr_reader template_name: String
+
     #  (Environment, String, String, Array[t_token]) -> t_block
     def self.parse: (Environment env, String source, String template_name, Array[t_token] tokens) -> t_block
 

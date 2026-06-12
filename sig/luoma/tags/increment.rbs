@@ -1,0 +1,11 @@
+module Luoma
+  class IncrementTag < Markup
+    @identifier: Name
+
+    #  (t_token, String, Parser) -> Markup
+    def self.parse: (t_token token, String tag_name, Parser parser) -> Markup
+
+    #  (t_token, String, Name) -> void
+    def initialize: (t_token token, String tag_name, Name identifier) -> void
+  end
+end

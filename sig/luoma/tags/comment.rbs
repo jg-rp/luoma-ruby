@@ -1,0 +1,12 @@
+module Luoma
+  class CommentTag < Markup
+    @text: String
+
+    #  (t_token, String, Parser) -> Markup
+    def self.parse: (t_token token, String tag_name, Parser parser) -> Markup
+
+    #  (t_token, String, String) -> void
+    def initialize: (t_token token, String tag_name, String text) -> void
+
+  end
+end

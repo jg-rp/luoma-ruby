@@ -2,6 +2,8 @@
 
 module Luoma
   class Parser
+    attr_reader :source, :template_name, :env
+
     TERMINATE_EXPRESSION = Set.new(%i[
                                      token_wc
                                      token_out_end
