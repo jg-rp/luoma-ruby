@@ -1,14 +1,16 @@
 module Luoma
   class AssignTag < Markup
 
-    @name: Name
+    @name: string
+
+    @identifier: Name
 
     @expression: Expression
 
-    #  (t_token, Parser) -> Markup
-    def self.parse: (t_token token, Parser parser) -> Markup
+    #  (t_token, String, Parser) -> Markup
+    def self.parse: (t_token token, String tag_name, Parser parser) -> Markup
 
     #  (t_token, Name, Expression) -> void
-    def initialize: (t_token token, Name name, Expression expression) -> void
+    def initialize: (t_token token, String tag_name, Name name, Expression expression) -> void
   end
 end

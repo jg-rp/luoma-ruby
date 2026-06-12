@@ -22,6 +22,7 @@ require_relative "luoma/drops/empty"
 require_relative "luoma/drops/range"
 require_relative "luoma/drops/undefined"
 require_relative "luoma/tags/assign"
+require_relative "luoma/tags/capture"
 require_relative "luoma/tags/output"
 
 module Luoma

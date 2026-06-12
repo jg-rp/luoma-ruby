@@ -1,14 +1,4 @@
 module Luoma
-  interface _Namespace
-    def key?: (String) -> bool
-    def fetch: (String, ?::Symbol default) -> untyped
-    def []: (String) -> untyped
-  end
-                   
-  interface _Tag
-    def parse: (t_token, Parser) -> Markup
-  end
-
   VERSION: String
 
   DEFAULT_ENVIRONMENT: Environment

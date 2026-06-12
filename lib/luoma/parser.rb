@@ -245,10 +245,10 @@ module Luoma
       token.first == :token_tag_name && Luoma.get_token_value(token, @source) == name
     end
 
-    # Return `true` if we're at the start of a tag and that tag's name is in
-    # `names`.
+    # Return a tag name if we're at the start of a tag and that tag's name is
+    # in `names`.
     #: (Set[String]) -> String?
-    def tags?(names)
+    def tags(names)
       token = peek
       token = peek(2) if token.first == :token_wc
 

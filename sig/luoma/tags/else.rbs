@@ -1,0 +1,13 @@
+module Luoma
+  class ElseBlock < Markup
+    @expression: Expression
+
+    @block: t_block
+
+    #  (t_token, String, t_block) -> void
+    def initialize: (t_token token, String tag_name, t_block block) -> void
+
+
+    def filter_strings: () -> untyped
+  end
+end

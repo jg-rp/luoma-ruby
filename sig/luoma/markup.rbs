@@ -1,17 +1,21 @@
 module Luoma
+  interface _Tag
+    def parse: (t_token, String, Parser) -> Markup
+  end
+  
   # The base class for all tag nodes and the output statement.
   class Markup
     @token: t_token
 
     @blank: bool
 
-    @tag: String
+    @tag_name: String
 
     attr_reader token: t_token
 
     attr_reader blank: bool
 
-    attr_reader tag: String
+    attr_reader tag_name: String
 
     #  (t_token) -> void
     def initialize: (t_token token) -> void

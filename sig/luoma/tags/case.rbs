@@ -1,0 +1,36 @@
+module Luoma
+  class CaseTag < Markup
+    @expression: Expression
+
+    @blocks: Array[WhenBlock|ElseBlock]
+
+    END_CASE_BLOCK: Set[String]
+
+    CASE_BLOCKS: Set[String]
+
+    #  (t_token, String, Parser) -> Markup
+    def self.parse: (t_token token, String tag_name, Parser parser) -> Markup
+
+    #  (t_token, String, Expression, Array[WhenBlock|ElseBlock]) -> void
+    def initialize: (t_token token, String tag_name, Expression expression, Array[WhenBlock|ElseBlock] blocks) -> void
+  end
+
+  class WhenBlock < Markup
+    @right: Array[Expression]
+
+    @block: t_block
+
+    END_CASE_BLOCK: Set[String]
+
+    WHEN_DELIMITERS: Set[t_token_kind]
+
+    #  (String, Parser) -> WhenBlock
+    def self.parse: (String tag_name, Parser parser) -> WhenBlock
+
+    #  (t_token, String, Array[Expression], t_block) -> void
+    def initialize: (t_token token, String tag_name, Array[Expression] right, t_block block) -> void
+
+    #: () -> void
+    def filter_strings: () -> void
+  end
+end

@@ -123,6 +123,8 @@ module Luoma
     #: () -> void
     def setup_tags_and_filters
       @tags["assign"] = AssignTag
+      @tags["capture"] = CaptureTag
+      @tags["case"] = CaseTag
     end
 
     #: (untyped, untyped, RenderContext, t_token) -> bool

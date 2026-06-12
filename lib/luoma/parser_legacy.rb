@@ -323,7 +323,8 @@ module Luoma
     def parse_tag
       skip_whitespace_control
       token = eat(:token_tag_name, message: "missing tag name")
-      tag = @env.tags[Luoma.get_token_value(token, @source)]
+      tag_name = Luoma.get_token_value(token, @source)
+      tag = @env.tags[tag_name]
 
       unless tag
         raise TemplateSyntaxError.new(
@@ -334,7 +335,7 @@ module Luoma
         )
       end
 
-      tag.parse(token, self)
+      tag.parse(token, tag_name, self)
     end
 
     #: () -> Variable

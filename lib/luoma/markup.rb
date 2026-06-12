@@ -9,7 +9,7 @@ module Luoma
     def initialize(token)
       @token = token
       @blank = false
-      @tag = ""
+      @tag_name = ""
     end
 
     #: (RenderContext, String) -> void
@@ -72,9 +72,9 @@ module Luoma
       if node.is_a?(String)
         buffer << node
       else
-        if context.disabled_tags&.include?(node.tag)
+        if context.disabled_tags&.include?(node.tag_name)
           raise DisabledTagError.new(
-            "#{node.tag.inspect} is not allowed in this context",
+            "#{node.tag_name.inspect} is not allowed in this context",
             node.token,
             context.template.source,
             context.template.name

@@ -100,9 +100,7 @@ module Luoma
     #  (String) -> bool
     def tag?: (String name) -> bool
 
-    # Return `true` if we're at the start of a tag and that tag's name is in
-    # `names`.
     #  (Set[String]) -> String?
-    def tags?: (Set[String] names) -> String?
+    def tags: (Set[String] names) -> String?
   end
 end

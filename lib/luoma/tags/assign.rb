@@ -2,29 +2,29 @@
 
 module Luoma
   class AssignTag < Markup
-    #: (t_token, Parser) -> Markup
-    def self.parse(token, parser)
-      name = parser.parse_ident
+    #: (t_token, String, Parser) -> Markup
+    def self.parse(token, tag_name, parser)
+      identifier = parser.parse_ident
       parser.eat(:token_assign, message: "bad identifier or missing assignment operator")
       expression = parser.parse_filtered_expression
       parser.carry_whitespace_control
       parser.eat(:token_tag_end)
-      new(token, name, expression)
+      new(token, tag_name, identifier, expression)
     end
 
-    #: (t_token, Name, Expression) -> void
-    def initialize(token, name, expression)
+    #: (t_token, String, Name, Expression) -> void
+    def initialize(token, tag_name, identifier, expression)
       super(token)
       @blank = true
-      @tag = "assign"
+      @tag_name = tag_name
 
-      @name = name
+      @identifier = identifier
       @expression = expression
     end
 
     #: (RenderContext, String) -> void
     def render(context, buffer)
-      context.assign(@name.value, @expression.evaluate(context))
+      context.assign(@identifier.value, @expression.evaluate(context))
     end
 
     #: () -> Array[Expression]
@@ -34,7 +34,7 @@ module Luoma
 
     #: () -> Array[Name]
     def template_scope
-      [@name]
+      [@identifier]
     end
   end
 end
