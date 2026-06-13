@@ -50,8 +50,8 @@ module Luoma
     # `{% continue %}`, for example.
     @interrupts: Array[Symbol]
 
-    # A stack of `ForLoop` drops used to populate `forloop.parent`
-    @forloops: Array[ForLoop]
+    # A stack of `ForLoopDrop` instances used to populate `forloop.parent`
+    @forloops: Array[ForLoopDrop]
 
     # Registers supporting stateful tags. It's OK to use this map for storing
     # custom tag state.
@@ -74,6 +74,8 @@ module Luoma
     attr_accessor render_score_cumulative: Integer
 
     attr_accessor interrupts: Array[Symbol]
+
+    attr_reader forloops: Array[ForLoopDrop]
 
     attr_reader registers: Hash[Symbol, untyped]
 

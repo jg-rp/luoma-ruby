@@ -1,0 +1,52 @@
+module Luoma
+  class ForTag < Markup
+    @identifier: Name
+
+    @expression: Expression
+
+    @block: t_block
+
+    @offset: Expression?
+
+    @limit: Expression?
+
+    @reversed: bool
+
+    @default: t_block?
+
+    @offset_key: String
+
+    END_FOR_BLOCK: Set[String]
+
+    #  (t_token, String, Parser) -> Markup
+    def self.parse: (t_token token, String tag_name, Parser parser) -> Markup
+
+    #  (Array[Expression|KeywordArgument], Parser) -> [Expression?, Expression?, bool]
+    def self.unpack_args: (Array[Expression|KeywordArgument] args, Parser parser) -> [Expression?, Expression?, bool]
+
+    #  (t_token,
+    #   String,
+    #   Name,
+    #   Expression,
+    #   t_block,
+    #   t_block?,
+    #   Expression?,
+    #   Expression?,
+    #   bool
+    #  ) -> void
+    def initialize: (
+      t_token token, 
+      String tag_name, 
+      Name identifier, 
+      Expression expression, 
+      t_block block, 
+      t_block? default, 
+      Expression? offset, 
+      Expression? limit, 
+      bool reversed
+      ) -> void
+
+    #: (Array[untyped], untyped, untyped, RenderContext) -> Array[untyped]
+    def slice: (Array[untyped] array, untyped offset, untyped limit, RenderContext context) -> Array[untyped]
+  end
+end

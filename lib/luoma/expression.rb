@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Luoma
+  # The base class for all expressions.
   class Expression
     attr_reader :token, :span
 
@@ -40,7 +41,14 @@ module Luoma
       func, with_context = context.env.filters[@filter.name.value]
 
       if func.nil?
-        raise "unknown filter" if context.env.strict_filters
+        if context.env.strict_filters
+          raise FilterNotFoundError.new(
+            "unknown filter #{@filter.name.value.inspect}",
+            @filter.span,
+            @context.template.name,
+            @context.template.source
+          )
+        end
 
         # Pass the input value through
         return @left.evaluate(context)
@@ -270,6 +278,13 @@ module Luoma
     #: () -> String
     def to_s
       path(@segments)
+    end
+
+    # Return true if this variable has a root segment matching `name` and
+    # no other segments.
+    #: (String) -> bool
+    def ident?(name)
+      @segments.empty? && @root.is_a?(Name) && @root.value == name # steep:ignore
     end
 
     private
@@ -564,6 +579,14 @@ module Luoma
     #: () -> String
     def to_s
       "#{@name}: #{@expression}"
+    end
+
+    def deconstruct
+      [@name.value, @expression]
+    end
+
+    def deconstruct_keys(keys)
+      { name: @name.value, expression: @expression }
     end
   end
 end

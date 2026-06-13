@@ -125,10 +125,13 @@ module Luoma
       @tags["assign"] = AssignTag
       @tags["capture"] = CaptureTag
       @tags["case"] = CaseTag
+      @tags["comment"] = CommentTag
       @tags["cycle"] = CycleTag
       @tags["decrement"] = DecrementTag
+      @tags["doc"] = DocTag
       @tags["echo"] = EchoTag
       @tags["increment"] = IncrementTag
+      @tags["for"] = ForTag
     end
 
     #: (untyped, untyped, RenderContext, t_token) -> bool
@@ -183,6 +186,8 @@ module Luoma
     def to_a(obj, context, token)
       if obj.is_a?(Array)
         obj
+      elsif obj.is_a?(String)
+        [obj]
       elsif nothing?(obj)
         []
       elsif obj.respond_to?(:to_a)
@@ -207,6 +212,8 @@ module Luoma
         obj.to_s("F")
       when Drop
         obj.to_primitive(:string, context)
+      when Symbol
+        ""
       else
         obj.to_s
       end

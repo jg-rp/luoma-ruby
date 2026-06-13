@@ -149,6 +149,9 @@ module Luoma
 
     #  () -> String
     def to_s: () -> String
+            
+    
+    def ident?: (String name) -> bool
 
     private
 
@@ -377,5 +380,9 @@ module Luoma
 
     #  () -> String
     def to_s: () -> ::String
+            
+    def deconstruct: () -> ::Array[untyped]
+
+    def deconstruct_keys: (untyped keys) -> { name: untyped, expression: untyped }
   end
 end

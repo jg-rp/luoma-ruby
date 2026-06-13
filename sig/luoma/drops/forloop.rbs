@@ -1,0 +1,43 @@
+module Luoma
+  class ForLoopDrop < Drop
+    @name: String
+
+    @length: Integer
+
+    @parent: ForLoopDrop?
+
+    @index: Integer
+
+    attr_reader name: String
+
+    attr_reader length: Integer
+
+    attr_reader parentloop: ForLoopDrop?
+
+    KEYS: Set[String]
+
+    #  (String, Integer, ForLoopDrop?) -> void
+    def initialize: (String name, Integer length, ForLoopDrop? parent) -> void
+
+    def key?: (String key) -> untyped
+
+    def []: (String key) -> untyped
+
+    def fetch: (untyped key, ?::Symbol default) -> untyped
+
+    def next: () -> untyped
+
+    def index: () -> untyped
+
+    def index0: () -> untyped
+
+    def rindex: () -> untyped
+
+    def rindex0: () -> untyped
+
+    def first: () -> untyped
+
+    def last: () -> untyped
+
+  end
+end
