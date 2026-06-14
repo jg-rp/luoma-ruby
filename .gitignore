@@ -11,3 +11,5 @@
 .stackprof*
 flamegraph*
 dev.rb
+
+.DS_Store

@@ -1,0 +1,51 @@
+module Luoma
+  class FilterContext
+    @token: t_token
+
+    @render_context: RenderContext
+
+    @env: Environment
+
+    attr_reader token: t_token
+
+    attr_reader render_context: RenderContext
+
+    attr_reader env: Environment
+
+    #  (t_token, RenderContext)
+    def initialize: (t_token token, RenderContext render_context) -> void
+                  
+    # (String) -> TemplateTypeError
+    def type_error: (String message) -> TemplateTypeError
+                  
+    # (String) -> FilterArgumentError
+    def argument_error: (String message) -> FilterArgumentError
+                  
+    #  (untyped) -> Array[untyped]
+    def to_a: (untyped obj) -> Array[untyped]
+
+    #  (untyped) -> Integer
+    def to_i: (untyped obj) -> Integer
+
+    #  (untyped) -> String
+    def to_string: (untyped obj) -> String
+
+    #  (untyped) -> Numeric
+    def to_numeric: (untyped obj, ?default: ::Numeric) -> Numeric
+
+    #  (untyped) -> Numeric
+    def to_decimal: (untyped obj, ?default: ::Numeric) -> Numeric
+
+    #  (untyped) -> Enumerable[untyped]
+    def to_enumerable: (untyped obj) -> Enumerable[untyped]
+                     
+    #  (untyped) -> bool
+    def nothing?: (untyped obj) -> bool
+                
+    #  (untyped) -> bool
+    def truthy?: (untyped obj) -> untyped
+               
+    #  (untyped, untyped, ?default: untyped?) -> untyped
+    def fetch: (untyped obj, untyped key, ?default: untyped) -> untyped
+  end
+end

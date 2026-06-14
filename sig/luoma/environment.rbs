@@ -130,7 +130,7 @@ module Luoma
     # @param name [String] The name of the filter.
     # @return [callable | nil] The callable implementing the removed filter, or nil
     #    if _name_ did not exist in the filter register.
-    def delete_filter: (String name) -> untyped
+    def delete_filter: (String name) -> void
 
     # Add or replace a tag.
     # @param name [String] The tag's name, as used by template authors.
@@ -168,6 +168,17 @@ module Luoma
 
     #  (untyped, RenderContext, t_token) -> Integer
     def to_i: (untyped obj, RenderContext context, t_token token) -> Integer
+
+    #  (untyped, ?default: Numeric?) -> Numeric
+    def to_numeric: (untyped obj, ?default: ::Numeric) -> Numeric
+
+    # Cast `obj` to a number, favouring BigDecimal over Float.
+    # Returns `default` if `obj` can't be cast to a numeric value.
+    #  (untyped, ?default: Numeric?) -> Numeric
+    def to_decimal: (untyped obj, ?default: ::Numeric) -> Numeric
+
+    #  (untyped) -> Enumerable
+    def to_enumerable: (untyped obj) -> Enumerable[untyped]
 
     #  (untyped, RenderContext, t_token) -> String
     def to_string: (untyped obj, RenderContext context, t_token token) -> String

@@ -46,7 +46,7 @@ module Luoma
       @undefined = undefined
 
       @tags = {} #: Hash[String, _Tag]
-      @filters = {} #: Hash[String, [untyped, Integer?]]
+      @filters = {} #: Hash[String, [t_filter, Integer?]]
       setup_tags_and_filters
 
       # Render context registers that persist when copying an instance of
@@ -91,6 +91,7 @@ module Luoma
     # @param name [String] The name of the filter, as used by template authors.
     # @param callable [responds to call] An object that responds to `#call(left, ...)`
     #   and `#parameters`. Like a Proc or Method.
+    #: (String, untyped) -> void
     def register_filter(name, callable)
       with_context = callable.parameters.index do |(kind, param)|
         kind == :keyreq && param == :context
@@ -100,8 +101,6 @@ module Luoma
 
     # Remove a filter from the filter register.
     # @param name [String] The name of the filter.
-    # @return [callable | nil] The callable implementing the removed filter, or nil
-    #    if _name_ did not exist in the filter register.
     def delete_filter(name)
       @filters.delete(name)
     end
@@ -132,6 +131,30 @@ module Luoma
       @tags["echo"] = EchoTag
       @tags["increment"] = IncrementTag
       @tags["for"] = ForTag
+
+      register_filter("abs", Luoma::Filters.method(:abs))
+      register_filter("at_least", Luoma::Filters.method(:at_least))
+      register_filter("at_most", Luoma::Filters.method(:at_most))
+      register_filter("ceil", Luoma::Filters.method(:ceil))
+      register_filter("divided_by", Luoma::Filters.method(:divided_by))
+      register_filter("times", Luoma::Filters.method(:times))
+      register_filter("floor", Luoma::Filters.method(:floor))
+      register_filter("minus", Luoma::Filters.method(:minus))
+      register_filter("modulo", Luoma::Filters.method(:modulo))
+      register_filter("plus", Luoma::Filters.method(:plus))
+      register_filter("round", Luoma::Filters.method(:round))
+      register_filter("join", Luoma::Filters.method(:join))
+      register_filter("compact", Luoma::Filters.method(:compact))
+      register_filter("concat", Luoma::Filters.method(:concat))
+      register_filter("find", Luoma::Filters.method(:find))
+      register_filter("find_index", Luoma::Filters.method(:find_index))
+      register_filter("has", Luoma::Filters.method(:has))
+      register_filter("first", Luoma::Filters.method(:first))
+      register_filter("last", Luoma::Filters.method(:last))
+      register_filter("map", Luoma::Filters.method(:map))
+      register_filter("reverse", Luoma::Filters.method(:reverse))
+      register_filter("reject", Luoma::Filters.method(:reject))
+      register_filter("uniq", Luoma::Filters.method(:uniq))
     end
 
     #: (untyped, untyped, RenderContext, t_token) -> bool
@@ -184,6 +207,7 @@ module Luoma
 
     #: (untyped, RenderContext, t_token) -> Array[untyped]
     def to_a(obj, context, token)
+      # TODO: drop protocol?
       if obj.is_a?(Array)
         obj
       elsif obj.is_a?(String)
@@ -201,6 +225,55 @@ module Luoma
     def to_i(obj, context, token)
       # TODO: handle invalid integer
       obj.is_a?(Integer) ? obj : Integer(obj)
+    end
+
+    #: (untyped, ?default: Numeric?) -> Numeric
+    def to_numeric(obj, default: 0)
+      case obj
+      when String
+        # Cast to float before integer as `to_f` will parse exponents, `to_i` will not.
+        # Use `Float(obj)` instead of `obj.to_f` because `to_f` ignores trailing non-digit chars.
+        obj.match?(/\A-?\d+(?:[eE]\+?\d+)?\Z/) ? obj.to_f.to_i : Float(obj)
+      when Float, Integer, BigDecimal, Numeric
+        # Numeric is the base class for heap allocated numbers.
+        obj
+      else
+        default
+      end
+    rescue ArgumentError
+      default
+    end
+
+    # Cast `obj` to a number, favouring BigDecimal over Float.
+    # Returns `default` if `obj` can't be cast to a numeric value.
+    #: (untyped, ?default: Numeric?) -> Numeric
+    def to_decimal(obj, default: 0)
+      case obj
+      when String
+        obj.match?(/\A-?\d+(?:[eE]\+?\d+)?\Z/) ? obj.to_f.to_i : BigDecimal(obj)
+      when Float
+        BigDecimal(obj.to_s)
+      when Integer, BigDecimal, Numeric
+        obj
+      else
+        default
+      end
+    rescue ArgumentError
+      default
+    end
+
+    #: (untyped) -> Enumerable
+    def to_enumerable(obj)
+      case obj
+      when Array
+        obj.flatten
+      when Hash, String
+        [obj]
+      when Enumerable
+        obj
+      else
+        obj.respond_to?(:each) ? obj.each : [obj]
+      end
     end
 
     #: (untyped, RenderContext, t_token) -> String

@@ -45,8 +45,8 @@ module Luoma
           raise FilterNotFoundError.new(
             "unknown filter #{@filter.name.value.inspect}",
             @filter.span,
-            @context.template.name,
-            @context.template.source
+            context.template.name,
+            context.template.source
           )
         end
 
@@ -68,7 +68,7 @@ module Luoma
         end
       end
 
-      kwargs[:context] = context if with_context
+      kwargs[:context] = FilterContext.new(@token, context) if with_context
 
       if kwargs.empty?
         func.call(left, *args) # steep:ignore
@@ -78,7 +78,7 @@ module Luoma
     rescue ArgumentError, TypeError => e
       raise FilterArgumentError.new(
         e.message,
-        @token,
+        @span,
         context.template.name,
         context.template.source
       )
