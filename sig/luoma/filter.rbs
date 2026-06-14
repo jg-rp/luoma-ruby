@@ -39,11 +39,17 @@ module Luoma
     #  (untyped) -> Enumerable[untyped]
     def to_enumerable: (untyped obj) -> Enumerable[untyped]
                      
+    #  (untyped) -> untyped
+    def to_date: (untyped obj) -> untyped
+                     
     #  (untyped) -> bool
     def nothing?: (untyped obj) -> bool
                 
     #  (untyped) -> bool
     def truthy?: (untyped obj) -> untyped
+               
+    #  (untyped) -> bool
+    def empty?: (untyped obj) -> bool
                
     #  (untyped, untyped, ?default: untyped?) -> untyped
     def fetch: (untyped obj, untyped key, ?default: untyped) -> untyped

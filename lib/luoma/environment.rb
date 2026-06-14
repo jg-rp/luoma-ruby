@@ -64,7 +64,7 @@ module Luoma
         self,
         source,
         @parser.parse(self, source, name || "", @lexer.tokenize(self, source)),
-        globals: globals,
+        globals: make_globals(globals),
         name: name,
         overlay: overlay,
         up_to_date: up_to_date
@@ -79,7 +79,7 @@ module Luoma
 
     #: (String, ?globals: _Namespace?, ?context: RenderContext?, **untyped) -> Template
     def get_template(name, globals: nil, context: nil, **kwargs)
-      raise "TODO:"
+      @loader.load(self, name, globals: globals, context: context, **kwargs)
     end
 
     # Add or replace a filter. The same callable can be registered multiple times with
@@ -129,32 +129,66 @@ module Luoma
       @tags["decrement"] = DecrementTag
       @tags["doc"] = DocTag
       @tags["echo"] = EchoTag
-      @tags["increment"] = IncrementTag
       @tags["for"] = ForTag
+      # TODO: break and continue
+      @tags["if"] = IfTag
+      @tags["increment"] = IncrementTag
 
       register_filter("abs", Luoma::Filters.method(:abs))
+      register_filter("append", Luoma::Filters.method(:append))
       register_filter("at_least", Luoma::Filters.method(:at_least))
       register_filter("at_most", Luoma::Filters.method(:at_most))
+      register_filter("base64_decode", Luoma::Filters.method(:base64_decode))
+      register_filter("base64_encode", Luoma::Filters.method(:base64_encode))
+      register_filter("base64_url_safe_decode", Luoma::Filters.method(:base64_url_safe_decode))
+      register_filter("base64_url_safe_encode", Luoma::Filters.method(:base64_url_safe_encode))
+      register_filter("capitalize", Luoma::Filters.method(:capitalize))
       register_filter("ceil", Luoma::Filters.method(:ceil))
-      register_filter("divided_by", Luoma::Filters.method(:divided_by))
-      register_filter("times", Luoma::Filters.method(:times))
-      register_filter("floor", Luoma::Filters.method(:floor))
-      register_filter("minus", Luoma::Filters.method(:minus))
-      register_filter("modulo", Luoma::Filters.method(:modulo))
-      register_filter("plus", Luoma::Filters.method(:plus))
-      register_filter("round", Luoma::Filters.method(:round))
-      register_filter("join", Luoma::Filters.method(:join))
       register_filter("compact", Luoma::Filters.method(:compact))
       register_filter("concat", Luoma::Filters.method(:concat))
-      register_filter("find", Luoma::Filters.method(:find))
+      register_filter("date", Luoma::Filters.method(:date))
+      register_filter("default", Luoma::Filters.method(:default))
+      register_filter("divided_by", Luoma::Filters.method(:divided_by))
+      register_filter("downcase", Luoma::Filters.method(:downcase))
+      register_filter("escape_once", Luoma::Filters.method(:escape_once))
+      register_filter("escape", Luoma::Filters.method(:escape))
       register_filter("find_index", Luoma::Filters.method(:find_index))
-      register_filter("has", Luoma::Filters.method(:has))
+      register_filter("find", Luoma::Filters.method(:find))
       register_filter("first", Luoma::Filters.method(:first))
+      register_filter("floor", Luoma::Filters.method(:floor))
+      register_filter("has", Luoma::Filters.method(:has))
+      register_filter("join", Luoma::Filters.method(:join))
       register_filter("last", Luoma::Filters.method(:last))
+      register_filter("lstrip", Luoma::Filters.method(:lstrip))
       register_filter("map", Luoma::Filters.method(:map))
-      register_filter("reverse", Luoma::Filters.method(:reverse))
+      register_filter("minus", Luoma::Filters.method(:minus))
+      register_filter("modulo", Luoma::Filters.method(:modulo))
+      register_filter("newline_to_br", Luoma::Filters.method(:newline_to_br))
+      register_filter("plus", Luoma::Filters.method(:plus))
+      register_filter("prepend", Luoma::Filters.method(:prepend_))
       register_filter("reject", Luoma::Filters.method(:reject))
+      register_filter("remove_first", Luoma::Filters.method(:remove_first))
+      register_filter("remove_last", Luoma::Filters.method(:remove_last))
+      register_filter("remove", Luoma::Filters.method(:remove))
+      register_filter("replace_first", Luoma::Filters.method(:replace_first))
+      register_filter("replace_last", Luoma::Filters.method(:replace_last))
+      register_filter("replace", Luoma::Filters.method(:replace))
+      register_filter("reverse", Luoma::Filters.method(:reverse))
+      register_filter("round", Luoma::Filters.method(:round))
+      register_filter("rstrip", Luoma::Filters.method(:rstrip))
+      register_filter("size", Luoma::Filters.method(:size))
+      register_filter("slice", Luoma::Filters.method(:slice))
+      register_filter("split", Luoma::Filters.method(:split))
+      register_filter("strip_html", Luoma::Filters.method(:strip_html))
+      register_filter("strip_newlines", Luoma::Filters.method(:strip_newlines))
+      register_filter("strip", Luoma::Filters.method(:strip))
+      register_filter("times", Luoma::Filters.method(:times))
+      register_filter("truncate", Luoma::Filters.method(:truncate))
+      register_filter("truncatewords", Luoma::Filters.method(:truncatewords))
       register_filter("uniq", Luoma::Filters.method(:uniq))
+      register_filter("upcase", Luoma::Filters.method(:upcase))
+      register_filter("url_decode", Luoma::Filters.method(:url_decode))
+      register_filter("url_encode", Luoma::Filters.method(:url_encode))
     end
 
     #: (untyped, untyped, RenderContext, t_token) -> bool
@@ -290,6 +324,29 @@ module Luoma
       else
         obj.to_s
       end
+    end
+
+    # Cast _obj_ to a  date and time. Return `nil` if casting fails.
+    # NOTE: This was copied from Shopify/liquid.
+    def to_date(obj)
+      return obj if obj.respond_to?(:strftime)
+
+      if obj.is_a?(String)
+        return nil if obj.empty?
+
+        obj = obj.downcase
+      end
+
+      case obj
+      when "now", "today"
+        Time.now
+      when /\A\d+\z/, Integer
+        Time.at(obj.to_i)
+      when String
+        Time.parse(obj)
+      end
+    rescue ::ArgumentError
+      nil
     end
 
     #: (String, String?, String?) -> String

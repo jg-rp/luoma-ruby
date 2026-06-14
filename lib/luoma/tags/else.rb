@@ -2,6 +2,8 @@
 
 module Luoma
   class ElseBlock < Markup
+    attr_reader :expression, :block
+
     #: (t_token, String, t_block) -> void
     def initialize(token, tag_name, block)
       super(token)

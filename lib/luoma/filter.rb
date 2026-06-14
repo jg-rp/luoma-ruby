@@ -15,8 +15,8 @@ module Luoma
     def type_error(message)
       TemplateTypeError.new(
         message, @token,
-        @render_context.template.name,
-        @render_context.template.source
+        @render_context.template.source,
+        @render_context.template.name
       )
     end
 
@@ -24,8 +24,8 @@ module Luoma
     def argument_error(message)
       FilterArgumentError.new(
         message, @token,
-        @render_context.template.name,
-        @render_context.template.source
+        @render_context.template.source,
+        @render_context.template.name
       )
     end
 
@@ -59,9 +59,19 @@ module Luoma
       @env.to_enumerable(obj)
     end
 
+    #: (untyped) -> untyped
+    def to_date(obj)
+      @env.to_date(obj)
+    end
+
     #: (untyped) -> bool
     def truthy?(obj)
       @env.truthy?(obj, @render_context)
+    end
+
+    #: (untyped) -> bool
+    def empty?(obj)
+      EMPTY.eq?(obj, @render_context)
     end
 
     #: (untyped) -> bool

@@ -4,6 +4,10 @@ module Luoma
 
     @block: t_block
 
+    attr_reader expression: Expression
+
+    attr_reader block: t_block
+
     #  (t_token, String, t_block) -> void
     def initialize: (t_token token, String tag_name, t_block block) -> void
 

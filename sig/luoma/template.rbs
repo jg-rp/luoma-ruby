@@ -39,7 +39,7 @@ module Luoma
     def initialize: (Environment env, String source, t_block nodes, ?globals: _Namespace?, ?name: String?, ?overlay: _Namespace?, ?up_to_date: untyped?) -> void
 
     #  (_Namespace?) -> String
-    def render: (_Namespace? data) -> String
+    def render: (?_Namespace? data) -> String
 
     #  (RenderContext, String) -> String
     def render_with_context: (RenderContext context, String buffer) -> String

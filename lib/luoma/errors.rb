@@ -19,14 +19,14 @@ module Luoma
       value = Luoma.get_token_value(@token, @source)
       line, col, current_line = error_context(@source, @token[1])
 
-      name_and_position = if @template_name
-                            "#{@template_name}:#{line}:#{col}"
-                          else
+      name_and_position = if @template_name.empty?
                             "#{current_line.inspect}:#{line}:#{col}"
+                          else
+                            "#{@template_name}:#{line}:#{col}"
                           end
 
       pad = " " * line.to_s.length
-      pointer = (" " * col) + ("^" * (value&.length || 1))
+      pointer = (" " * (col - 1)) + ("^" * (value&.length || 1))
 
       <<~MESSAGE.strip
         #{self.class}: #{message}
@@ -50,7 +50,7 @@ module Luoma
 
         target_line_index = i
         line_number = target_line_index + 1
-        column_number = index - (cumulative_length - lines[target_line_index].length)
+        column_number = index - (cumulative_length - lines[target_line_index].length) + 1
         return [line_number, column_number, lines[target_line_index].rstrip]
       end
 

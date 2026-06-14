@@ -44,9 +44,9 @@ module Luoma
         if context.env.strict_filters
           raise FilterNotFoundError.new(
             "unknown filter #{@filter.name.value.inspect}",
-            @filter.span,
-            context.template.name,
-            context.template.source
+            @filter.token,
+            context.template.source,
+            context.template.name
           )
         end
 
@@ -79,8 +79,8 @@ module Luoma
       raise FilterArgumentError.new(
         e.message,
         @span,
-        context.template.name,
-        context.template.source
+        context.template.source,
+        context.template.name
       )
     end
 

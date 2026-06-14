@@ -386,14 +386,16 @@ module Luoma
 
       case token.first
       when :token_int
-        IndexSelector.new(token, Luoma.get_token_value(token, @source).to_i)
+        IndexSelector.new(
+          token, Luoma.get_token_value(token, @source).to_i
+        ).with(eat(:token_rbracket))
       when :token_ident, :token_blank, :token_empty, :token_false, :token_true, :token_null, :token_nil
-        @pos += 1
+        @pos -= 1
         path = parse_path
         eat(:token_rbracket)
         path
       when :token_double_quote, :token_single_quote
-        @pos += 1
+        @pos -= 1
         parse_string_literal.with(eat(:token_rbracket))
       when :token_rbracket
         raise TemplateSyntaxError.new(

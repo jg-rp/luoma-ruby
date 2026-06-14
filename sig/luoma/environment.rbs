@@ -182,6 +182,10 @@ module Luoma
 
     #  (untyped, RenderContext, t_token) -> String
     def to_string: (untyped obj, RenderContext context, t_token token) -> String
+                 
+    # Cast _obj_ to a  date and time. Return `nil` if casting fails.
+    # NOTE: This was copied from Shopify/liquid.
+    def to_date: (untyped obj) -> untyped
 
     #  (String, String?, String?) -> String
     def trim: (String value, String? left, String? right) -> String

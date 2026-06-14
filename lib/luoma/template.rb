@@ -21,7 +21,7 @@ module Luoma
 
     # Render this template with template variables from `data`.
     #: (_Namespace?) -> String
-    def render(data)
+    def render(data = nil)
       buffer = +""
       context = RenderContext.new(self, globals: make_globals(data))
       render_with_context(context, buffer)

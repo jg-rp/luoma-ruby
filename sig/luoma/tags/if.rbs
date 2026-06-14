@@ -1,0 +1,45 @@
+module Luoma
+  class IfTag < Markup
+    @alts: Array[IfBlock | ElseBlock]
+
+    END_IF_BLOCK: Set[String]
+
+    IF_BLOCKS: Set[String]
+
+    #  (t_token, String, Parser) -> Markup
+    def self.parse: (t_token token, String tag_name, Parser parser) -> Markup
+
+    def initialize: (t_token token, String tag_name, Array[IfBlock | ElseBlock] alts) -> void
+
+    #  (RenderContext, String) -> void
+    def render: (RenderContext context, String buffer) -> void
+
+    #  (RenderContext) -> Array[Markup]
+    def children: (RenderContext static_context) -> Array[Markup]
+  end
+
+  class IfBlock < Markup
+    @expression: Expression
+
+    @block: t_block
+
+    END_IF_BLOCK: Set[String]
+
+    attr_reader expression: Expression
+
+    attr_reader block: t_block
+
+    #  (Parser) -> Markup
+    def self.parse: (String tag_name, Parser parser) -> IfBlock
+
+    def initialize: (t_token token, String tag_name, Expression expression, t_block block) -> void
+
+    #  (RenderContext) -> Array[Markup]
+    def children: (RenderContext static_context) -> Array[Markup]
+
+    #  () -> Array[Expression]
+    def expressions: () -> ::Array[Expression]
+
+    def filter_strings: () -> void
+  end
+end
