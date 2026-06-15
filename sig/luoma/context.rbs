@@ -61,6 +61,8 @@ module Luoma
 
     attr_reader template: Template
 
+    attr_reader scopes: ChainHash
+
     attr_reader disabled_tags: Set[String]?
 
     attr_reader context_depth: Integer
@@ -93,11 +95,11 @@ module Luoma
     #  (String, untyped) -> void
     def assign: (String name, untyped value) -> void
 
-    #  (_Namespace, bool?, Set[String]?, Template?) -> RenderContext
-    def copy: (_Namespace namespace, ?block_scope: bool?, ?disabled_tags: Set[String]?, ?template: Template?) -> RenderContext
+    #  (t_namespace, bool?, Set[String]?, Template?) -> RenderContext
+    def copy: (t_namespace namespace, ?block_scope: bool?, ?disabled_tags: Set[String]?, ?template: Template?) -> RenderContext
 
-    #  (_Namespace, ?template: Template?) { () -> untyped } -> void
-    def extends: (_Namespace namespace, ?template: Template?) { () -> untyped } -> void
+    #  (t_namespace, ?template: Template?) { () -> untyped } -> void
+    def extends: (t_namespace namespace, ?template: Template?) { () -> untyped } -> void
 
     #  (String) -> Integer
     def decrement: (String name) -> Integer

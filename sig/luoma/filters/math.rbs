@@ -1,37 +1,37 @@
 module Luoma
   module Filters
     # Return the absolute value of `left`.
-    def self.abs: (untyped left, context: FilterContext) -> untyped
+    def self.abs: (FilterContext context, untyped left) -> untyped
 
     # Return the maximum of `left` and `right`.
-    def self.at_least: (untyped left, untyped right, context: FilterContext) -> untyped
+    def self.at_least: (FilterContext context, untyped left, untyped right) -> untyped
 
     # Return the minimum of `left` and `right`.
-    def self.at_most: (untyped left, untyped right, context: FilterContext) -> untyped
+    def self.at_most: (FilterContext context, untyped left, untyped right) -> untyped
 
     # Return `left` rounded up to the next whole number.
-    def self.ceil: (untyped left, context: FilterContext) -> untyped
+    def self.ceil: (FilterContext context, untyped left) -> untyped
 
     # Return the result of dividing `left` by `right`.
     # If both `left` and `right` are integers, integer division is performed.
-    def self.divided_by: (untyped left, untyped right, context: FilterContext) -> untyped
+    def self.divided_by: (FilterContext context, untyped left, untyped right) -> untyped
 
     # Return the result of multiplying `left` by `right`.
-    def self.times: (untyped left, untyped right, context: FilterContext) -> untyped
+    def self.times: (FilterContext context, untyped left, untyped right) -> untyped
 
     # Return `left` rounded down to the next whole number.
-    def self.floor: (untyped left, context: FilterContext) -> untyped
+    def self.floor: (FilterContext context, untyped left) -> untyped
 
     # Return `right` subtracted from `left`.
-    def self.minus: (untyped left, untyped right, context: FilterContext) -> untyped
+    def self.minus: (FilterContext context, untyped left, untyped right) -> untyped
 
     # Return the remainder of dividing `left` by `right`.
-    def self.modulo: (untyped left, untyped right, context: FilterContext) -> untyped
+    def self.modulo: (FilterContext context, untyped left, untyped right) -> untyped
 
     # Return `right` added to `left`.
-    def self.plus: (untyped left, untyped right, context: FilterContext) -> untyped
+    def self.plus: (FilterContext context, untyped left, untyped right) -> untyped
 
     # Return `left` rounded to `ndigits` decimal digits.
-    def self.round: (untyped left, ?::Integer ndigits, context: FilterContext) -> untyped
+    def self.round: (FilterContext context, untyped left, ?::Integer ndigits) -> untyped
   end
 end

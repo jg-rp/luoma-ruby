@@ -5,9 +5,9 @@ module Luoma
     #: (Environment,
     #   String,
     #   t_block,
-    #   ?globals: _Namespace?,
+    #   ?globals: t_namespace?,
     #   ?name: String?,
-    #   ?overlay: _Namespace?,
+    #   ?overlay: t_namespace?,
     #   ?up_to_date: Proc::_Callable?) -> void
     def initialize(env, source, nodes, globals: nil, name: nil, overlay: nil, up_to_date: nil)
       @env = env
@@ -20,7 +20,7 @@ module Luoma
     end
 
     # Render this template with template variables from `data`.
-    #: (_Namespace?) -> String
+    #: (t_namespace?) -> String
     def render(data = nil)
       buffer = +""
       context = RenderContext.new(self, globals: make_globals(data))
@@ -36,7 +36,7 @@ module Luoma
     end
 
     # Return a copy of this template with different globals.
-    #: (_Namespace) -> Template
+    #: (t_namespace) -> Template
     def with_globals(globals)
       Template.new(
         @env, @source, @nodes,
@@ -53,10 +53,15 @@ module Luoma
 
     # Return a new namespace including data from `namespace` and other
     # namespaces pinned to this template.
-    #: (_Namespace?) -> _Namespace?
+    #: (t_namespace?) -> t_namespace?
     def make_globals(namespace)
-      namespaces = [namespace, @overlay, @globals].compact
-      ChainHash.new(*namespaces) unless namespaces.empty?
+      return @globals if namespace.nil? && @overlay.nil?
+
+      namespace_ = {} #: t_namespace
+      namespace_.merge!(@globals) if @globals # steep:ignore
+      namespace_.merge!(@overlay) if @overlay # steep:ignore
+      namespace_.merge!(namespace) if namespace
+      namespace_
     end
   end
 end

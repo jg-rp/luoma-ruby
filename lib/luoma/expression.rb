@@ -38,7 +38,7 @@ module Luoma
 
     #: (RenderContext) -> untyped
     def evaluate(context)
-      func, with_context = context.env.filters[@filter.name.value]
+      func = context.env.filters[@filter.name.value]
 
       if func.nil?
         if context.env.strict_filters
@@ -54,34 +54,21 @@ module Luoma
         return @left.evaluate(context)
       end
 
+      filter_context = FilterContext.new(@token, context)
       left = @left.evaluate(context)
-      return func.call(left) if @filter.args.empty? && !with_context
 
-      args = [] #: Array[untyped]
-      kwargs = {} #: Hash[Symbol, untyped]
+      return func.call(filter_context, left) if @filter.args.empty? && @filter.kwargs.empty?
 
-      @filter.args.each do |arg|
-        if arg.is_a?(KeywordArgument)
-          kwargs[arg.name.value.to_sym] = arg.expression.evaluate(context)
-        else
-          args << arg.evaluate(context)
-        end
-      end
-
-      kwargs[:context] = FilterContext.new(@token, context) if with_context
-
-      if kwargs.empty?
-        func.call(left, *args) # steep:ignore
+      if @filter.kwargs.empty?
+        func.call(filter_context, left, *@filter.args.map { |arg| arg.evaluate(context) }) # steep:ignore
       else
-        func.call(left, *args, **kwargs) # steep:ignore
+        func.call(
+          filter_context,
+          left,
+          *@filter.args.map { |arg| arg.evaluate(context) }, # steep:ignore
+          **@filter.kwargs.to_h { |arg| [arg.name.value.to_sym, arg.expression.evaluate(context)] } # steep:ignore
+        )
       end
-    rescue ArgumentError, TypeError => e
-      raise FilterArgumentError.new(
-        e.message,
-        @span,
-        context.template.source,
-        context.template.name
-      )
     end
 
     #: (RenderContext) -> Array[_Traversable]
@@ -250,9 +237,13 @@ module Luoma
     #: (RenderContext) -> untyped
     def evaluate(context)
       root_segment = @root.is_a?(Variable) ? @root.evaluate(context) : @root.value # steep:ignore
-      root = root_segment.is_a?(String) ? context.resolve(root_segment) : :nothing
+      root = root_segment.is_a?(String) ? context.scopes.fetch(root_segment, :nothing) : :nothing
 
-      obj, index = context.resolve_path(root, @segments.map { |s| s.evaluate(context) })
+      obj, index = if @segments.empty?
+                     [root, 0]
+                   else
+                     context.resolve_path(root, @segments.map { |s| s.evaluate(context) })
+                   end
 
       if obj == :nothing
         context.env.undefined.new(
@@ -438,7 +429,7 @@ module Luoma
   class NullLiteral < Expression
     #: (RenderContext) -> untyped
     def evaluate(context)
-      @value
+      nil
     end
 
     #: (RenderContext) -> Array[_Traversable]
@@ -448,7 +439,7 @@ module Luoma
 
     #: () -> String
     def to_s
-      @value.to_s
+      ""
     end
   end
 
@@ -539,13 +530,14 @@ module Luoma
   end
 
   class Filter
-    attr_reader :token, :span, :name, :args
+    attr_reader :token, :span, :name, :args, :kwargs
 
-    #: (t_token, Name, Array[Expression | KeywordArgument])
-    def initialize(token, name, args)
+    #: (t_token, Name, Array[Expression], Array[KeywordArgument])
+    def initialize(token, name, args, kwargs)
       @token = token
       @name = name
       @args = args
+      @kwargs = kwargs
       @span = args.empty? ? token : Luoma.span(token, args.last.span)
     end
 
@@ -554,9 +546,11 @@ module Luoma
     end
 
     def to_s
-      return @name.value if @args.empty?
+      return @name.value if @args.empty? && @kwargs.empty?
 
-      "#{@name}: #{@args.map(&:to_s).join(",")}"
+      args = @args.map(&:to_s).join(",")
+      args << ", " << @kwargs.map(&:to_s).join(",") unless @kwargs.empty?
+      "#{@name}: #{args}"
     end
   end
 

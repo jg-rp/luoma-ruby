@@ -9,7 +9,7 @@ module Luoma
       raise "not implemented"
     end
 
-    #: (Environment, String, ?globals: _Namespace?, ?context: RenderContext?, **kwargs) -> Template
+    #: (Environment, String, ?globals: t_namespace?, ?context: RenderContext?, **kwargs) -> Template
     def load(env, name, globals: nil, context: nil, **kwargs)
       data = get_source(env, name, context: context, **kwargs)
       env.parse(data.source,

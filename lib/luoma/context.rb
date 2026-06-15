@@ -5,7 +5,7 @@ require_relative "chain_hash"
 module Luoma
   class RenderContext
     attr_reader :env, :template, :disabled_tags, :context_depth, :assign_score, :assign_score_cumulative,
-                :registers, :globals
+                :registers, :globals, :scopes
 
     attr_accessor :render_score, :render_score_cumulative, :interrupts, :forloops
 
@@ -31,10 +31,10 @@ module Luoma
 
       # The namespace for variables defined with `{% assign %}` and
       # `{% capture %}`.
-      @locals = {} #: Hash[String, untyped]
+      @locals = {} #: t_namespace
 
       # A namespace for `{% increment %}` and `{% decrement %}`.
-      @counters = {} #: Hash[String, untyped]
+      @counters = {} #: t_namespace
 
       # The current template scope including `locals`, `globals` and `counters`.
       # New block-scoped namespaces get pushed onto and popped off this chain
@@ -42,7 +42,7 @@ module Luoma
       #
       # Scopes are searched from right to left. New scopes are push on the
       # right.
-      @scopes = ChainHash.new(@locals, @globals, @counters)
+      @scopes = ChainHash.new(@counters, @globals, @locals)
 
       # Names of tags that are disallowed in this context.
       @disabled_tags = disabled_tags
@@ -145,7 +145,7 @@ module Luoma
     #
     # The caller is responsible for updating renderScoreCumulative when the new
     # context is no longer needed.
-    #: (_Namespace, bool?, Set[String]?, Template?) -> RenderContext
+    #: (t_namespace, bool?, Set[String]?, Template?) -> RenderContext
     def copy(namespace, block_scope: nil, disabled_tags: nil, template: nil)
       ctx = RenderContext.new(
         template || @template,
@@ -162,7 +162,7 @@ module Luoma
     # Extend the scope of this context with the given namespace for the
     # duration of a block.
     #
-    #: (_Namespace, ?template: Template?) { () -> untyped } -> void
+    #: (t_namespace, ?template: Template?) { () -> untyped } -> void
     def extends(namespace, template: nil)
       raise_for_context_depth
 

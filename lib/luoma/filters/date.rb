@@ -6,7 +6,7 @@ module Luoma
     # Format date and time object _left_ with _format_.
     # Coerce _left_ to a `Time` if it is not a time-like object already.
     # Coerce _format_ to a string if it is not a string already.
-    def self.date(left, format, context:)
+    def self.date(context, left, format)
       format = context.to_string(format)
       return left if format.empty?
 

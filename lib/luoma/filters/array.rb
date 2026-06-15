@@ -4,7 +4,7 @@ module Luoma
   module Filters
     # Return the concatenation of items in _left_ separated by _sep_.
     # Coerce items in _left_ to strings if they aren't strings already.
-    def self.join(left, sep = " ", context:)
+    def self.join(context, left, sep = " ")
       context.to_enumerable(left).map { |item| context.to_string(item) }.join(context.to_string(sep))
     end
 
@@ -16,7 +16,7 @@ module Luoma
     #
     # If key is not `:nothing`, coerce it to a string before calling `fetch` on items in
     # _left_.
-    def self.compact(left, key = :nothing, context:)
+    def self.compact(context, left, key = :nothing)
       left = context.to_enumerable(left)
 
       case key
@@ -31,13 +31,13 @@ module Luoma
 
     # Return _left_ concatenated with _right_, or nil if _right_ is not an array.
     # Coerce _left_ to an array if it isn't an array already.
-    def self.concat(left, right, context:)
+    def self.concat(context, left, right)
       raise context.argument_error("expected an array") unless right.respond_to?(:to_ary)
 
       context.to_enumerable(left).to_a.concat(right)
     end
 
-    def self.find(left, key, value = nil, context:)
+    def self.find(context, left, key, value = nil)
       left = context.to_enumerable(left)
 
       if !context.nothing?(value)
@@ -53,7 +53,7 @@ module Luoma
       nil
     end
 
-    def self.find_index(left, key, value = nil, context:)
+    def self.find_index(context, left, key, value = nil)
       left = context.to_enumerable(left)
 
       if !context.nothing?(value)
@@ -69,7 +69,7 @@ module Luoma
       nil
     end
 
-    def self.has(left, key, value = nil, context:)
+    def self.has(context, left, key, value = nil)
       left = context.to_enumerable(left)
 
       if !context.nothing?(value)
@@ -86,7 +86,7 @@ module Luoma
     end
 
     # Return the first item in _left_, or `nil` if _left_ does not have a first item.
-    def self.first(left)
+    def self.first(context, left)
       case left
       when String
         left[0]
@@ -96,7 +96,7 @@ module Luoma
     end
 
     # Return the last item in _left_, or `nil` if _left_ does not have a last item.
-    def self.last(left)
+    def self.last(context, left)
       case left
       when String
         left[-1]
@@ -105,7 +105,7 @@ module Luoma
       end
     end
 
-    def self.map(left, key, context:)
+    def self.map(context, left, key)
       left = context.to_enumerable(left)
       key = context.to_string(key)
       left.map { |item| item[key] }
@@ -113,11 +113,11 @@ module Luoma
 
     # Return _left_ with all items in reverse order.
     # Coerce _left_ to an array if it isn't an array already.
-    def self.reverse(left, context:)
+    def self.reverse(context, left)
       context.to_enumerable(left).to_a.reverse
     end
 
-    def self.reject(left, key, value = nil, context:)
+    def self.reject(context, left, key, value = nil)
       left = context.to_enumerable(left)
       key = context.to_string(key)
 
@@ -132,7 +132,7 @@ module Luoma
       end
     end
 
-    def self.where(left, key, value = nil, context:)
+    def self.where(context, left, key, value = nil)
       left = context.to_enumerable(left)
       key = context.to_string(key)
 
@@ -149,7 +149,7 @@ module Luoma
 
     # Deduplicate items in _left_.
     # Coerce _left_ to an array if it isn't an array already.
-    def self.uniq(left, key = nil, context:)
+    def self.uniq(context, left, key = nil)
       left = context.to_enumerable(left)
 
       if context.nothing?(key)

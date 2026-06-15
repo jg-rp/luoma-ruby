@@ -7,11 +7,11 @@ module Luoma
 
     @nodes: t_block
 
-    @globals: _Namespace?
+    @globals: t_namespace?
 
     @name: String
 
-    @overlay: _Namespace?
+    @overlay: t_namespace?
 
     @up_to_date: untyped
 
@@ -21,33 +21,33 @@ module Luoma
 
     attr_reader nodes: t_block
 
-    attr_reader globals: _Namespace?
+    attr_reader globals: t_namespace?
 
     attr_reader name: String
 
-    attr_reader overlay: _Namespace?
+    attr_reader overlay: t_namespace?
 
     attr_reader up_to_date: untyped
 
     #  (Environment,
     #   String,
     #   t_block,
-    #   ?globals: Hash[String, untyped]?,
+    #   ?globals: t_namespace?,
     #   ?name: String?,
-    #   ?overlay: Hash[String, untyped]?,
+    #   ?overlay: t_namespace?,
     #   ?up_to_date: Proc::_Callable?) -> void
-    def initialize: (Environment env, String source, t_block nodes, ?globals: _Namespace?, ?name: String?, ?overlay: _Namespace?, ?up_to_date: untyped?) -> void
+    def initialize: (Environment env, String source, t_block nodes, ?globals: t_namespace?, ?name: String?, ?overlay: t_namespace?, ?up_to_date: untyped?) -> void
 
-    #  (_Namespace?) -> String
-    def render: (?_Namespace? data) -> String
+    #  (t_namespace?) -> String
+    def render: (?t_namespace? data) -> String
 
     #  (RenderContext, String) -> String
     def render_with_context: (RenderContext context, String buffer) -> String
 
-    #  (_Namespace) -> Template
-    def with_globals: (_Namespace namespace) -> Template
+    #  (t_namespace) -> Template
+    def with_globals: (t_namespace namespace) -> Template
 
-    #  (_Namespace?) -> _Namespace?
-    def make_globals: (_Namespace? namespace) -> _Namespace?
+    #  (t_namespace?) -> t_namespace?
+    def make_globals: (t_namespace? namespace) -> t_namespace?
   end
 end

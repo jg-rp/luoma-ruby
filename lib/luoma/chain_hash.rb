@@ -14,13 +14,22 @@ module Luoma
       while index >= 0
         h = @hashes[index]
         index -= 1
-        return h[key] if h.key?(key)
+        v = h.fetch(key, :nothing)
+        return v unless v == :nothing
       end
     end
 
     #: (String) -> bool
     def key?(key)
-      !@hashes.rindex { |h| h.key?(key) }.nil?
+      index = @hashes.length - 1
+      while index >= 0
+        h = @hashes[index]
+        index -= 1
+        v = h.fetch(key, :nothing)
+        return true unless v == :nothing
+      end
+
+      false
     end
 
     #: (String, untyped) -> untyped
@@ -29,7 +38,8 @@ module Luoma
       while index >= 0
         h = @hashes[index]
         index -= 1
-        return h[key] if h.key?(key)
+        v = h.fetch(key, :nothing)
+        return v unless v == :nothing
       end
 
       default
@@ -39,5 +49,6 @@ module Luoma
     def push(hash) = @hashes << hash
     alias << push
     def pop = @hashes.pop
+    def nil? = false
   end
 end

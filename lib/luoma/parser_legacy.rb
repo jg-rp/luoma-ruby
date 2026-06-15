@@ -511,13 +511,14 @@ module Luoma
           Filter.new(
             name_token,
             Name.new(name_token, Luoma.get_token_value(name_token, @source)),
-            []
+            [], []
           )
         )
       end
 
       eat(:token_colon, message: "missing colon or pipe")
-      args = [] #: Array[Expression | KeywordArgument]
+      args = [] #: Array[Expression]
+      kwargs = [] #: Array[KeywordArgument]
 
       loop do
         kind_ = kind
@@ -527,7 +528,7 @@ module Luoma
           # A keyword argument
           param = parse_ident
           eat(:token_colon)
-          args << KeywordArgument.new(param.token, param, parse_expression)
+          kwargs << KeywordArgument.new(param.token, param, parse_expression)
         else
           args << parse_expression
         end
@@ -543,7 +544,8 @@ module Luoma
         Filter.new(
           name_token,
           Name.new(name_token, Luoma.get_token_value(name_token, @source)),
-          args
+          args,
+          kwargs
         )
       )
     end

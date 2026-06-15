@@ -4,6 +4,6 @@ module Luoma
     # Format date and time object _left_ with _format_.
     # Coerce _left_ to a `Time` if it is not a time-like object already.
     # Coerce _format_ to a string if it is not a string already.
-    def self.date: (untyped left, untyped format, context: FilterContext) -> untyped
+    def self.date: (FilterContext context, untyped left, untyped format) -> untyped
   end
 end

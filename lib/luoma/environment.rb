@@ -46,7 +46,7 @@ module Luoma
       @undefined = undefined
 
       @tags = {} #: Hash[String, _Tag]
-      @filters = {} #: Hash[String, [t_filter, Integer?]]
+      @filters = {} #: Hash[String, t_filter]
       setup_tags_and_filters
 
       # Render context registers that persist when copying an instance of
@@ -93,10 +93,7 @@ module Luoma
     #   and `#parameters`. Like a Proc or Method.
     #: (String, untyped) -> void
     def register_filter(name, callable)
-      with_context = callable.parameters.index do |(kind, param)|
-        kind == :keyreq && param == :context
-      end
-      @filters[name] = [callable, with_context]
+      @filters[name] = callable
     end
 
     # Remove a filter from the filter register.
@@ -264,13 +261,13 @@ module Luoma
     #: (untyped, ?default: Numeric?) -> Numeric
     def to_numeric(obj, default: 0)
       case obj
+      when Float, Integer, BigDecimal, Numeric
+        # Numeric is the base class for heap allocated numbers.
+        obj
       when String
         # Cast to float before integer as `to_f` will parse exponents, `to_i` will not.
         # Use `Float(obj)` instead of `obj.to_f` because `to_f` ignores trailing non-digit chars.
         obj.match?(/\A-?\d+(?:[eE]\+?\d+)?\Z/) ? obj.to_f.to_i : Float(obj)
-      when Float, Integer, BigDecimal, Numeric
-        # Numeric is the base class for heap allocated numbers.
-        obj
       else
         default
       end
@@ -313,6 +310,8 @@ module Luoma
     #: (untyped, RenderContext, t_token) -> String
     def to_string(obj, context, token)
       case obj
+      when String
+        obj
       when Hash, Array
         JSON.generate(obj)
       when BigDecimal
@@ -370,10 +369,12 @@ module Luoma
 
     protected
 
-    #: (_Namespace?) -> _Namespace?
+    #: (t_namespace?) -> t_namespace?
     def make_globals(namespace)
-      namespaces = [namespace, @globals].compact
-      ChainHash.new(*namespaces) unless namespaces.empty?
+      namespace_ = {} #: t_namespace
+      namespace_.merge!(@globals) if @globals # steep:ignore
+      namespace_.merge!(namespace) if namespace
+      namespace_
     end
   end
 end

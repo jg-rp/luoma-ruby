@@ -5,8 +5,8 @@ module Luoma
     #  (Environment, String, ?context: RenderContext?, **untyped) -> TemplateSource
     def get_source: (Environment env, String name, ?context: RenderContext?, **untyped kwargs) -> TemplateSource
 
-    #  (Environment, String, ?globals: _Namespace?, ?context: RenderContext?, **kwargs) -> Template
-    def load: (Environment env, String name, ?globals: _Namespace?, ?context: RenderContext?, **untyped kwargs) -> Template
+    #  (Environment, String, ?globals: t_namespace?, ?context: RenderContext?, **kwargs) -> Template
+    def load: (Environment env, String name, ?globals: t_namespace?, ?context: RenderContext?, **untyped kwargs) -> Template
   end
 
   # Liquid template source text and meta data.
@@ -17,7 +17,7 @@ module Luoma
 
     @up_to_date: Proc::_Callable?
 
-    @matter: _Namespace?
+    @matter: t_namespace?
 
     attr_reader source: String
 
@@ -25,9 +25,9 @@ module Luoma
 
     attr_reader up_to_date: Proc::_Callable?
 
-    attr_reader matter: _Namespace?
+    attr_reader matter: t_namespace?
 
-    def initialize: (source: String, name: String, ?up_to_date: Proc::_Callable?, ?matter: _Namespace?) -> void
+    def initialize: (source: String, name: String, ?up_to_date: Proc::_Callable?, ?matter: t_namespace?) -> void
   end
 
   # A template loader that reads templates from a hash.

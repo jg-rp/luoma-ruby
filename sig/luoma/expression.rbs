@@ -335,7 +335,9 @@ module Luoma
 
     @name: Name
 
-    @args: Array[Expression | KeywordArgument]
+    @args: Array[Expression]
+
+    @kwargs: Array[KeywordArgument]
 
     @span: t_token
 
@@ -345,10 +347,12 @@ module Luoma
 
     attr_reader name: Name
 
-    attr_reader args: Array[Expression | KeywordArgument]
+    attr_reader kwargs: Array[KeywordArgument]
+
+    attr_reader args: Array[Expression]
 
     #  (t_token, Name, Array[Expression | KeywordArgument])
-    def initialize: (t_token token, Name name, Array[Expression | KeywordArgument] args) -> void
+    def initialize: (t_token token, Name name, Array[Expression] args, Array[KeywordArgument] kwargs) -> void
 
     def children: (RenderContext context) -> Array[Luoma::_Traversable]
 

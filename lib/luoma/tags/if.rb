@@ -48,11 +48,13 @@ module Luoma
 
     #: (RenderContext, String) -> void
     def render(context, buffer)
-      @alts.each do |alt|
+      index = 0
+      while (alt = @alts[index])
         if context.env.truthy?(alt.expression.evaluate(context), context)
-          alt.render(context, buffer)
+          Luoma.render_block(alt.block, context, buffer)
           break
         end
+        index += 1
       end
     end
 
