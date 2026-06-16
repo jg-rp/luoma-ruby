@@ -16,7 +16,7 @@ module Luoma
 
     attr_accessor source: String
 
-    def initialize: (String message, t_token token, String template_name, String source) -> void
+    def initialize: (String message, t_token token, String source, String template_name) -> void
 
     def detailed_message: (?highlight: bool, **untyped kwargs) -> String
 

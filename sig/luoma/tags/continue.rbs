@@ -1,0 +1,11 @@
+module Luoma
+  class ContinueTag < Markup
+    #  (t_token, String, Parser) -> Markup
+    def self.parse: (t_token token, String tag_name, Parser parser) -> Markup
+
+    def initialize: (t_token token, String tag_name) -> void
+
+    #  (RenderContext, String) -> void
+    def render: (RenderContext context, String buffer) -> void
+  end
+end

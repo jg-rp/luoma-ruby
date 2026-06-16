@@ -112,8 +112,8 @@ module Luoma
     #   ?up_to_date: Proc::_Callable?) -> Template
     def parse: (String source, ?globals: t_namespace?, ?name: String?, ?overlay: t_namespace?, ?up_to_date: untyped?) -> Template
 
-    #  (String, ?data: t_namespace?) -> String
-    def render: (String source, ?data: t_namespace?) -> String
+    #  (String, ?t_namespace?) -> String
+    def render: (String source, ?t_namespace? data) -> String
 
     #  (String, ?globals: t_namespace?, ?context: RenderContext?, **untyped) -> Template
     def get_template: (String name, ?globals: t_namespace?, ?context: RenderContext?, **untyped kwargs) -> Template

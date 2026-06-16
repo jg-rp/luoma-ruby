@@ -159,6 +159,15 @@ module Luoma
       end
     end
 
-    # TODO: sum
+    # Return the sum of all numeric values in the input array.
+    def self.sum(context, left, key = nil)
+      left = context.to_enumerable(left)
+
+      if context.nothing?(key)
+        left.map { |v| context.to_numeric(v) }.sum
+      else
+        left.map { |v| context.to_numeric(context.fetch(v, key)) }.sum
+      end
+    end
   end
 end

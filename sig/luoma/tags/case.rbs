@@ -24,6 +24,10 @@ module Luoma
 
     WHEN_DELIMITERS: Set[t_token_kind]
 
+    attr_reader block: t_block
+
+    attr_reader right: Array[Expression]
+
     #  (String, Parser) -> WhenBlock
     def self.parse: (String tag_name, Parser parser) -> WhenBlock
 

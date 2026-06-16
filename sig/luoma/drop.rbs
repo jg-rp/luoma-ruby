@@ -6,7 +6,7 @@ module Luoma
     #  (String, RenderContext) -> untyped
     def fetch: (untyped name, Luoma::RenderContext context) -> untyped
 
-    def each: () -> void
+    def each: () -> untyped
 
     #  (untyped, RenderContext) -> bool
     def eq?: (untyped obj, Luoma::RenderContext context) -> bool

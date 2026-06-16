@@ -43,5 +43,8 @@ module Luoma
     # Deduplicate items in _left_.
     # Coerce _left_ to an array if it isn't an array already.
     def self.uniq: (FilterContext context, untyped left, ?untyped? key) -> untyped
+                 
+    # Return the sum of all numeric values in the input array.
+    def self.sum: (untyped context, untyped left, ?untyped? key) -> untyped
   end
 end

@@ -72,8 +72,8 @@ module Luoma
     end
 
     # Parse and render template `source` with variables from `data`.
-    #: (String, ?data: _Namespace?) -> String
-    def render(source, data: nil)
+    #: (String, ?t_namespace?) -> String
+    def render(source, data = nil)
       parse(source).render(data)
     end
 
@@ -127,7 +127,8 @@ module Luoma
       @tags["doc"] = DocTag
       @tags["echo"] = EchoTag
       @tags["for"] = ForTag
-      # TODO: break and continue
+      @tags["break"] = BreakTag
+      @tags["continue"] = ContinueTag
       @tags["if"] = IfTag
       @tags["increment"] = IncrementTag
 
@@ -179,6 +180,7 @@ module Luoma
       register_filter("strip_html", Luoma::Filters.method(:strip_html))
       register_filter("strip_newlines", Luoma::Filters.method(:strip_newlines))
       register_filter("strip", Luoma::Filters.method(:strip))
+      register_filter("sum", Luoma::Filters.method(:sum))
       register_filter("times", Luoma::Filters.method(:times))
       register_filter("truncate", Luoma::Filters.method(:truncate))
       register_filter("truncatewords", Luoma::Filters.method(:truncatewords))
@@ -300,6 +302,8 @@ module Luoma
         obj.flatten
       when Hash, String
         [obj]
+      when Drop
+        obj.each
       when Enumerable
         obj
       else

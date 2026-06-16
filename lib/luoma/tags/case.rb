@@ -45,12 +45,33 @@ module Luoma
 
     #: (RenderContext, String) -> void
     def render(context, buffer)
-      raise "TODO:"
+      left = @expression.evaluate(context)
+      alt = true
+
+      @blocks.each do |block|
+        if block.is_a?(ElseBlock)
+          # Render any and all `else` blocks as long as we haven't had a
+          # successful `when` block.
+          Luoma.render_block(block.block, context, buffer) if alt
+          next
+        end
+
+        block.right.each do |expr|
+          # Render each `when` blocks potentially many times, once for each
+          # expression equal to `left`. There can be multiple expressions per
+          # `{% when %}` tags and all `{% when %}` tags always fall-through to
+          # subsequent `{% when %}` tags, but not `{% else %}` tags.
+          if context.env.eq?(left, expr.evaluate(context), context, expr.span)
+            alt = false
+            Luoma.render_block(block.block, context, buffer)
+          end
+        end
+      end
     end
 
     #: (RenderContext) -> Array[Markup]
     def children(static_context)
-      raise "TODO:"
+      @blocks
     end
 
     #: () -> Array[Expression]
@@ -60,6 +81,8 @@ module Luoma
   end
 
   class WhenBlock < Markup
+    attr_reader :block, :right
+
     END_CASE_BLOCK = Set["endcase", "when", "else"]
     WHEN_DELIMITERS = Set[:token_comma, :token_or] #: Set[t_token_kind]
 

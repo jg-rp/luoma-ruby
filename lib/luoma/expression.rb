@@ -69,6 +69,13 @@ module Luoma
           **@filter.kwargs.to_h { |arg| [arg.name.value.to_sym, arg.expression.evaluate(context)] } # steep:ignore
         )
       end
+    rescue TypeError, ArgumentError => e
+      raise FilterArgumentError.new(
+        e.message,
+        @token,
+        context.template.source,
+        context.template.name
+      )
     end
 
     #: (RenderContext) -> Array[_Traversable]
