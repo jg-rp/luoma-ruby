@@ -70,7 +70,7 @@ module Luoma
 
     # Scan up to but not including `pattern`.
     #: (Regexp) -> bool
-    def scan_until(pattern)
+    def scan_until?(pattern)
       byte_offset = @scanner.exist?(pattern)
       if byte_offset.nil?
         false
@@ -81,7 +81,7 @@ module Luoma
     end
 
     #: (Regexp) -> bool
-    def skip(pattern)
+    def skip?(pattern)
       if @scanner.scan(pattern)
         @start = @scanner.pos
         true
@@ -92,7 +92,7 @@ module Luoma
 
     # Skip up to but not including `pattern`.
     #: (Regexp) -> bool
-    def skip_until(pattern)
+    def skip_until?(pattern)
       byte_offset = @scanner.exist?(pattern)
       if byte_offset.nil?
         false

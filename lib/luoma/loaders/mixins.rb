@@ -15,8 +15,8 @@ module Luoma
                end
     end
 
-    def load(env, name, globals: nil, context: nil, **kwargs)
-      key = cache_key(name, context: context, **kwargs)
+    def load(env, name, globals: nil, context: nil, **)
+      key = cache_key(name, context: context, **)
 
       # @type var template: Template
       # @type var cached_template: Template

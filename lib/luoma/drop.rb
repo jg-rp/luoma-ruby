@@ -10,12 +10,12 @@ module Luoma
     end
 
     #: (String, RenderContext) -> untyped
-    def fetch(name, context)
-      :nothing
+    def fetch(name, context, default: :nothing)
+      default
     end
 
     def each
-      Enumerator.new {}
+      [].to_enum # steep:ignore
     end
 
     #: (untyped, RenderContext) -> bool

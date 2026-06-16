@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require "base64"
-require "cgi"
+require "cgi/escape"
 
 module Luoma
   module Filters
@@ -151,7 +151,7 @@ module Luoma
       ellipsis = context.to_string(ellipsis)
       return ellipsis[0, max_length] if ellipsis.length >= max_length
 
-      "#{left[0...max_length - ellipsis.length]}#{ellipsis}"
+      "#{left[0...(max_length - ellipsis.length)]}#{ellipsis}"
     end
 
     def self.truncatewords(context, left, max_words = 15, ellipsis = "...")

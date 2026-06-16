@@ -78,8 +78,8 @@ module Luoma
     end
 
     #: (String, ?globals: _Namespace?, ?context: RenderContext?, **untyped) -> Template
-    def get_template(name, globals: nil, context: nil, **kwargs)
-      @loader.load(self, name, globals: globals, context: context, **kwargs)
+    def get_template(name, globals: nil, context: nil, **)
+      @loader.load(self, name, globals: globals, context: context, **)
     end
 
     # Add or replace a filter. The same callable can be registered multiple times with
@@ -194,6 +194,8 @@ module Luoma
     def contains?(left, right, context, token)
       return left.contains?(right, context) if left.is_a?(Drop)
 
+      right = right.to_primitive(:data, context) if right.is_a?(Drop)
+
       if left && right && left.respond_to?(:include?)
         left.include?(left.is_a?(String) ? right.to_s : right)
       else
@@ -213,8 +215,14 @@ module Luoma
     def lt?(left, right, context, token)
       return left.lt?(right, context) if left.is_a?(Drop)
 
-      # TODO: handle non-orderable
       left < right
+    rescue ArgumentError => e
+      raise TemplateTypeError.new(
+        e.message,
+        token,
+        context.template.source,
+        context.template.name
+      )
     end
 
     #: (untyped) -> bool
@@ -249,7 +257,7 @@ module Luoma
         []
       elsif obj.respond_to?(:to_a)
         obj.to_a
-      else
+      else # rubocop:disable Lint/DuplicateBranch
         []
       end
     end

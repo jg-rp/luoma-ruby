@@ -59,6 +59,6 @@ module Luoma
   # the default template environment.
   #: (String, ?Hash[String, untyped]?) -> String
   def self.render(source, data = nil)
-    DEFAULT_ENVIRONMENT.render(source, data: data)
+    DEFAULT_ENVIRONMENT.render(source, data)
   end
 end

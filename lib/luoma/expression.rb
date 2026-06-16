@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# rubocop:disable Naming/PredicateMethod
+
 module Luoma
   # The base class for all expressions.
   class Expression
@@ -267,9 +269,9 @@ module Luoma
     #: (RenderContext) -> Array[_Traversable]
     def children(context)
       if @root.is_a?(Variable)
-        [@root, *@segments.filter { |s| s.is_a?(Variable) }]
+        [@root, *@segments.grep(Variable)]
       else
-        @segments.filter { |s| s.is_a?(Variable) }
+        @segments.filter.grep(Variable)
       end
     end
 
@@ -555,8 +557,8 @@ module Luoma
     def to_s
       return @name.value if @args.empty? && @kwargs.empty?
 
-      args = @args.map(&:to_s).join(",")
-      args << ", " << @kwargs.map(&:to_s).join(",") unless @kwargs.empty?
+      args = @args.join(",")
+      args << ", " << @kwargs.join(",") unless @kwargs.empty?
       "#{@name}: #{args}"
     end
   end
@@ -591,3 +593,5 @@ module Luoma
     end
   end
 end
+
+# rubocop:enable Naming/PredicateMethod

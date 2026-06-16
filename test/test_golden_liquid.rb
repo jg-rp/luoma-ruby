@@ -5,7 +5,7 @@ require "test_helper"
 
 begin
   # TEST_CASES = JSON.load_file("test/golden_liquid/golden_liquid.json")
-  TEST_CASES = JSON.load_file("test/golden_liquid/tests/tags/if.json")
+  TEST_CASES = JSON.load_file("test/golden_liquid/tests/tags/for.json")
 rescue Errno::ENOENT
   puts "Error: uninitialized submodule. Try `git submodule update --init`"
   exit(1)

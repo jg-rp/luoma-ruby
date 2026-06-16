@@ -20,7 +20,7 @@ module Luoma
 
     #: (RenderContext) -> Array[Markup]
     def children(static_context)
-      @block.filter { |node| !node.is_a?(String) } #: Array[Markup]
+      @block.grep_v(String) #: Array[Markup]
     end
 
     def filter_strings

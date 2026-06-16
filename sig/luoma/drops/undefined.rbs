@@ -14,9 +14,6 @@ module Luoma
     #  (String, t_token, String, String) -> void
     def initialize: (String path, t_token token, String source, String template_name) -> void
 
-    #  (String, RenderContext) -> untyped
-    def fetch: (String name, RenderContext context) -> untyped
-
     #  (untyped, RenderContext) -> bool
     def eq?: (untyped obj, RenderContext context) -> bool
   end

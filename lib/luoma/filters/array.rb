@@ -40,13 +40,13 @@ module Luoma
     def self.find(context, left, key, value = nil)
       left = context.to_enumerable(left)
 
-      if !context.nothing?(value)
+      if context.nothing?(value)
         left.each do |item|
-          return item if context.fetch(item, key) == value
+          return item if context.fetch(item, key)
         end
       else
         left.each do |item|
-          return item if context.fetch(item, key)
+          return item if context.fetch(item, key) == value
         end
       end
 
@@ -56,29 +56,29 @@ module Luoma
     def self.find_index(context, left, key, value = nil)
       left = context.to_enumerable(left)
 
-      if !context.nothing?(value)
+      if context.nothing?(value)
         left.each_with_index do |item, index|
-          return index if context.fetch(item, key) == value
+          return index if context.fetch(item, key)
         end
       else
         left.each_with_index do |item, index|
-          return index if context.fetch(item, key)
+          return index if context.fetch(item, key) == value
         end
       end
 
       nil
     end
 
-    def self.has(context, left, key, value = nil)
+    def self.has(context, left, key, value = nil) # rubocop:disable Naming/PredicateMethod
       left = context.to_enumerable(left)
 
-      if !context.nothing?(value)
+      if context.nothing?(value)
         left.each do |item|
-          return true if context.fetch(item, key) == value
+          return true if context.fetch(item, key)
         end
       else
         left.each do |item|
-          return true if context.fetch(item, key)
+          return true if context.fetch(item, key) == value
         end
       end
 
@@ -121,13 +121,13 @@ module Luoma
       left = context.to_enumerable(left)
       key = context.to_string(key)
 
-      if !context.nothing?(value)
+      if context.nothing?(value)
         left.reject do |item|
-          context.fetch(item, key) == value
+          context.truthy?(context.fetch(item, key))
         end
       else
         left.reject do |item|
-          context.truthy?(context.fetch(item, key))
+          context.fetch(item, key) == value
         end
       end
     end
@@ -136,13 +136,13 @@ module Luoma
       left = context.to_enumerable(left)
       key = context.to_string(key)
 
-      if !context.nothing?(value)
+      if context.nothing?(value)
         left.filter do |item|
-          context.fetch(item, key) == value
+          context.truthy?(context.fetch(item, key))
         end
       else
         left.filter do |item|
-          context.truthy?(context.fetch(item, key))
+          context.fetch(item, key) == value
         end
       end
     end
@@ -164,9 +164,9 @@ module Luoma
       left = context.to_enumerable(left)
 
       if context.nothing?(key)
-        left.map { |v| context.to_numeric(v) }.sum
+        left.sum { |v| context.to_numeric(v) }
       else
-        left.map { |v| context.to_numeric(context.fetch(v, key)) }.sum
+        left.sum { |v| context.to_numeric(context.fetch(v, key)) }
       end
     end
   end

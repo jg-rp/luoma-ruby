@@ -100,11 +100,7 @@ module Luoma
         obj = case obj
               when Drop
                 segment = segment.to_primitive(:string, self) if segment.is_a?(Drop)
-                if obj.key?(segment, self)
-                  obj.fetch(segment, self)
-                else
-                  :nothing
-                end
+                obj.fetch(segment, self, default: :nothing)
               when Array
                 segment = segment.to_primitive(:numeric, self) if segment.is_a?(Drop)
                 resolve_array_segment(obj, segment)

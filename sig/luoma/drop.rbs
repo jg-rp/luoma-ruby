@@ -4,7 +4,7 @@ module Luoma
     def key?: (untyped obj, Luoma::RenderContext context) -> bool
 
     #  (String, RenderContext) -> untyped
-    def fetch: (untyped name, Luoma::RenderContext context) -> untyped
+    def fetch: (untyped name, Luoma::RenderContext context, ?default: untyped?) -> untyped
 
     def each: () -> untyped
 

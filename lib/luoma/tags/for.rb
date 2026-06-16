@@ -105,7 +105,7 @@ module Luoma
       @blank = Luoma.blank_block?(block) && (!default || Luoma.blank_block?(default))
 
       @default = if blank && default
-                   default.filter { |node| !node.is_a?(String) }
+                   default.grep_v(String)
                  else
                    default
                  end
@@ -115,12 +115,12 @@ module Luoma
 
     #: (RenderContext, String) -> void
     def render(context, buffer)
-      it = @expression.evaluate(context)
+      target = @expression.evaluate(context)
 
-      raise "TODO:" if it.is_a?(Drop)
+      raise "TODO:" if target.is_a?(Drop)
 
       array = slice(
-        context.env.to_a(it, context, @expression.span),
+        context.env.to_a(target, context, @expression.span),
         @offset.is_a?(Variable) && @offset.ident?("continue") ? :continue : @offset&.evaluate(context), # steep:ignore
         @limit&.evaluate(context),
         context
@@ -165,8 +165,8 @@ module Luoma
 
     #: (RenderContext) -> Array[Markup]
     def children(static_context)
-      result = @block.filter { |node| !node.is_a?(String) } #: Array[Markup]
-      result.concat(@default.filter { |node| !node.is_a?(String) }) if @default # steep:ignore
+      result = @block.grep_v(String) #: Array[Markup]
+      result.concat(@default.grep_v(String)) if @default # steep:ignore
       result
     end
 

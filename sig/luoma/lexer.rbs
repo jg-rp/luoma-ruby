@@ -31,12 +31,12 @@ module Luoma
     def scan: (Regexp pattern) -> String?
 
     #  (Regexp) -> bool
-    def scan_until: (Regexp pattern) -> bool
+    def scan_until?: (Regexp pattern) -> bool
 
     #  (Regexp) -> bool
-    def skip: (Regexp pattern) -> bool
+    def skip?: (Regexp pattern) -> bool
 
     #  (Regexp) -> bool
-    def skip_until: (Regexp pattern) -> bool
+    def skip_until?: (Regexp pattern) -> bool
   end
 end

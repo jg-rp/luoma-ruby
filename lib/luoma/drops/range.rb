@@ -18,7 +18,7 @@ module Luoma
     end
 
     #: (String, RenderContext) -> untyped
-    def fetch(name, context)
+    def fetch(name, context, default: :nothing)
       case name
       when "first"
         @start
@@ -27,7 +27,7 @@ module Luoma
       when "size"
         @range.size
       else
-        :nothing
+        default
       end
     end
 

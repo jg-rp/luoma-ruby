@@ -11,40 +11,39 @@ end
 
 class TestLexerLegacy < Minitest::Test
   def test_tokenize_empty
-    assert_equal(tokenize(""), [])
+    assert_equal([], tokenize(""))
   end
 
   def test_tokenize_just_text
-    assert_equal(tokenize("Hello, World!"), [["TEXT", "Hello, World!"]])
+    assert_equal([["TEXT", "Hello, World!"]], tokenize("Hello, World!"))
   end
 
   def test_tokenize_just_output
     assert_equal(
-      tokenize("{{ hello }}"),
       [
         ["OUT_START", "{{"],
         ["IDENT", "hello"],
         ["OUT_END", "}}"]
-      ]
+      ],
+      tokenize("{{ hello }}")
     )
   end
 
   def test_tokenize_hello_you
     assert_equal(
-      tokenize("Hello, {{ you }}!"),
       [
         ["TEXT", "Hello, "],
         ["OUT_START", "{{"],
         ["IDENT", "you"],
         ["OUT_END", "}}"],
         ["TEXT", "!"]
-      ]
+      ],
+      tokenize("Hello, {{ you }}!")
     )
   end
 
   def test_tokenize_whitespace_control
     assert_equal(
-      tokenize("Hello, {{- you -}}!"),
       [
         ["TEXT", "Hello, "],
         ["OUT_START", "{{"],
@@ -53,39 +52,39 @@ class TestLexerLegacy < Minitest::Test
         ["WC", "-"],
         ["OUT_END", "}}"],
         ["TEXT", "!"]
-      ]
+      ],
+      tokenize("Hello, {{- you -}}!")
     )
   end
 
   def test_tokenize_single_quoted_string_literal
     assert_equal(
-      tokenize("{{ 'Hello, World!' }}"),
       [
         ["OUT_START", "{{"],
         ["SINGLE_QUOTE", "'"],
         ["SINGLE_QUOTED", "Hello, World!"],
         ["SINGLE_QUOTE", "'"],
         ["OUT_END", "}}"]
-      ]
+      ],
+      tokenize("{{ 'Hello, World!' }}")
     )
   end
 
   def test_tokenize_double_quoted_string_literal
     assert_equal(
-      tokenize('{{ "Hello, World!" }}'),
       [
         ["OUT_START", "{{"],
         ["DOUBLE_QUOTE", '"'],
         ["DOUBLE_QUOTED", "Hello, World!"],
         ["DOUBLE_QUOTE", '"'],
         ["OUT_END", "}}"]
-      ]
+      ],
+      tokenize('{{ "Hello, World!" }}')
     )
   end
 
   def test_tokenize_filter
     assert_equal(
-      tokenize("{{ 42 | plus: 3 }}"),
       [
         ["OUT_START", "{{"],
         ["INT", "42"],
@@ -94,13 +93,13 @@ class TestLexerLegacy < Minitest::Test
         ["COLON", ":"],
         ["INT", "3"],
         ["OUT_END", "}}"]
-      ]
+      ],
+      tokenize("{{ 42 | plus: 3 }}")
     )
   end
 
   def test_tokenize_float_literal
     assert_equal(
-      tokenize("{{ 42.2 | plus: 3.0 }}"),
       [
         ["OUT_START", "{{"],
         ["FLOAT", "42.2"],
@@ -109,13 +108,13 @@ class TestLexerLegacy < Minitest::Test
         ["COLON", ":"],
         ["FLOAT", "3.0"],
         ["OUT_END", "}}"]
-      ]
+      ],
+      tokenize("{{ 42.2 | plus: 3.0 }}")
     )
   end
 
   def test_tokenize_range_literal
     assert_equal(
-      tokenize("{{ (1..5) | join: ', ' }}"),
       [
         ["OUT_START", "{{"],
         ["LPAREN", "("],
@@ -130,24 +129,24 @@ class TestLexerLegacy < Minitest::Test
         ["SINGLE_QUOTED", ", "],
         ["SINGLE_QUOTE", "'"],
         ["OUT_END", "}}"]
-      ]
+      ],
+      tokenize("{{ (1..5) | join: ', ' }}")
     )
   end
 
   def test_tokenize_ident_with_trailing_question_mark
     assert_equal(
-      tokenize("{{ eh? }}"),
       [
         ["OUT_START", "{{"],
         ["IDENT", "eh?"],
         ["OUT_END", "}}"]
-      ]
+      ],
+      tokenize("{{ eh? }}")
     )
   end
 
   def test_tokenize_raw
     assert_equal(
-      tokenize("Hello, {% raw %}{{ you }}{% endraw %}"),
       [
         ["TEXT", "Hello, "],
         ["TAG_START", "{%"],
@@ -157,13 +156,13 @@ class TestLexerLegacy < Minitest::Test
         ["TAG_START", "{%"],
         ["TAG_NAME", "endraw"],
         ["TAG_END", "%}"]
-      ]
+      ],
+      tokenize("Hello, {% raw %}{{ you }}{% endraw %}")
     )
   end
 
   def test_tokenize_raw_wc
     assert_equal(
-      tokenize("Hello, {%- raw -%}{{ you }}{%- endraw -%}!"),
       [
         ["TEXT", "Hello, "],
         ["TAG_START", "{%"],
@@ -178,13 +177,13 @@ class TestLexerLegacy < Minitest::Test
         ["WC", "-"],
         ["TAG_END", "%}"],
         ["TEXT", "!"]
-      ]
+      ],
+      tokenize("Hello, {%- raw -%}{{ you }}{%- endraw -%}!")
     )
   end
 
   def test_tokenize_tag
     assert_equal(
-      tokenize("{% assign x = true %}"),
       [
         ["TAG_START", "{%"],
         ["TAG_NAME", "assign"],
@@ -192,84 +191,85 @@ class TestLexerLegacy < Minitest::Test
         ["ASSIGN", "="],
         ["TRUE", "true"],
         ["TAG_END", "%}"]
-      ]
+      ],
+      tokenize("{% assign x = true %}")
     )
   end
 
   def test_tokenize_single_closing_brace
     assert_equal(
-      tokenize("{{.} "),
       [
         ["OUT_START", "{{"],
         ["DOT", "."],
         ["OUT_END", "}"],
         ["TEXT", " "]
-      ]
+      ],
+      tokenize("{{.} ")
     )
   end
 
   def test_tokenize_extra_closing_brace
     assert_equal(
-      tokenize("{{}}}"),
       [
         ["OUT_START", "{{"],
         ["OUT_END", "}}"],
         ["TEXT", "}"]
-      ]
+      ],
+      tokenize("{{}}}")
     )
   end
 
   def test_tokenize_single_closing_brace_then_closing_tag
     assert_equal(
-      tokenize("{{}%}"),
       [
         ["OUT_START", "{{"],
         ["OUT_END", "}"],
         ["TEXT", "%}"]
-      ]
+      ],
+      tokenize("{{}%}")
     )
   end
 
   def test_tokenize_close_output_with_tag_delim
     assert_equal(
-      tokenize("{{%}"),
       [
         ["OUT_START", "{{"],
         ["OUT_END", "%}"]
-      ]
+      ],
+      tokenize("{{%}")
     )
   end
 
   def test_tokenize_output_percents
     assert_equal(
-      tokenize("{{%%%}}"),
       [
         ["OUT_START", "{{"],
         ["UNKNOWN", "%"],
         ["UNKNOWN", "%"],
         ["UNKNOWN", "%"],
         ["OUT_END", "}}"]
-      ]
+      ],
+      tokenize("{{%%%}}")
     )
   end
 
   def test_tokenize_open_tag_close_output
     assert_equal(
-      tokenize("{%}}"),
       [
         ["TEXT", "{%}}"]
-      ]
+      ],
+      tokenize("{%}}")
     )
   end
 
   def test_tokenize_tag_followed_by_brace
     assert_equal(
-      tokenize("{%%}}"),
       [
         ["TAG_START", "{%"],
         ["TAG_END", "%}"],
         ["TEXT", "}"]
-      ]
+      ],
+      tokenize("{%%}}")
     )
   end
 end

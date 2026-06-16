@@ -19,11 +19,9 @@ module Luoma
     #  (String, Integer, ForLoopDrop?) -> void
     def initialize: (String name, Integer length, ForLoopDrop? parent) -> void
 
-    def key?: (String key) -> untyped
+    def key?: (String key, RenderContext context) -> untyped
 
-    def []: (String key) -> untyped
-
-    def fetch: (untyped key, ?::Symbol default) -> untyped
+    def fetch: (untyped key, Luoma::RenderContext context, ?default: untyped?) -> untyped
 
     def next: () -> untyped
 

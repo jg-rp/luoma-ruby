@@ -75,10 +75,10 @@ module Luoma
           end
 
           emit(:token_out_start)
-          accept_whitespace_control
+          accept_whitespace_control?
           accept_expression(limit)
-          skip(RE_TRIVIA)
-          accept_whitespace_control
+          skip?(RE_TRIVIA)
+          accept_whitespace_control?
           @scanner.scan(RE_OUT_END)
           emit(:token_out_end)
         when "{%"
@@ -88,7 +88,7 @@ module Luoma
 
           if limit.nil?
             # No more `%}`, but there could be `{{` and `}}`
-            if scan_until(RE_MARKUP)
+            if scan_until?(RE_MARKUP)
               emit(:token_text)
             else
               # No more markup. Emit text to end of string.
@@ -98,13 +98,13 @@ module Luoma
             end
           else
             emit(:token_tag_start)
-            accept_whitespace_control
-            skip(RE_TRIVIA)
+            accept_whitespace_control?
+            skip?(RE_TRIVIA)
             accept_tag(limit)
           end
         else
           # No more `%}`, but there could be `{{` and `}}`
-          if scan_until(RE_MARKUP)
+          if scan_until?(RE_MARKUP)
             emit(:token_text)
           else
             # No more markup. Emit text to end of string.
@@ -135,8 +135,8 @@ module Luoma
         accept_line_statements(limit)
       else
         accept_expression(limit)
-        skip(RE_TRIVIA)
-        accept_whitespace_control
+        skip?(RE_TRIVIA)
+        accept_whitespace_control?
         @scanner.scan(RE_TAG_END)
         emit(:token_tag_end)
       end
@@ -145,7 +145,7 @@ module Luoma
     #: (Integer, ?Regexp) -> void
     def accept_expression(limit, trivia = RE_TRIVIA)
       loop do
-        skip(trivia)
+        skip?(trivia)
 
         # Trivia can put us past the limit
         break if @scanner.pos >= limit
@@ -190,17 +190,17 @@ module Luoma
     def accept_inline_comment(limit)
       @scanner.pos = limit
       emit(:token_comment)
-      accept_whitespace_control
+      accept_whitespace_control?
       @scanner.scan(RE_TAG_END)
       emit(:token_tag_end)
     end
 
     #: (Integer) -> void
     def accept_block_comment(limit)
-      skip(RE_TRIVIA)
+      skip?(RE_TRIVIA)
       # Ignore any "expression".
       @scanner.pos = limit
-      accept_whitespace_control
+      accept_whitespace_control?
       @scanner.scan(RE_TAG_END)
       emit(:token_tag_end)
 
@@ -208,7 +208,7 @@ module Luoma
       raw_depth = 0
 
       loop do
-        match = skip_until(RE_COMMENT_SEGMENT)
+        match = skip_until?(RE_COMMENT_SEGMENT)
 
         unless match
           emit(:token_unknown)
@@ -250,28 +250,28 @@ module Luoma
     def accept_doc_comment(limit)
       # Let the parser handle unexpected expression tokens.
       accept_expression(limit)
-      skip(RE_TRIVIA)
-      accept_whitespace_control
+      skip?(RE_TRIVIA)
+      accept_whitespace_control?
       @scanner.scan(RE_TAG_END)
       emit(:token_tag_end)
-      emit(:token_comment) if scan_until(RE_END_DOC)
+      emit(:token_comment) if scan_until?(RE_END_DOC)
     end
 
     #: (Integer) -> void
     def accept_raw_tag(limit)
       # Let the parser handle unexpected expression tokens.
       accept_expression(limit)
-      skip(RE_TRIVIA)
-      accept_whitespace_control
+      skip?(RE_TRIVIA)
+      accept_whitespace_control?
       @scanner.scan(RE_TAG_END)
       emit(:token_tag_end)
-      emit(:token_text) if scan_until(RE_END_RAW)
+      emit(:token_text) if scan_until?(RE_END_RAW)
     end
 
     #: (Integer) -> void
     def accept_line_statements(limit)
       while @scanner.pos < limit
-        skip(RE_TRIVIA)
+        skip?(RE_TRIVIA)
         line_limit = @scanner.string.byteindex("\n", @scanner.pos) || limit
         line_limit = limit if line_limit > limit
 
@@ -306,8 +306,8 @@ module Luoma
         end
       end
 
-      skip(RE_TRIVIA)
-      accept_whitespace_control
+      skip?(RE_TRIVIA)
+      accept_whitespace_control?
       @scanner.scan(RE_TAG_END)
       emit(:token_tag_end)
     end
@@ -317,7 +317,7 @@ module Luoma
       comment_depth = 1
 
       while @scanner.pos < limit
-        unless skip_until(RE_LINE_COMMENT_SEGMENT)
+        unless skip_until?(RE_LINE_COMMENT_SEGMENT)
           emit(:token_unknown)
           break
         end
@@ -383,7 +383,7 @@ module Luoma
     end
 
     #: () -> bool
-    def accept_whitespace_control
+    def accept_whitespace_control?
       if @scanner.peek_byte == 45 # steep:ignore
         @scanner.pos += 1
         emit(:token_wc)

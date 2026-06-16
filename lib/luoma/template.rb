@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Luoma
   class Template
     attr_reader :env, :source, :nodes, :globals, :name, :overlay, :up_to_date

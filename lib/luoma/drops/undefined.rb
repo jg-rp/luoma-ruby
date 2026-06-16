@@ -15,7 +15,7 @@ module Luoma
     end
 
     #: (String, RenderContext) -> untyped
-    def fetch(name, context)
+    def fetch(name, context, default: :nothing)
       self
     end
 
@@ -31,7 +31,7 @@ module Luoma
       error
     end
 
-    def fetch(name, context)
+    def fetch(name, context, default: :nothing)
       error
     end
 

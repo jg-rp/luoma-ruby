@@ -76,6 +76,6 @@ module Luoma
     def accept_string_literal: (Integer limit) -> void
 
     #  () -> bool
-    def accept_whitespace_control: () -> bool
+    def accept_whitespace_control?: () -> bool
   end
 end

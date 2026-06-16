@@ -25,15 +25,11 @@ module Luoma
       @index = -1
     end
 
-    def key?(key)
+    def key?(key, context)
       KEYS.member?(key)
     end
 
-    def [](key)
-      send(key) if KEYS.member?(key)
-    end
-
-    def fetch(key, default = :undefined)
+    def fetch(key, context, default: :undefined)
       if KEYS.member?(key)
         send(key)
       else
@@ -46,8 +42,8 @@ module Luoma
     def index0 = @index
     def rindex = @length - @index
     def rindex0 = @length - @index - 1
-    def first = @index.zero?
-    def last = @index == @length - 1
+    def first = @index.zero? # rubocop:disable Naming/PredicateMethod
+    def last = @index == @length - 1 # rubocop:disable Naming/PredicateMethod
 
     #: (:data | :numeric | :string | :boolean, RenderContext) -> untyped
     def to_primitive(hint, context)
