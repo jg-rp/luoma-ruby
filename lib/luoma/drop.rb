@@ -14,7 +14,9 @@ module Luoma
       default
     end
 
-    def each
+    def each(&block)
+      return enum_for(:each) unless block
+
       [].to_enum # steep:ignore
     end
 

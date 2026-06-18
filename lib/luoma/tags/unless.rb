@@ -1,23 +1,23 @@
 # frozen_string_literal: true
 
 module Luoma
-  class IfTag < Markup
-    END_IF_BLOCK = Set["else", "elsif", "endif"]
-    IF_BLOCKS = Set["else", "elsif"]
+  class UnlessTag < Markup
+    END_UNLESS_BLOCK = Set["else", "elsif", "endunless"]
+    UNLESS_BLOCKS = Set["else", "elsif"]
 
     #: (t_token, String, Parser) -> Markup
     def self.parse(token, tag_name, parser)
-      blocks = [] #: Array[IfBlock | ElseBlock]
+      blocks = [] #: Array[UnlessBlock | IfBlock | ElseBlock]
       parser.expect_expression
       expression = parser.parse_expression(infix: true)
       parser.carry_whitespace_control
       parser.eat(:token_tag_end)
 
-      block = parser.parse_block(stop: END_IF_BLOCK)
-      blocks << IfBlock.new(token, "if", expression, block)
+      block = parser.parse_block(stop: END_UNLESS_BLOCK)
+      blocks << UnlessBlock.new(token, "unless", expression, block)
 
       loop do
-        case parser.tags(IF_BLOCKS)
+        case parser.tags(UNLESS_BLOCKS)
         when "elsif"
           blocks << IfBlock.parse("elsif", parser)
         when "else"
@@ -27,15 +27,15 @@ module Luoma
           blocks << ElseBlock.new(
             name_token,
             "else",
-            parser.parse_block(stop: END_IF_BLOCK)
+            parser.parse_block(stop: END_UNLESS_BLOCK)
           )
         else
           break
         end
       end
 
-      parser.eat_empty_tag("endif")
-      IfTag.new(token, tag_name, blocks)
+      parser.eat_empty_tag("endunless")
+      UnlessTag.new(token, tag_name, blocks)
     end
 
     def initialize(token, tag_name, alts)
@@ -50,7 +50,12 @@ module Luoma
     def render(context, buffer)
       index = 0
       while (alt = @alts[index])
-        if context.env.truthy?(alt.expression.evaluate(context), context)
+        if alt.is_a?(UnlessBlock)
+          unless context.env.truthy?(alt.expression.evaluate(context), context)
+            Luoma.render_block(alt.block, context, buffer)
+            break
+          end
+        elsif context.env.truthy?(alt.expression.evaluate(context), context)
           Luoma.render_block(alt.block, context, buffer)
           break
         end
@@ -64,10 +69,10 @@ module Luoma
     end
   end
 
-  class IfBlock < Markup
+  class UnlessBlock < Markup
     attr_reader :expression, :block
 
-    END_IF_BLOCK = Set["else", "elsif", "endif", "endunless"]
+    END_UNLESS_BLOCK = Set["else", "elsif", "endunless"]
 
     #: (Parser) -> Markup
     def self.parse(tag_name, parser)
@@ -78,7 +83,7 @@ module Luoma
       expression = parser.parse_expression(infix: true)
       parser.carry_whitespace_control
       parser.eat(:token_tag_end)
-      IfBlock.new(token, tag_name, expression, parser.parse_block(stop: END_IF_BLOCK))
+      UnlessBlock.new(token, tag_name, expression, parser.parse_block(stop: END_UNLESS_BLOCK))
     end
 
     def initialize(token, tag_name, expression, block)

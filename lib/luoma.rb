@@ -29,6 +29,7 @@ require_relative "luoma/filters/default"
 require_relative "luoma/filters/math"
 require_relative "luoma/filters/size"
 require_relative "luoma/filters/slice"
+require_relative "luoma/filters/sort"
 require_relative "luoma/filters/string"
 require_relative "luoma/tags/assign"
 require_relative "luoma/tags/break"
@@ -43,8 +44,10 @@ require_relative "luoma/tags/echo"
 require_relative "luoma/tags/else"
 require_relative "luoma/tags/for"
 require_relative "luoma/tags/if"
+require_relative "luoma/tags/ifchanged"
 require_relative "luoma/tags/increment"
 require_relative "luoma/tags/output"
+require_relative "luoma/tags/unless"
 
 module Luoma
   DEFAULT_ENVIRONMENT = Environment.new

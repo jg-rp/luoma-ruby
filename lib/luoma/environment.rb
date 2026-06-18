@@ -130,7 +130,9 @@ module Luoma
       @tags["break"] = BreakTag
       @tags["continue"] = ContinueTag
       @tags["if"] = IfTag
+      @tags["ifchanged"] = IfChangedTag
       @tags["increment"] = IncrementTag
+      @tags["unless"] = UnlessTag
 
       register_filter("abs", Luoma::Filters.method(:abs))
       register_filter("append", Luoma::Filters.method(:append))
@@ -176,6 +178,8 @@ module Luoma
       register_filter("rstrip", Luoma::Filters.method(:rstrip))
       register_filter("size", Luoma::Filters.method(:size))
       register_filter("slice", Luoma::Filters.method(:slice))
+      register_filter("sort", Luoma::Filters.method(:sort))
+      register_filter("sort_natural", Luoma::Filters.method(:sort_natural))
       register_filter("split", Luoma::Filters.method(:split))
       register_filter("strip_html", Luoma::Filters.method(:strip_html))
       register_filter("strip_newlines", Luoma::Filters.method(:strip_newlines))

@@ -1,0 +1,12 @@
+module Luoma
+  class IfChangedTag < Markup
+    @block: t_block
+
+    END_IFCHANGED_BLOCK: Set[String]
+
+    #  (t_token, String, Parser) -> Markup
+    def self.parse: (t_token token, String tag_name, Parser parser) -> Markup
+
+    def initialize: (t_token token, String tag_name, t_block block) -> void
+  end
+end

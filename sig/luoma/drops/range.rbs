@@ -4,7 +4,7 @@ module Luoma
 
     @stop: Integer
 
-    @range: Enumerator[Integer]
+    @range: Range[Integer]
 
     attr_reader start: Integer
 

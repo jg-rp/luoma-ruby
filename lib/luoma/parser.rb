@@ -35,7 +35,12 @@ module Luoma
 
     #: () -> void
     def carry_whitespace_control
-      kind == :token_wc ? @whitespace_control_carry = "-" : nil
+      if kind == :token_wc
+        @whitespace_control_carry = "-"
+        @pos += 1
+      else
+        @whitespace_control_carry = nil
+      end
     end
 
     #: () -> t_token

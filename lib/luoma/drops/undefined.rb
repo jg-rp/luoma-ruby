@@ -35,7 +35,7 @@ module Luoma
       error
     end
 
-    def each
+    def each(&)
       error
     end
 
