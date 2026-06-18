@@ -97,12 +97,17 @@ module Luoma
       @tag_name = tag_name
       @identifier = identifier
       @expression = expression
-      @block = block
       @offset = offset
       @limit = limit
       @reversed = reversed
 
       @blank = Luoma.blank_block?(block) && (!default || Luoma.blank_block?(default))
+
+      @block = if @blank
+                 block.grep_v(String)
+               else
+                 block
+               end
 
       @default = if blank && default
                    default.grep_v(String)
@@ -117,14 +122,21 @@ module Luoma
     def render(context, buffer)
       target = @expression.evaluate(context)
 
-      raise "TODO:" if target.is_a?(Drop)
-
-      array = slice(
-        context.env.to_a(target, context, @expression.span),
-        @offset.is_a?(Variable) && @offset.ident?("continue") ? :continue : @offset&.evaluate(context), # steep:ignore
-        @limit&.evaluate(context),
-        context
-      )
+      array = if target.is_a?(Drop)
+                lazy_slice(
+                  target,
+                  @offset.is_a?(Variable) && @offset.ident?("continue") ? :continue : @offset&.evaluate(context), # steep:ignore
+                  @limit&.evaluate(context),
+                  context
+                )
+              else
+                slice(
+                  target.is_a?(String) && target.empty? ? [] : context.env.to_a(target, context, @expression.span),
+                  @offset.is_a?(Variable) && @offset.ident?("continue") ? :continue : @offset&.evaluate(context), # steep:ignore
+                  @limit&.evaluate(context),
+                  context
+                )
+              end
 
       if array.empty? && @default
         Luoma.render_block(@default || raise, context, buffer)
@@ -147,8 +159,9 @@ module Luoma
         index = 0
         while index < length
           namespace[name] = array[index]
-          index += 1
           for_loop_drop.next
+          index += 1
+
           Luoma.render_block(@block, context, buffer)
 
           case context.interrupts.pop
@@ -188,10 +201,34 @@ module Luoma
                   context.env.nothing?(offset) ? 0 : context.env.to_i(offset, context, @offset&.span || @token)
                 end
 
-      limit_ = context.env.nothing?(limit) ? array.length : context.env.to_i(limit, context, @limit&.span || @token)
+      limit_ = if context.env.nothing?(limit)
+                 array.length
+               else
+                 context.env.to_i(limit, context, @limit&.span || @token)
+               end
 
       array_ = array.slice(offset_, limit_) || []
+      context.registers[:for][@offset_key] = offset_ + array_.length
       @reversed ? array_.reverse! : array_
+    end
+
+    #: (Drop, untyped, untyped, RenderContext) -> Array[untyped]
+    def lazy_slice(drop, offset, limit, context)
+      offset_ = if offset == :continue
+                  context.registers[:for][@offset_key]
+                else
+                  context.env.nothing?(offset) ? nil : context.env.to_i(offset, context, @offset&.span || @token)
+                end
+
+      limit_ = if context.env.nothing?(limit)
+                 drop.length(context)
+               else
+                 context.env.to_i(limit, context, @limit&.span || @token)
+               end
+
+      array = drop.slice(offset_, limit_, @reversed).to_a
+      context.registers[:for][@offset_key] = (offset_ || 0) + array.length
+      array
     end
   end
 end

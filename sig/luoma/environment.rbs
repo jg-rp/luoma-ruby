@@ -169,8 +169,8 @@ module Luoma
     #  (untyped, RenderContext, t_token) -> Array[untyped]
     def to_a: (untyped obj, RenderContext context, t_token token) -> Array[untyped]
 
-    #  (untyped, RenderContext, t_token) -> Integer
-    def to_i: (untyped obj, RenderContext context, t_token token) -> Integer
+    #  (untyped, RenderContext, t_token, ?default: Integer?) -> Integer
+    def to_i: (untyped obj, RenderContext context, t_token token, ?default: Integer?) -> Integer
 
     #  (untyped, ?default: Numeric?) -> Numeric
     def to_numeric: (untyped obj, ?default: ::Numeric) -> Numeric

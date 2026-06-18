@@ -18,6 +18,10 @@ module Luoma
       [].to_enum # steep:ignore
     end
 
+    def to_a
+      each.to_a
+    end
+
     #: (untyped, RenderContext) -> bool
     def eq?(obj, context)
       false
@@ -40,6 +44,7 @@ module Luoma
       0
     end
 
+    # TODO: pass context
     #: (Integer?, Integer?, bool?) -> Enumerable[untyped]
     def slice(offset, limit, reversed)
       self

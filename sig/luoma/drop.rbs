@@ -7,6 +7,8 @@ module Luoma
     def fetch: (untyped name, Luoma::RenderContext context, ?default: untyped?) -> untyped
 
     def each: () -> untyped
+            
+    def to_a: () -> Array[untyped]
 
     #  (untyped, RenderContext) -> bool
     def eq?: (untyped obj, Luoma::RenderContext context) -> bool

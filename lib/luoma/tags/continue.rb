@@ -17,7 +17,7 @@ module Luoma
 
     #: (RenderContext, String) -> void
     def render(context, buffer)
-      context.interrupts.push(:break)
+      context.interrupts.push(:continue)
     end
   end
 end

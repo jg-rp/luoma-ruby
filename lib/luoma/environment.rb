@@ -248,24 +248,34 @@ module Luoma
 
     #: (untyped, RenderContext, t_token) -> Array[untyped]
     def to_a(obj, context, token)
-      # TODO: drop protocol?
       if obj.is_a?(Array)
         obj
       elsif obj.is_a?(String)
         [obj]
-      elsif nothing?(obj)
-        []
       elsif obj.respond_to?(:to_a)
         obj.to_a
-      else # rubocop:disable Lint/DuplicateBranch
+      else
         []
       end
     end
 
-    #: (untyped, RenderContext, t_token) -> Integer
-    def to_i(obj, context, token)
-      # TODO: handle invalid integer
-      obj.is_a?(Integer) ? obj : Integer(obj)
+    #: (untyped, RenderContext, t_token, ?default: Integer?) -> Integer
+    def to_i(obj, context, token, default: nil)
+      return obj if obj.is_a?(Integer)
+      return obj.to_i if obj.respond_to?(:to_i) && !obj.is_a?(String)
+
+      begin
+        Integer(obj.to_s)
+      rescue ::ArgumentError
+        return default if default
+
+        raise TemplateTypeError.new(
+          "invalid integer",
+          token,
+          context.template.source,
+          context.template.name
+        )
+      end
     end
 
     #: (untyped, ?default: Numeric?) -> Numeric

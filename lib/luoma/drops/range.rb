@@ -9,7 +9,7 @@ module Luoma
       super()
       @start = start
       @stop = stop
-      @range = start < stop ? start.upto(stop) : start.downto(stop)
+      @range = start..stop
     end
 
     #: (untyped, RenderContext) -> bool
@@ -22,7 +22,7 @@ module Luoma
       case name
       when "first"
         @start
-      when "stop"
+      when "last"
         @stop
       when "size"
         @range.size
@@ -45,23 +45,26 @@ module Luoma
       @range.size
     end
 
-    #: (Integer?, Integer?, bool?) -> Enumerable[untyped]
+    #: (Integer?, Integer?, bool?) -> Enumerable[Integer]
     def slice(offset, limit, reversed)
-      return self if (@range.size || raise).zero?
+      return self if offset.nil? && limit.nil?
 
-      if offset.nil? && limit.nil?
-        return reversed ? RangeDrop.new(@stop, @start) : self
-      end
+      size = @stop - @start + 1
+      start = offset&.negative? ? size + offset : offset || 0
+      length = limit || size
 
-      start = offset.nil? ? @start : @start + offset
-      stop = limit.nil? ? @stop : [limit, @stop].min
-      RangeDrop.new(start, stop)
+      return RangeDrop.new(1, 0) if start.negative? || start >= size || length.negative?
+      return RangeDrop.new(1, 0) if length.zero?
+
+      stop = [start + length - 1, size - 1].min
+      range = RangeDrop.new(@start + start, @start + stop)
+      reversed ? range.to_a.reverse! : range
     end
 
     def to_primitive(hint, context)
       case hint
       when :data
-        @range.to_a
+        to_a
       when :string
         to_s
       when :boolean

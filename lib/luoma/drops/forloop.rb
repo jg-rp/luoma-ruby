@@ -21,7 +21,7 @@ module Luoma
       super()
       @name = name
       @length = length
-      @parent = parent
+      @parentloop = parent
       @index = -1
     end
 

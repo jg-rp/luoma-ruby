@@ -48,5 +48,8 @@ module Luoma
 
     #: (Array[untyped], untyped, untyped, RenderContext) -> Array[untyped]
     def slice: (Array[untyped] array, untyped offset, untyped limit, RenderContext context) -> Array[untyped]
+             
+    #  (Drop, untyped, untyped, RenderContext) -> Array[untyped]
+    def lazy_slice: (Drop drop, untyped offset, untyped limit, RenderContext context) -> Array[untyped]
   end
 end
