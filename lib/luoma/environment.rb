@@ -132,6 +132,9 @@ module Luoma
       @tags["if"] = IfTag
       @tags["ifchanged"] = IfChangedTag
       @tags["increment"] = IncrementTag
+      @tags["include"] = IncludeTag
+      @tags["#"] = InlineCommentTag
+      @tags["liquid"] = LiquidTag
       @tags["unless"] = UnlessTag
 
       register_filter("abs", Luoma::Filters.method(:abs))

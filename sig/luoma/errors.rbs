@@ -47,6 +47,9 @@ module Luoma
   class TemplateNotFoundError < LuomaError
   end
 
+  class NoSuchTemplateError < DetailedLuomaError
+  end
+
   class TemplateSyntaxError < DetailedLuomaError
   end
 

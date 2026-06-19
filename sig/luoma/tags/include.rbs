@@ -1,0 +1,17 @@
+module Luoma
+  class IncludeTag < Markup
+    @template_name: Expression
+
+    @bind_expression: Expression?
+
+    @bind_name: Name?
+
+    @args: Array[KeywordArgument]
+
+    #  (t_token, String, Parser) -> Markup
+    def self.parse: (t_token token, String tag_name, Parser parser) -> Markup
+
+    #  (t_token, String, Expression, Expression?, Name?, Array[KeywordArgument]) -> void
+    def initialize: (t_token token, String tag_name, Expression template_name, Expression? expression, Name? bind, Array[KeywordArgument] args) -> void
+  end
+end

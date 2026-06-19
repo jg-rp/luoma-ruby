@@ -2,6 +2,8 @@ module Luoma
   class CommentTag < Markup
     @text: String
 
+    attr_reader text: String
+
     #  (t_token, String, Parser) -> Markup
     def self.parse: (t_token token, String tag_name, Parser parser) -> Markup
 

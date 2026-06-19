@@ -66,6 +66,7 @@ module Luoma
   class ResourceLimitError < LuomaError; end
   class ContextDepthError < ResourceLimitError; end
   class TemplateNotFoundError < LuomaError; end
+  class NoSuchTemplateError < DetailedLuomaError; end
   class TemplateSyntaxError < DetailedLuomaError; end
   class TemplateTypeError < DetailedLuomaError; end
   class UndefinedVariableError < DetailedLuomaError; end

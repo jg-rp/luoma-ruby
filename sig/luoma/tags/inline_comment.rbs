@@ -1,6 +1,8 @@
 module Luoma
-  class DocTag < Markup
+  class InlineCommentTag < Markup
     @text: String
+
+    RE_LEADING_HASH: ::Regexp
 
     attr_reader text: String
 
@@ -9,6 +11,5 @@ module Luoma
 
     #  (t_token, String, String) -> void
     def initialize: (t_token token, String tag_name, String text) -> void
-
   end
 end

@@ -2,6 +2,8 @@
 
 module Luoma
   class DocTag < Markup
+    attr_reader :text
+
     #: (t_token, String, Parser) -> Markup
     def self.parse(token, tag_name, parser)
       parser.carry_whitespace_control

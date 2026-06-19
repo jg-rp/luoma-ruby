@@ -1,0 +1,3 @@
+module Luoma
+  def self.fnv1a32: (String s) -> Integer
+end
