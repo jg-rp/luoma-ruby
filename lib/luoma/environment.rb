@@ -135,6 +135,7 @@ module Luoma
       @tags["include"] = IncludeTag
       @tags["#"] = InlineCommentTag
       @tags["liquid"] = LiquidTag
+      @tags["raw"] = RawTag
       @tags["unless"] = UnlessTag
 
       register_filter("abs", Luoma::Filters.method(:abs))
