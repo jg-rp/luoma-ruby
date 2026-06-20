@@ -100,7 +100,7 @@ module Luoma
       scope = @args.map(&:name)
       scope << (@bind_name || Name.new(@template_name.token, name)) if @bind_expression
 
-      Partial.new(template, :shared, scope, Luoma.fnv1a32("#{name}-#{scope.map(&:value).join}"))
+      Partial.new(template, :shared, scope, Luoma.fnv1a32("#{name}-#{scope.map(&:value).join(":")}"))
     end
   end
 end

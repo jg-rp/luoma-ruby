@@ -52,6 +52,7 @@ require_relative "luoma/tags/inline_comment"
 require_relative "luoma/tags/liquid"
 require_relative "luoma/tags/output"
 require_relative "luoma/tags/raw"
+require_relative "luoma/tags/render"
 require_relative "luoma/tags/unless"
 
 module Luoma
