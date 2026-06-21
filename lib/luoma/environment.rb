@@ -137,6 +137,7 @@ module Luoma
       @tags["liquid"] = LiquidTag
       @tags["raw"] = RawTag
       @tags["render"] = RenderTag
+      @tags["tablerow"] = TableRowTag
       @tags["unless"] = UnlessTag
 
       register_filter("abs", Luoma::Filters.method(:abs))
@@ -197,6 +198,7 @@ module Luoma
       register_filter("upcase", Luoma::Filters.method(:upcase))
       register_filter("url_decode", Luoma::Filters.method(:url_decode))
       register_filter("url_encode", Luoma::Filters.method(:url_encode))
+      register_filter("where", Luoma::Filters.method(:where))
     end
 
     #: (untyped, untyped, RenderContext, t_token) -> bool

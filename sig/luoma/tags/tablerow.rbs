@@ -1,0 +1,34 @@
+module Luoma
+  class TableRowTag < Markup
+    @identifier: Name
+
+    @expression: Expression
+
+    @block: t_block
+
+    @cols: Expression?
+
+    @offset: Expression?
+
+    @limit: Expression?
+
+    END_TABLEROW_BLOCK: Set[String]
+
+    #  (t_token, String, Parser) -> Markup
+    def self.parse: (t_token token, String tag_name, Parser parser) -> Markup
+
+    #  (Array[Expression|KeywordArgument], Parser) -> [Expression?, Expression?, Expression?]
+    def self.unpack_args: (Array[KeywordArgument] args, Parser parser) -> [Expression?, Expression?, Expression?]
+
+    #  (t_token,
+    #   String,
+    #   Name,
+    #   Expression,
+    #   t_block,
+    #   Expression?,
+    #   Expression?,
+    #   Expression?,
+    #  ) -> void
+    def initialize: (t_token token, String tag_name, Name identifier, Expression expression, t_block block, Expression? cols, Expression? offset, Expression? limit) -> void
+  end
+end

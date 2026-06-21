@@ -1,0 +1,48 @@
+module Luoma
+  class TableRowLoopDrop < Drop
+    @length: Integer
+
+    @cols: Integer
+
+    @col: Integer
+
+    @row: Integer
+
+    @index: Integer
+
+    attr_reader length: Integer
+
+    attr_reader col: Integer
+
+    attr_reader row: Integer
+
+    KEYS: Set[String]
+
+    #  (Integer, Integer) -> void
+    def initialize: (Integer length, Integer cols) -> void
+
+    def key?: (untyped key, RenderContext context) -> untyped
+
+    def fetch: (untyped key, RenderContext context, ?default: ::Symbol) -> untyped
+
+    def col_first: () -> bool
+
+    def col_last: () -> bool
+
+    def col0: () -> Integer
+
+    def index: () -> Integer
+
+    def index0: () -> Integer
+
+    def rindex: () -> Integer
+
+    def rindex0: () -> Integer
+
+    def first: () -> bool
+
+    def last: () -> bool
+
+    def next: () -> void
+  end
+end
