@@ -34,6 +34,11 @@ module Luoma
       false
     end
 
+    #: (untyped, RenderContext) -> bool
+    def gt?(obj, context)
+      false
+    end
+
     #: (obj, RenderContext) -> bool
     def contains?(obj, context)
       false

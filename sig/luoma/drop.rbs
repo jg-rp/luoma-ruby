@@ -17,6 +17,9 @@ module Luoma
 
     #  (untyped, RenderContext) -> bool
     def lt?: (untyped obj, Luoma::RenderContext context) -> bool
+
+    #  (untyped, RenderContext) -> bool
+    def gt?: (untyped obj, Luoma::RenderContext context) -> bool
            
     #  (untyped, RenderContext) -> bool
     def contains?: (untyped obj, Luoma::RenderContext context) -> bool

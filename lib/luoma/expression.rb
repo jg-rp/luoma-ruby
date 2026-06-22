@@ -497,8 +497,8 @@ module Luoma
 
     #: (RenderContext) -> untyped
     def evaluate(context)
-      start = context.env.to_i(@start.evaluate(context), context, @span)
-      stop = context.env.to_i(@stop.evaluate(context), context, @span)
+      start = context.env.to_i(@start.evaluate(context), context, @span, default: 0)
+      stop = context.env.to_i(@stop.evaluate(context), context, @span, default: 0)
       RangeDrop.new(start, stop)
     end
 

@@ -195,7 +195,7 @@ module Luoma
 
       if PATH_PUNCTUATION.include?(kind)
         raise TemplateSyntaxError.new(
-          "expected and identifier, found a path",
+          "expected an identifier, found a path",
           token,
           @source,
           @template_name
@@ -427,7 +427,7 @@ module Luoma
     #: () -> Expression
     def parse_true_literal
       token = self.next
-      if PATH_PUNCTUATION.include?(token.first)
+      if PATH_PUNCTUATION.include?(kind)
         @pos -= 1
         parse_path
       else
@@ -438,7 +438,7 @@ module Luoma
     #: () -> Expression
     def parse_false_literal
       token = self.next
-      if PATH_PUNCTUATION.include?(token.first)
+      if PATH_PUNCTUATION.include?(kind)
         @pos -= 1
         parse_path
       else
@@ -449,7 +449,7 @@ module Luoma
     #: () -> Expression
     def parse_null_literal
       token = self.next
-      if PATH_PUNCTUATION.include?(token.first)
+      if PATH_PUNCTUATION.include?(kind)
         @pos -= 1
         parse_path
       else
@@ -472,7 +472,7 @@ module Luoma
     #: () -> Expression
     def parse_blank
       token = self.next
-      if PATH_PUNCTUATION.include?(token.first)
+      if PATH_PUNCTUATION.include?(kind)
         @pos -= 1
         parse_path
       else
@@ -483,7 +483,7 @@ module Luoma
     #: () -> Expression
     def parse_empty
       token = self.next
-      if PATH_PUNCTUATION.include?(token.first)
+      if PATH_PUNCTUATION.include?(kind)
         @pos -= 1
         parse_path
       else

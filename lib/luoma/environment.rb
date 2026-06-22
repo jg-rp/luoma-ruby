@@ -172,6 +172,7 @@ module Luoma
       register_filter("newline_to_br", Luoma::Filters.method(:newline_to_br))
       register_filter("plus", Luoma::Filters.method(:plus))
       register_filter("prepend", Luoma::Filters.method(:prepend_))
+      register_filter("squish", Luoma::Filters.method(:squish))
       register_filter("reject", Luoma::Filters.method(:reject))
       register_filter("remove_first", Luoma::Filters.method(:remove_first))
       register_filter("remove_last", Luoma::Filters.method(:remove_last))
@@ -225,6 +226,7 @@ module Luoma
     #: (untyped, untyped, RenderContext, t_token) -> bool
     def lt?(left, right, context, token)
       return left.lt?(right, context) if left.is_a?(Drop)
+      return right.gt?(left, context) if right.is_a?(Drop)
 
       left < right
     rescue ArgumentError => e
@@ -270,6 +272,8 @@ module Luoma
       end
     end
 
+    # Try to coerce `obj` to an integer using `#to_i` with a fallback to
+    # `Integer(obj.to_s)` if `obj` does not respond to `to_i`.
     #: (untyped, RenderContext, t_token, ?default: Integer?) -> Integer
     def to_i(obj, context, token, default: nil)
       return obj if obj.is_a?(Integer)
@@ -280,6 +284,24 @@ module Luoma
       rescue ::ArgumentError
         return default if default
 
+        raise TemplateTypeError.new(
+          "invalid integer",
+          token,
+          context.template.source,
+          context.template.name
+        )
+      end
+    end
+
+    # Try to coerce `obj` to an integer using `Integer()`.
+    # Raise a type error if `obj` can't be coerced to an integer.
+    #: (untyped, RenderContext, t_token) -> Integer
+    def to_integer(obj, context, token)
+      return obj if obj.is_a?(Integer)
+
+      begin
+        Integer(obj.to_s)
+      rescue ::ArgumentError
         raise TemplateTypeError.new(
           "invalid integer",
           token,

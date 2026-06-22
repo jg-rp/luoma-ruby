@@ -97,5 +97,7 @@ module Luoma
     def self.base64_url_safe_encode: (FilterContext context, untyped left) -> untyped
 
     def self.base64_url_safe_decode: (FilterContext context, untyped left) -> untyped
+
+    def self.squish: (FilterContext context, untyped left) -> untyped
   end
 end

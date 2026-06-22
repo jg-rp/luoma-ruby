@@ -39,6 +39,11 @@ module Luoma
       @env.to_i(obj, @render_context, @token)
     end
 
+    #: (untyped) -> Integer
+    def to_integer(obj)
+      @env.to_integer(obj, @render_context, @token)
+    end
+
     #: (untyped) -> String
     def to_string(obj)
       @env.to_string(obj, @render_context, @token)

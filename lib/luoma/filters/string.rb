@@ -197,5 +197,9 @@ module Luoma
       decoded = Base64.urlsafe_decode64(context.to_string(left)).force_encoding(Encoding::UTF_8)
       decoded if decoded.valid_encoding?
     end
+
+    def self.squish(context, left)
+      context.to_string(left).strip.gsub(/\s+/, " ") unless left.nil?
+    end
   end
 end

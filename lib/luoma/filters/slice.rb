@@ -8,9 +8,9 @@ module Luoma
       length = 1 if context.nothing?(length)
 
       if left.is_a?(Array)
-        left.slice(context.to_i(start), context.to_i(length)) || []
+        left.slice(context.to_integer(start), context.to_integer(length)) || []
       else
-        context.to_string(left).slice(context.to_i(start), context.to_i(length)) || ""
+        context.to_string(left).slice(context.to_integer(start), context.to_integer(length)) || ""
       end
     end
   end

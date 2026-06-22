@@ -20,7 +20,7 @@ module Luoma
       when :string, :data
         ""
       when :boolean
-        false
+        true
       end
     end
   end
