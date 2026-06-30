@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module Luoma
+  # A Shopify/liquid v5.12.0 (strict mode) parser that consumes tokens from
+  # the legacy lexer.
   class LegacyParser < Parser
     class Precedence
       LOWEST = 1

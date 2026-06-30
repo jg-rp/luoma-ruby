@@ -1,0 +1,49 @@
+module Luoma
+  class UnifiedLexer < BaseLexer
+    RE_FLOAT: ::Regexp
+
+    RE_HASHES: ::Regexp
+
+    RE_INT: ::Regexp
+
+    RE_MARKUP_START: ::Regexp
+
+    RE_OUTPUT_END: ::Regexp
+
+    RE_PUNCTUATION: ::Regexp
+
+    RE_RAW_END: ::Regexp
+
+    RE_TAG_END: ::Regexp
+
+    RE_TAG_NAME: ::Regexp
+
+    RE_TRIVIA: ::Regexp
+
+    RE_WHITESPACE_CONTROL: ::Regexp
+
+    RE_WORD: ::Regexp
+
+    # Keywords and symbols that get their own token kind.
+    TOKEN_MAP: Hash[String, t_token_kind]
+
+
+    #  () -> void?
+    def accept_tag: () -> void
+                         
+    #  () -> void
+    def accept_expression: () -> void
+                         
+    #  () -> void
+    def accept_comment: () -> void
+                         
+    #  () -> void
+    def accept_string: () -> void
+                         
+    #  () -> void
+    def accept_object: () -> void
+
+    #  () -> bool
+    def accept_whitespace_control?: () -> bool
+  end
+end

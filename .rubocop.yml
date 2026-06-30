@@ -54,9 +54,11 @@ Style/Documentation:
 Style/RaiseArgs:
   Enabled: false
 
+Style/RegexpLiteral:
+  Enabled: false
+
 Lint/UnusedMethodArgument:
   Enabled: false
 
 Naming/MethodParameterName:
   AllowedNames: [op, re, e, s]
-  

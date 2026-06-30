@@ -124,20 +124,14 @@ module Luoma
       @tags["comment"] = CommentTag
       @tags["cycle"] = CycleTag
       @tags["decrement"] = DecrementTag
-      @tags["doc"] = DocTag
-      @tags["echo"] = EchoTag
       @tags["for"] = ForTag
       @tags["break"] = BreakTag
       @tags["continue"] = ContinueTag
       @tags["if"] = IfTag
-      @tags["ifchanged"] = IfChangedTag
       @tags["increment"] = IncrementTag
       @tags["include"] = IncludeTag
-      @tags["#"] = InlineCommentTag
-      @tags["liquid"] = LiquidTag
       @tags["raw"] = RawTag
       @tags["render"] = RenderTag
-      @tags["tablerow"] = TableRowTag
       @tags["unless"] = UnlessTag
 
       register_filter("abs", Luoma::Filters.method(:abs))

@@ -1,6 +1,0 @@
-module Luoma
-  BLANK: BlankDrop
-
-  class BlankDrop < Drop
-  end
-end
