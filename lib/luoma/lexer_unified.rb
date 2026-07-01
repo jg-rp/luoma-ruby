@@ -19,6 +19,16 @@ module Luoma
     RE_WHITESPACE_CONTROL = /[+\-~]/
     RE_WORD = /[\u0080-\uFFFFa-zA-Z_][\u0080-\uFFFFa-zA-Z0-9_-]*/
 
+    RE_HASH_COUNT = {
+      1 => /[+\-~]?\#\}/,
+      2 => /[+\-~]?\#{2}\}/,
+      3 => /[+\-~]?\#{3}\}/,
+      4 => /[+\-~]?\#{4}\}/,
+      5 => /[+\-~]?\#{5}\}/,
+      6 => /[+\-~]?\#{6}\}/,
+      7 => /[+\-~]?\#{7}\}/
+    }.freeze #: Hash[Integer, Regexp]
+
     # Keywords and symbols that get their own token kind.
     TOKEN_MAP = {
       "true" => :token_true,
@@ -101,7 +111,8 @@ module Luoma
         skip?(RE_TRIVIA)
         accept_whitespace_control?
         emit(:token_tag_end) if @scanner.scan(RE_TAG_END)
-        emit(:token_text) if scan_until?(RE_RAW_END)
+        scan_until?(RE_RAW_END)
+        emit(:token_text) if @start < @scanner.pos
       when nil
         # Missing or malformed tag name
         accept_expression
@@ -131,18 +142,17 @@ module Luoma
         elsif @scanner.scan(RE_INT)
           emit(:token_int)
         else
-          next_byte = @scanner.peek_byte # steep:ignore
-
-          if next_byte == 39 || next_byte == 34
+          case @scanner.peek_byte # steep:ignore
+          when 39, 34 # ' or "
             accept_string
-          elsif next_byte == 125
+          when 123 # {
             # Object literals require their own state so we can tell the
             # difference between a closing brace and the start of a closing
             # output delimiter.
             accept_object
           else
-            @scanner.pos += 1
-            emit(:token_unknown)
+            # Non-expression byte or end of input.
+            break
           end
         end
       end
@@ -150,23 +160,110 @@ module Luoma
 
     #: () -> void
     def accept_comment
-      raise "TODO:"
+      start_of_delim = @start
+      hash_count = 1
+      hash_count = (@source.byteslice(@start, @scanner.pos - 1) || raise).size if @scanner.scan(RE_HASHES)
+      re = RE_HASH_COUNT[hash_count]
+
+      emit(:token_comment_start)
+      wc = accept_whitespace_control?
+
+      if re && scan_until?(re)
+        emit(:token_comment)
+        accept_whitespace_control?
+        @scanner.scan(re)
+        emit(:token_comment_end)
+      else
+        # No closing delimiter. Not a comment.
+        @tokens.pop
+        @tokens.pop if wc
+        @start = start_of_delim
+        emit(:token_text)
+      end
     end
 
     #: () -> void
     def accept_string
-      raise "TODO:"
+      quote = @scanner.get_byte || raise
+      byte = quote.ord
+      double = byte == 34 # "
+
+      quote_kind = double ? :token_double_quote : :token_single_quote #: t_token_kind
+      unescaped_kind = double ? :token_double_quoted : :token_single_quoted #: t_token_kind
+      escaped_kind = double ? :token_double_escaped : :token_single_escaped #: t_token_kind
+      current_kind = unescaped_kind #: t_token_kind
+
+      emit(quote_kind)
+
+      if @scanner.peek_byte == byte # steep:ignore
+        @scanner.pos += 1
+        emit(quote_kind)
+        return
+      end
+
+      loop do
+        case @scanner.get_byte&.ord
+        when byte
+          @scanner.pos -= 1
+          emit(current_kind) if @start < @scanner.pos
+          @scanner.pos += 1
+          emit(quote_kind)
+          break
+        when 92 # \
+          @scanner.pos -= 1
+          # Emit unescaped segment, if any.
+          emit(current_kind) if current_kind == unescaped_kind && @start < @scanner.pos
+          @scanner.pos += 2
+          current_kind = escaped_kind
+        when 36 # $
+          next unless @scanner.peek_byte == 123 # steep:ignore
+
+          @scanner.pos -= 1
+          emit(current_kind) if @start < @scanner.pos
+
+          current_kind = unescaped_kind
+          @scanner.pos += 2
+          emit(:token_interpolation_start)
+
+          accept_expression
+
+          if @scanner.peek_byte == 125 # steep:ignore
+            @scanner.pos += 1
+            emit(:token_interpolation_end)
+          else
+            # unclosed interpolation. Let the parser handle it.
+            break
+          end
+        when nil
+          # Unclosed string literal. Let the parser handle it.
+          break
+        end
+      end
     end
 
     #: () -> void
     def accept_object
-      raise "TODO:"
+      @scanner.pos += 1
+      emit(:token_lbrace)
+
+      loop do
+        case @scanner.peek_byte # steep:ignore
+        when 125 # }
+          @scanner.pos += 1
+          emit(:token_rbrace)
+          break
+        when nil
+          # Unclosed object literal.
+          break
+        else
+          accept_expression
+        end
+      end
     end
 
     #: () -> bool
     def accept_whitespace_control?
-      if @scanner.peek_byte == 45 # steep:ignore
-        @scanner.pos += 1
+      if @scanner.scan(RE_WHITESPACE_CONTROL)
         emit(:token_wc)
         true
       else

@@ -24,6 +24,8 @@ module Luoma
 
     RE_WORD: ::Regexp
 
+    RE_HASH_COUNT: Hash[Integer, Regexp]
+
     # Keywords and symbols that get their own token kind.
     TOKEN_MAP: Hash[String, t_token_kind]
 

@@ -16,7 +16,7 @@ module Luoma
       auto_escape: nil,
       auto_trim: nil,
       globals: nil,
-      lexer: LegacyLexer,
+      lexer: UnifiedLexer,
       loader: nil,
       max_assign_score_cumulative: nil,
       max_assign_score: nil,
@@ -24,7 +24,7 @@ module Luoma
       max_render_score_cumulative: nil,
       max_render_score: nil,
       max_render_size: nil,
-      parser: LegacyParser,
+      parser: UnifiedParser,
       strict_filters: true,
       suppress_blank_control_flow_blocks: true,
       undefined: UndefinedDrop
