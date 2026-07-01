@@ -181,7 +181,7 @@ module Luoma
     # Cast `obj` to a number, favouring BigDecimal over Float.
     # Returns `default` if `obj` can't be cast to a numeric value.
     #  (untyped, ?default: Numeric?) -> Numeric
-    def to_decimal: (untyped obj, ?default: ::Numeric) -> Numeric
+    def to_decimal: [X] (untyped obj, ?default: X) -> (Numeric | X)
 
     #  (untyped) -> Enumerable
     def to_enumerable: (untyped obj) -> Enumerable[untyped]

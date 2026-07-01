@@ -3,7 +3,9 @@
 require_relative "lexer"
 
 module Luoma
-  # A single-pass template tokenizer for the Unified Expression Language.
+  # A single-pass template tokenizer for the Unified Expression Language with
+  # new style comments and no line statements.
+  #
   # https://jg-rp.github.io/template-expression-spec/
   class UnifiedLexer < BaseLexer
     RE_FLOAT = /((?:\d+\.\d+(?:[eE][+-]?\d+)?)|(\d+[eE]-\d+))/
@@ -144,6 +146,8 @@ module Luoma
         else
           case @scanner.peek_byte # steep:ignore
           when 39, 34 # ' or "
+            # String literals get their own state because we allow markup
+            # delimiters inside quotes.
             accept_string
           when 123 # {
             # Object literals require their own state so we can tell the

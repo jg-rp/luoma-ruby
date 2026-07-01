@@ -234,12 +234,12 @@ module Luoma
 
     #: (untyped) -> bool
     def nothing?(obj)
-      obj.nil? || obj == :nothing || obj.is_a?(UndefinedDrop)
+      obj == :nothing || obj.is_a?(UndefinedDrop)
     end
 
     #: (untyped, RenderContext) -> bool
     def truthy?(obj, context)
-      obj.is_a?(Drop) ? obj.to_primitive(:boolean, context) : !!obj
+      obj.is_a?(Drop) ? obj.to_primitive(:boolean, context) : obj == :nothing || !!obj
     end
 
     #: (untyped, RenderContext, t_token) -> String

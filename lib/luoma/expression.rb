@@ -20,12 +20,70 @@ module Luoma
 
     #: (RenderContext) -> Array[_Traversable]
     def children(context)
+      # TODO: remove `context`, add tree view
       raise "not implemented"
     end
 
     #: () -> String
     def to_s
       raise "not implemented"
+    end
+  end
+
+  class GroupExpression < Expression
+    #: (t_token, Expression, Array[t_path_segment]) -> void
+    def initialize(token, expr, segments)
+      super(token)
+      @expr = expr
+      @segments = segments
+
+      @span = if segments.empty?
+                Luoma.span(token, expr.span)
+              else
+                Luoma.span(token, segments.last.token)
+              end
+    end
+
+    #: (RenderContext) -> untyped
+    def evaluate(context)
+      obj = @expr.evaluate(context)
+      obj = context.resolve_path(obj, @segments.map { |s| s.evaluate(context) }) unless @segments.empty?
+      obj
+    end
+
+    #: (RenderContext) -> Array[_Traversable]
+    def children(context)
+      [@expr, *@segments.grep(Variable)]
+    end
+
+    def with(token)
+      @span = Luoma.span(@token, token)
+      self
+    end
+  end
+
+  class TernaryExpression < Expression
+    #: (t_token, Expression, Expression, Expression?) -> void
+    def initialize(token, consequence, condition, alternative)
+      super(token)
+      @consequence = consequence
+      @condition = condition
+      @alternative = alternative
+      @span = Luoma.span(@consequence.token, (@alternative || @condition).span)
+    end
+
+    #: (RenderContext) -> untyped
+    def evaluate(context)
+      if context.env.truthy?(@condition.evaluate(context), context)
+        @consequence.evaluate(context)
+      else
+        @alternative&.evaluate(context) || :nothing
+      end
+    end
+
+    #: (RenderContext) -> Array[_Traversable]
+    def children(context)
+      [@consequence, @condition, @alternative].compact
     end
   end
 
@@ -103,6 +161,19 @@ module Luoma
     #: (RenderContext) -> Array[_Traversable]
     def children(context)
       [@left, @right]
+    end
+  end
+
+  class CoalesceExpression < InfixExpression
+    #: (RenderContext) -> untyped
+    def evaluate(context)
+      left = @left.evaluate(context)
+      context.env.nothing?(left) ? @right.evaluate(context) : left
+    end
+
+    #: () -> String
+    def to_s
+      "#{@left} orElse #{@right}"
     end
   end
 
@@ -232,6 +303,76 @@ module Luoma
     end
   end
 
+  class AddExpression < InfixExpression
+    #: (RenderContext) -> untyped
+    def evaluate(context)
+      left = context.env.to_decimal(@left.evaluate(context), default: :nothing)
+      right = context.env.to_decimal(@right.evaluate(context), default: :nothing)
+      left == :nothing || right == :nothing ? :nothing : left + right # steep:ignore
+    end
+
+    #: () -> String
+    def to_s
+      "#{@left} + #{@right}"
+    end
+  end
+
+  class SubExpression < InfixExpression
+    #: (RenderContext) -> untyped
+    def evaluate(context)
+      left = context.env.to_decimal(@left.evaluate(context), default: :nothing)
+      right = context.env.to_decimal(@right.evaluate(context), default: :nothing)
+      left == :nothing || right == :nothing ? :nothing : left - right # steep:ignore
+    end
+
+    #: () -> String
+    def to_s
+      "#{@left} - #{@right}"
+    end
+  end
+
+  class MulExpression < InfixExpression
+    #: (RenderContext) -> untyped
+    def evaluate(context)
+      left = context.env.to_decimal(@left.evaluate(context), default: :nothing)
+      right = context.env.to_decimal(@right.evaluate(context), default: :nothing)
+      left == :nothing || right == :nothing ? :nothing : left * right # steep:ignore
+    end
+
+    #: () -> String
+    def to_s
+      "#{@left} * #{@right}"
+    end
+  end
+
+  class DivExpression < InfixExpression
+    #: (RenderContext) -> untyped
+    def evaluate(context)
+      left = context.env.to_decimal(@left.evaluate(context), default: :nothing)
+      right = context.env.to_decimal(@right.evaluate(context), default: :nothing)
+      left == :nothing || right == :nothing || right.zero? ? :nothing : left / right # steep:ignore
+    end
+
+    #: () -> String
+    def to_s
+      "#{@left} / #{@right}"
+    end
+  end
+
+  class ModExpression < InfixExpression
+    #: (RenderContext) -> untyped
+    def evaluate(context)
+      left = context.env.to_decimal(@left.evaluate(context), default: :nothing)
+      right = context.env.to_decimal(@right.evaluate(context), default: :nothing)
+      left == :nothing || right == :nothing || right.zero? ? :nothing : left % right # steep:ignore
+    end
+
+    #: () -> String
+    def to_s
+      "#{@left} % #{@right}"
+    end
+  end
+
   class Variable < Expression
     attr_reader :root, :segments
 
@@ -329,29 +470,58 @@ module Luoma
     end
   end
 
-  class StringLiteral < Expression
-    attr_reader :value
-
-    #: (t_token, Integer, t_token)
-    def initialize(token, value, end_token)
+  class Lambda < Expression
+    #: (t_token, Array[Name], Expression) -> void
+    def initialize(token, params, expr)
       super(token)
-      @value = value
+      @params = params
+      @expr = expr
+      @span = Luoma.span(token, expr.span)
+    end
+
+    #: (RenderContext) -> untyped
+    def evaluate(context)
+      LambdaDrop.new(@params.map(&:value), @expr, context)
+    end
+
+    #: (RenderContext) -> Array[_Traversable]
+    def children(context)
+      [@expr]
+    end
+
+    #: () -> String
+    def to_s
+      "(#{@params.join(", ")}) => #{@expr}"
+    end
+  end
+
+  class StringLiteral < Expression
+    attr_reader :segments
+
+    #: (t_token, Array[String|Expression], t_token)
+    def initialize(token, segments, end_token)
+      super(token)
+      @segments = segments
       @span = Luoma.span(token, end_token)
     end
 
     #: (RenderContext) -> untyped
     def evaluate(context)
-      context.env.auto_escape ? HTMLSafeDrop.from(@value) : @value
+      result = @segments.map do |s|
+        s.is_a?(String) ? s : context.env.to_string(s.evaluate(context), context, s.span)
+      end.join
+
+      context.env.auto_escape ? HTMLSafeDrop.from(result) : result
     end
 
     #: (RenderContext) -> Array[_Traversable]
     def children(context)
-      []
+      @segments.grep_v(String) #: Array[Expression]
     end
 
     #: () -> String
     def to_s
-      @token.first == :token_double_quoted ? "\"#{@value}\"" : "'#{@value}'"
+      @segments.map { |s| s.is_a?(String) ? s : "${#{s}}" }.join
     end
 
     def with(token)
@@ -452,40 +622,6 @@ module Luoma
     end
   end
 
-  class Blank < Expression
-    #: (RenderContext) -> untyped
-    def evaluate(context)
-      Luoma::BLANK
-    end
-
-    #: (RenderContext) -> Array[_Traversable]
-    def children(context)
-      []
-    end
-
-    #: () -> String
-    def to_s
-      ""
-    end
-  end
-
-  class Empty < Expression
-    #: (RenderContext) -> untyped
-    def evaluate(context)
-      Luoma::EMPTY
-    end
-
-    #: (RenderContext) -> Array[_Traversable]
-    def children(context)
-      []
-    end
-
-    #: () -> String
-    def to_s
-      ""
-    end
-  end
-
   class RangeLiteral < Expression
     #: (t_token, Expression, Expression) -> void
     def initialize(token, start, stop)
@@ -512,6 +648,12 @@ module Luoma
       "(#{@start}..#{@stop})"
     end
   end
+
+  # TODO: ArrayLiteral
+  # TODO: ObjectLiteral
+  # TODO: Predicate
+  # TODO: Spread
+  # TODO: Item
 
   class Name
     attr_reader :token, :span, :value

@@ -26,6 +26,28 @@ module Luoma
     def to_s: () -> String
   end
 
+  class GroupExpression < Expression
+    @expr: Expression
+
+    @segments: Array[t_path_segment]
+
+    #  (t_token, Expression, Array[t_path_segment]) -> void
+    def initialize: (t_token token, Expression expr, Array[t_path_segment] segments) -> void
+
+    def with: (t_token token) -> self
+  end
+
+  class TernaryExpression < Expression
+    @consequence: Expression
+
+    @condition: Expression
+
+    @alternative: Expression?
+
+    #  (t_token, Expression, Expression, Expression?) -> void
+    def initialize: (t_token token, Expression consequence, Expression condition, Expression? alternative) -> void
+  end
+
   class FilteredExpression < Expression
     @left: Expression
 
@@ -45,6 +67,14 @@ module Luoma
 
     #  (t_token, Expression, Expression) -> void
     def initialize: (t_token token, Expression left, Expression right) -> void
+  end
+
+  class CoalesceExpression < InfixExpression
+    #  (RenderContext) -> untyped
+    def evaluate: (RenderContext context) -> untyped
+
+    #  () -> String
+    def to_s: () -> ::String
   end
 
   class OrExpression < InfixExpression
@@ -127,6 +157,21 @@ module Luoma
     def to_s: () -> ::String
   end
 
+  class AddExpression < InfixExpression
+  end
+
+  class SubExpression < InfixExpression
+  end
+
+  class MulExpression < InfixExpression
+  end
+
+  class DivExpression < InfixExpression
+  end
+
+  class ModExpression < InfixExpression
+  end
+
   class Variable < Expression
     @root: Name | StringLiteral | Variable
 
@@ -179,22 +224,22 @@ module Luoma
     def with: (t_token token) -> self
   end
 
+  class Lambda < Expression
+    @params: Array[Name]
+
+    @expr: Expression
+
+    #  (t_token, Array[Name], Expression) -> void
+    def initialize: (t_token token, Array[Name] params, Expression expr) -> void
+  end
+
   class StringLiteral < Expression
-    @value: String
+    @segments: Array[String|Expression]
 
-    attr_reader value: String
+    attr_reader segments: Array[String|Expression]
 
-    #  (t_token, Integer, t_token)
-    def initialize: (t_token token, String value, t_token end_token) -> void
-
-    #  (RenderContext) -> untyped
-    def evaluate: (RenderContext context) -> untyped
-
-    #  (RenderContext) -> Array[_Traversable]
-    def children: (RenderContext context) -> ::Array[_Traversable]
-
-    #  () -> String
-    def to_s: () -> ::String
+    #  (t_token, Array[String|Expression], t_token)
+    def initialize: (t_token token, Array[String|Expression] segments, t_token end_token) -> void
 
     def with: (t_token token) -> self
   end
