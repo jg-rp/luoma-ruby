@@ -309,28 +309,6 @@ module Luoma
     def to_s: () -> String
   end
 
-  class Blank < Expression
-    #  (RenderContext) -> untyped
-    def evaluate: (RenderContext context) -> untyped
-
-    #  (RenderContext) -> Array[_Traversable]
-    def children: (RenderContext context) -> ::Array[_Traversable]
-
-    #  () -> String
-    def to_s: () -> ""
-  end
-
-  class Empty < Expression
-    #  (RenderContext) -> untyped
-    def evaluate: (RenderContext context) -> untyped
-
-    #  (RenderContext) -> Array[_Traversable]
-    def children: (RenderContext context) -> ::Array[Luoma::_Traversable]
-
-    #  () -> String
-    def to_s: () -> ""
-  end
-
   class RangeLiteral < Expression
     @start: Expression
 
@@ -341,6 +319,64 @@ module Luoma
 
     #  (RenderContext) -> untyped
     def evaluate: (RenderContext context) -> untyped
+
+    #  (RenderContext) -> Array[_Traversable]
+    def children: (RenderContext context) -> ::Array[_Traversable]
+
+    #  () -> String
+    def to_s: () -> ::String
+  end
+
+  class ArrayLiteral < Expression
+    @items: Array[Expression|Spread]
+
+    def initialize: (t_token token, Array[Expression|Spread] items) -> void
+
+    def with: (t_token token) -> self
+  end
+
+  class ObjectLiteral < Expression
+    @items: Array[Item|Spread]
+
+    #   (t_token token, Array[Item|Spread] items) -> void
+    def initialize: (t_token token, Array[Item|Spread] items) -> void
+
+    def with: (untyped token) -> self
+  end
+
+  class Spread
+    @token: t_token
+
+    @expr: Expression
+
+    attr_reader token: t_token
+
+    attr_reader expr: Expression
+
+    def initialize: (t_token token, Expression expr) -> void
+
+    #  (RenderContext) -> Array[_Traversable]
+    def children: (RenderContext context) -> ::Array[_Traversable]
+
+    #  () -> String
+    def to_s: () -> ::String
+  end
+
+  class Item
+    @token: t_token
+
+    @key: Name
+
+    @expr: Expression
+
+    attr_reader token: t_token
+
+    attr_reader key: Name
+
+    attr_reader expr: Expression
+
+    #  (t_token, Name, Expression) -> void
+    def initialize: (t_token token, Name key, Expression expr) -> void
 
     #  (RenderContext) -> Array[_Traversable]
     def children: (RenderContext context) -> ::Array[_Traversable]
@@ -433,5 +469,38 @@ module Luoma
     def deconstruct: () -> ::Array[untyped]
 
     def deconstruct_keys: (untyped keys) -> { name: untyped, expression: untyped }
+  end
+
+  class PredicateFunction
+    @name: String
+
+    @func: ^(untyped) -> bool
+
+    attr_reader name: String
+
+    attr_reader func: ^(untyped) -> bool
+
+    #  (String, ^(untyped) -> bool) -> void
+    def initialize: (String name, ^(untyped) -> bool func) -> void
+
+    #  (untyped) -> bool
+    def call: (untyped obj) -> bool
+  end
+
+  class LambdaFunction
+    @params: Array[String]
+
+    @expr: Expression
+
+    @context: RenderContext
+
+    #  (Array[String], Expression, RenderContext) -> void
+    def initialize: (Array[String] params, Expression expr, RenderContext context) -> void
+
+    #  (Enumerable[untyped]) -> Array[untyped]
+    def broadcast: (Enumerable[untyped] enum) -> Array[untyped]
+
+    #  (untyped, Integer) -> untyped
+    def call: (untyped value, Integer index) -> untyped
   end
 end

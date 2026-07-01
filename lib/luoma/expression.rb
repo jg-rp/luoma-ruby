@@ -481,7 +481,7 @@ module Luoma
 
     #: (RenderContext) -> untyped
     def evaluate(context)
-      LambdaDrop.new(@params.map(&:value), @expr, context)
+      LambdaFunction.new(@params.map(&:value), @expr, context)
     end
 
     #: (RenderContext) -> Array[_Traversable]
@@ -649,11 +649,151 @@ module Luoma
     end
   end
 
-  # TODO: ArrayLiteral
-  # TODO: ObjectLiteral
-  # TODO: Predicate
-  # TODO: Spread
-  # TODO: Item
+  class ArrayLiteral < Expression
+    #:  (t_token token, Array[Expression|Spread] items) -> void
+    def initialize(token, items)
+      super(token)
+      @items = items
+    end
+
+    #: (RenderContext) -> untyped
+    def evaluate(context)
+      result = [] #: Array[untyped]
+
+      @items.each do |item|
+        if item.is_a?(Spread)
+          result.concat(context.env.to_a(item.expr.evaluate(context), context, item.expr.token))
+        else
+          result << item.evaluate(context)
+        end
+      end
+
+      result
+    end
+
+    #: (RenderContext) -> Array[_Traversable]
+    def children(context)
+      @items
+    end
+
+    #: () -> String
+    def to_s
+      "[#{@items.join(", ")}]"
+    end
+
+    def with(token)
+      @span = Luoma.span(@token, token)
+      self
+    end
+  end
+
+  class ObjectLiteral < Expression
+    #:  (t_token token, Array[Item|Spread] items) -> void
+    def initialize(token, items)
+      super(token)
+      @items = items
+    end
+
+    #: (RenderContext) -> untyped
+    def evaluate(context)
+      result = {} #: Hash[String, untyped]
+
+      @items.each do |item|
+        if item.is_a?(Spread)
+          result.update(context.env.to_h(item.expr.evaluate(context), context, item.expr.token))
+        else
+          result[item.key.value] = item.expr.evaluate(context)
+        end
+      end
+
+      result
+    end
+
+    #: (RenderContext) -> Array[_Traversable]
+    def children(context)
+      @items
+    end
+
+    #: () -> String
+    def to_s
+      "{#{@items.join(", ")}}"
+    end
+
+    def with(token)
+      @span = Luoma.span(@token, token)
+      self
+    end
+  end
+
+  class Predicate < Expression
+    #:  (t_token, String) -> void
+    def initialize(token, value)
+      super(token)
+      @value = value
+    end
+
+    #: (RenderContext) -> untyped
+    def evaluate(context)
+      func = context.env.predicates[@filter.name.value]
+
+      if func.nil?
+        :nothing
+      else
+        PredicateFunction.new(@value, func)
+      end
+    end
+
+    #: (RenderContext) -> Array[_Traversable]
+    def children(context)
+      []
+    end
+
+    #: () -> String
+    def to_s
+      @value
+    end
+  end
+
+  class Spread
+    attr_reader :token, :expr
+
+    #: (t_token, Expression) -> void
+    def initialize(token, expr)
+      @token = token
+      @expr = expr
+    end
+
+    #: (RenderContext) -> Array[_Traversable]
+    def children(context)
+      [@expr]
+    end
+
+    #: () -> String
+    def to_s
+      "...#{@expr}"
+    end
+  end
+
+  class Item
+    attr_reader :token, :key, :expr
+
+    #: (t_token, Name, Expression) -> void
+    def initialize(token, key, expr)
+      @token = token
+      @key = key
+      @expr = expr
+    end
+
+    #: (RenderContext) -> Array[_Traversable]
+    def children(context)
+      [@expr]
+    end
+
+    #: () -> String
+    def to_s
+      "#{@key}: #{@expr}"
+    end
+  end
 
   class Name
     attr_reader :token, :span, :value
@@ -732,6 +872,40 @@ module Luoma
 
     def deconstruct_keys(keys)
       { name: @name.value, expression: @expression }
+    end
+  end
+
+  class PredicateFunction
+    attr_reader :name, :func
+
+    #: (String, ^(untyped) -> bool) -> void
+    def initialize(name, func)
+      @name = name
+      @func = func
+    end
+
+    #: (untyped) -> bool
+    def call(obj)
+      raise "TODO:"
+    end
+  end
+
+  class LambdaFunction
+    #: (Array[String], Expression, RenderContext) -> void
+    def initialize(params, expr, context)
+      @params = params
+      @expr = expr
+      @context = context
+    end
+
+    #: (Enumerable[untyped]) -> Array[untyped]
+    def broadcast(enum)
+      raise "TODO:"
+    end
+
+    #: (untyped, Integer) -> untyped
+    def call(value, index)
+      raise "TODO:"
     end
   end
 end

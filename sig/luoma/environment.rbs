@@ -168,6 +168,9 @@ module Luoma
                  
     #  (untyped, RenderContext, t_token) -> Array[untyped]
     def to_a: (untyped obj, RenderContext context, t_token token) -> Array[untyped]
+    
+    #  (untyped, RenderContext, t_token) -> Hash[untyped, untyped]
+    def to_h: (untyped obj, RenderContext context, t_token token) -> Hash[untyped, untyped]
 
     #  (untyped, RenderContext, t_token, ?default: Integer?) -> Integer
     def to_i: (untyped obj, RenderContext context, t_token token, ?default: Integer?) -> Integer

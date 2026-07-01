@@ -266,6 +266,20 @@ module Luoma
       end
     end
 
+    #: (untyped, RenderContext, t_token) -> Hash[untyped, untyped]
+    def to_h(obj, context, token)
+      if obj.is_a?(Hash)
+        obj
+      elsif obj.is_a(Drop)
+        obj = obj.to_primitive("object", context)
+        nothing?(obj) ? {} : obj
+      elsif obj.respond_to?(:to_h)
+        obj.to_h
+      else
+        {}
+      end
+    end
+
     # Try to coerce `obj` to an integer using `#to_i` with a fallback to
     # `Integer(obj.to_s)` if `obj` does not respond to `to_i`.
     #: (untyped, RenderContext, t_token, ?default: Integer?) -> Integer
