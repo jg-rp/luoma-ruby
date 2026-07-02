@@ -49,21 +49,11 @@ module Luoma
     #  (?stop: Set[String]?) -> t_block
     def parse_block: (?stop: Set[String]?) -> t_block
 
-    #  (?precedence: Integer, ?infix: bool?) -> Expression
-    def parse_expression: (?precedence: Integer, ?infix: bool?) -> Expression
-
-    # Parse an expression with optional filters.
-    #  (?precedence: Integer, ?infix: bool?) -> Expression
-    def parse_filtered_expression: (?precedence: Integer, ?infix: bool?) -> Expression
-
     #  () -> Name
     def parse_ident: () -> Name
 
     #  (?require_commas: bool?) -> Array[KeywordArgument]
     def parse_keyword_arguments: (?require_commas: bool?) -> Array[KeywordArgument]
-
-    #  () -> t_block
-    def parse_line_statements: () -> t_block
 
     # Parse an identifier, possibly surrounded by quotes.
     #  () -> Name
@@ -74,6 +64,33 @@ module Luoma
 
     #  () -> StringLiteral
     def parse_string_literal: () -> StringLiteral
+
+    #  (?precedence: Integer) -> Expression
+    def parse_primary: (?precedence: Integer) -> Expression
+
+    #  (Expression) -> Expression
+    def parse_ternary: (Expression consequence) -> Expression
+
+    #  () -> Expression
+    def parse_array_or_path: () -> Expression
+
+    #  (t_token, Expression) -> Expression
+    def parse_partial_array: (t_token token, Expression first) -> Expression
+
+    #  () -> ObjectLiteral
+    def parse_object_literal: () -> ObjectLiteral
+
+    #  () -> Item | Spread
+    def parse_object_item: () -> (Item | Spread)
+
+    #  () -> Expression
+    def parse_lambda_range_or_group: () -> Expression
+
+    #  (Expression) -> Lambda
+    def parse_partial_lambda: (Expression expr) -> Expression
+
+    #  () -> Expression
+    def parse_prefix: () -> Expression
 
     #  () -> Markup
     def parse_output: () -> Markup
@@ -108,19 +125,13 @@ module Luoma
     #  () -> Expression
     def parse_float_literal: () -> Expression
 
-    #  () -> Expression
-    def parse_blank: () -> Expression
-
-    #  () -> Expression
-    def parse_empty: () -> Expression
-
-    #  (Expression) -> FilteredExpression
-    def parse_filters: (untyped left) -> FilteredExpression
-
-    #  (Expression) -> FilteredExpression
-    def parse_filter: (untyped left) -> FilteredExpression
+    #  (t_token, Expression) -> FilteredExpression
+    def parse_filter: (t_token token, Expression left) -> FilteredExpression
+                    
+    #  () -> Lambda
+    def parse_lambda: () -> Lambda
 
     #  (Expression) -> Expression
-    def parse_infix: (untyped left) -> Expression
+    def parse_infix: (Expression left) -> Expression
   end
 end

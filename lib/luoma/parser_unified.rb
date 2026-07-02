@@ -187,56 +187,10 @@ module Luoma
       nodes
     end
 
-    #: (?precedence: Integer, ?infix: bool?) -> Expression
-    def parse_expression(precedence: Precedence::LOWEST, infix: true)
-      left = case kind
-             when :token_single_quote, :token_double_quote
-               parse_string_literal
-             when :token_ident, :token_lbracket
-               parse_path
-             when :token_lparen
-               parse_range_literal
-             when :token_true
-               parse_true_literal
-             when :token_false
-               parse_false_literal
-             when :token_null, :token_nil
-               parse_null_literal
-             when :token_int
-               parse_int_literal
-             when :token_float
-               parse_float_literal
-             when :token_blank
-               parse_blank
-             when :token_empty
-               parse_empty
-             else
-               token = current
-               raise TemplateSyntaxError.new(
-                 "unexpected #{Luoma::TOKEN_KIND_MAP[token.first].inspect}",
-                 token,
-                 @source,
-                 @template_name
-               )
-             end
-
-      return left unless infix
-
-      loop do
-        kind_ = kind
-        break if (PRECEDENCES[kind_] || Precedence::LOWEST) < precedence || !INFIX_OPERATORS.include?(kind_)
-
-        left = parse_infix(left)
-      end
-
-      left
-    end
-
-    # Parse an expression with optional filters.
-    #: (?precedence: Integer, ?infix: bool?) -> Expression
-    def parse_filtered_expression(precedence: Precedence::LOWEST, infix: nil)
-      expr = parse_expression(precedence: precedence, infix: infix)
-      expr = parse_filters(expr) if kind == :token_pipe
+    #: (?precedence: Integer) -> Expression
+    def parse_expression(precedence: Precedence::LOWEST)
+      expr = parse_primary(precedence: precedence)
+      expr = parse_ternary(expr) if kind == :token_if
       expr
     end
 
@@ -370,11 +324,68 @@ module Luoma
 
     protected
 
+    #: (?precedence: Integer) -> Expression
+    def parse_primary(precedence: Precedence::LOWEST)
+      left = case kind
+             when :token_single_quote, :token_double_quote
+               parse_string_literal
+             when :token_ident
+               parse_path
+             when :token_lbracket
+               parse_array_or_path
+             when :token_lbrace
+               parse_object_literal
+             when :token_lparen
+               parse_lambda_range_or_group
+             when :token_not, :token_add, :token_sub
+               parse_prefix
+             when :token_true
+               parse_true_literal
+             when :token_false
+               parse_false_literal
+             when :token_null, :token_nil
+               parse_null_literal
+             when :token_int
+               parse_int_literal
+             when :token_float
+               parse_float_literal
+             else
+               token = current
+               raise TemplateSyntaxError.new(
+                 "unexpected #{Luoma::TOKEN_KIND_MAP[token.first].inspect}",
+                 token,
+                 @source,
+                 @template_name
+               )
+             end
+
+      loop do
+        kind_ = kind
+        break if (PRECEDENCES[kind_] || Precedence::LOWEST) < precedence || !INFIX_OPERATORS.include?(kind_)
+
+        left = parse_infix(left)
+      end
+
+      left
+    end
+
+    #: (Expression) -> Expression
+    def parse_ternary(consequence)
+      eat(:token_if)
+      condition = parse_primary
+      alternative = if kind == :token_else
+                      @pos += 1
+                      parse_primary
+                    end
+
+      TernaryExpression.new(consequence.token, consequence, condition, alternative)
+    end
+
     #: () -> Markup
     def parse_output
       token = @tokens[@pos - 1]
       skip_whitespace_control
-      expr = parse_filtered_expression
+      expr = parse_expression
       carry_whitespace_control
       eat(:token_out_end)
       OutputStatement.new(token, expr)
@@ -476,11 +487,46 @@ module Luoma
     end
 
     #: () -> Expression
+    def parse_array_or_path
+      raise "TODO:"
+    end
+
+    #: (t_token, Expression) -> Expression
+    def parse_partial_array(token, first)
+      raise "TODO:"
+    end
+
+    #: () -> ObjectLiteral
+    def parse_object_literal
+      raise "TODO:"
+    end
+
+    #: () -> Item | Spread
+    def parse_object_item
+      raise "TODO:"
+    end
+
+    #: () -> Expression
+    def parse_lambda_range_or_group
+      raise "TODO:"
+    end
+
+    #: (Expression) -> Lambda
+    def parse_partial_lambda(expr)
+      raise "TODO:"
+    end
+
+    #: () -> Expression
+    def parse_prefix
+      raise "TODO:"
+    end
+
+    #: () -> Expression
     def parse_range_literal
       token = eat(:token_lparen)
-      start = parse_expression(infix: false)
+      start = parse_expression
       eat(:token_double_dot)
-      stop = parse_expression(infix: false)
+      stop = parse_expression
       eat(:token_rparen)
       RangeLiteral.new(token, start, stop)
     end
@@ -531,16 +577,8 @@ module Luoma
     end
 
     #: (Expression) -> FilteredExpression
-    def parse_filters(left)
-      expr = parse_filter(left)
-      expr = parse_filter(expr) while kind == :token_pipe
-      expr
-    end
-
-    #: (Expression) -> FilteredExpression
-    def parse_filter(left)
-      token = eat(:token_pipe)
-      name_token = eat(:token_ident, message: "missing or malformed filter name")
+    def parse_filter(token, left)
+      name = parse_ident
 
       if TERMINATE_FILTER.include?(kind)
         # No arguments
@@ -548,9 +586,10 @@ module Luoma
           token,
           left,
           Filter.new(
-            name_token,
-            Name.new(name_token, Luoma.get_token_value(name_token, @source)),
-            [], []
+            name.token,
+            name,
+            [],
+            []
           )
         )
       end
@@ -563,13 +602,26 @@ module Luoma
         kind_ = kind
         break if TERMINATE_FILTER.include?(kind_)
 
-        if kind_ == :token_ident && KEYWORD_ARGUMENT_DELIMITERS.include?(peek.first)
-          # A keyword argument
-          param = parse_ident
-          eat_one_of(KEYWORD_ARGUMENT_DELIMITERS)
-          kwargs << KeywordArgument.new(param.token, param, parse_expression)
+        if kind_ == :token_ident
+          peek_kind = peek.first
+          if KEYWORD_ARGUMENT_DELIMITERS.include?(peek_kind)
+            # A keyword argument
+            param = parse_ident
+            eat_one_of(KEYWORD_ARGUMENT_DELIMITERS)
+            value = parse_expression(precedence: Precedence::FILTER_ARG)
+            kwargs << KeywordArgument.new(param.token, param, value)
+          elsif peek_kind == :token_arrow
+            # A positional argument that is an arrow function with a single
+            # parameter.
+            args << parse_lambda
+          else
+            # A positional argument that is a variable or path
+            args << parse_expression(precedence: Precedence::FILTER_ARG)
+          end
         else
-          args << parse_expression
+          break if TERMINATE_FILTER.include?(kind_)
+
+          args << parse_expression(precedence: Precedence::FILTER_ARG)
         end
 
         break if TERMINATE_FILTER.include?(kind)
@@ -581,12 +633,17 @@ module Luoma
         token,
         left,
         Filter.new(
-          name_token,
-          Name.new(name_token, Luoma.get_token_value(name_token, @source)),
+          name.token,
+          name,
           args,
           kwargs
         )
       )
+    end
+
+    #: () -> Lambda
+    def parse_lambda
+      raise "TODO:"
     end
 
     #: (Expression) -> Expression
@@ -594,11 +651,9 @@ module Luoma
       op_token = self.next
       kind_ = op_token.first
 
-      right = parse_expression(
-        precedence: PRECEDENCES[kind_] || Precedence::LOWEST,
-        infix: true
-      )
+      return parse_filter(op_token, left) if kind == :token_pipe
 
+      right = parse_expression(precedence: PRECEDENCES[kind_] || Precedence::LOWEST)
       INFIX_OPERATORS[kind_].new(op_token, left, right)
     end
   end
