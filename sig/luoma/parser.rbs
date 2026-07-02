@@ -76,9 +76,6 @@ module Luoma
     #  (?require_commas: bool?) -> Array[KeywordArgument]
     def parse_keyword_arguments: (?require_commas: bool?) -> Array[KeywordArgument]
 
-    #  () -> t_block
-    def parse_line_statements: () -> t_block
-
     # Parse an identifier, possibly surrounded by quotes.
     #  () -> Name
     def parse_name: () -> Name

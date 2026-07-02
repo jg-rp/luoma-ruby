@@ -117,7 +117,10 @@ module Luoma
     KEYWORD_ARGUMENT_DELIMITERS = Set[
       :token_colon,
       :token_assign
-  ].freeze #: Set[t_token_kind]
+    ].freeze #: Set[t_token_kind]
+
+    RE_SLASH_U = /\\u([0-9a-fA-F]{4})/
+    RE_ESCAPE_INTERPOLATION = /\\\$\{/
 
     #: (?require_commas: bool?) -> Array[Expression | KeywordArgument]
     def parse_arguments(require_commas: nil)
@@ -233,32 +236,6 @@ module Luoma
       args
     end
 
-    #: () -> t_block
-    def parse_line_statements
-      block = [] #: t_block
-
-      loop do
-        token = current
-        kind_ = token.first
-
-        if kind_ == :token_tag_start
-          @pos += 1
-          block << parse_tag
-        elsif kind_ == :token_wc || kind_ == :token_tag_end
-          break
-        else
-          raise TemplateSyntaxError.new(
-            "unexpected #{Luoma::TOKEN_KIND_MAP[kind_]} (#{Luoma.get_token_value(token, @source).inspect})",
-            token,
-            @source,
-            @template_name
-          )
-        end
-      end
-
-      block
-    end
-
     # Parse an identifier, possibly surrounded by quotes.
     #: () -> Name
     def parse_name
@@ -310,16 +287,25 @@ module Luoma
 
     #: () -> StringLiteral
     def parse_string_literal
-      token = self.next
+      token = self.next # quote
+      segments = [] #: Array[String|Expression]
 
-      # Empty string?
-      return StringLiteral.new(token, "", eat(token.first)) if kind == token.first
+      loop do
+        case kind
+        when :token_single_quoted, :token_double_quoted
+          segments << Luoma.get_token_value(self.next, @source)
+        when :token_single_escaped, :token_double_escaped
+          segments << unescape(self.next)
+        when :token_interpolation_start
+          @pos += 1
+          segments << parse_expression
+          eat(:token_interpolation_end)
+        else
+          break
+        end
+      end
 
-      StringLiteral.new(
-        token,
-        Luoma.get_token_value(eat_one_of(STRING_LITERAL_KINDS), @source),
-        eat(token.first)
-      )
+      StringLiteral.new(token, segments, eat(token.first))
     end
 
     protected
@@ -488,37 +474,164 @@ module Luoma
 
     #: () -> Expression
     def parse_array_or_path
-      raise "TODO:"
+      start_pos = @pos
+      token = eat(:token_lbracket)
+
+      case kind
+      when :token_rbracket
+        # Empty array.
+        ArrayLiteral.new(token, []).with(eat(:token_rbracket))
+      when :token_triple_dot
+        # An array with a spread operator before the first item.
+        parse_partial_array(token, Spread.new(self.next, parse_expression))
+      else
+        expr = parse_expression
+
+        if kind != :token_comma && (expr.is_a?(StringLiteral) || expr.is_a?(Variable))
+          # A path, backtrack.
+          @pos = start_pos
+          parse_path
+        else
+          parse_partial_array(token, expr)
+        end
+      end
     end
 
-    #: (t_token, Expression) -> Expression
+    # Parse an array where we've consumed the opening bracket and first item.
+    #: (t_token, Expression|Spread) -> Expression
     def parse_partial_array(token, first)
-      raise "TODO:"
+      items = [] #: Array[Expression|Spread]
+
+      loop do
+        break if kind == :token_rbracket
+
+        eat(:token_comma)
+
+        case kind
+        when :token_rbracket
+          # Trailing commas are OK.
+          break
+        when :token_triple_dot
+          items << Spread.new(self.next, parse_expression)
+        else
+          items << parse_expression
+        end
+      end
+
+      eat(:token_rbracket)
+      ArrayLiteral.new(token, items)
     end
 
     #: () -> ObjectLiteral
     def parse_object_literal
-      raise "TODO:"
+      token = eat(:token_lbrace)
+
+      return ObjectLiteral.new(token, []).with(eat(:token_rbrace)) if kind == :token_rbrace
+
+      items = [parse_object_item] #: Array[Item|Spread]
+
+      loop do
+        break if kind == :token_rbrace
+
+        eat(:token_comma)
+        break if kind == :token_rbrace # Trailing commas are OK.
+
+        items << parse_object_item
+      end
+
+      eat(:token_rbrace)
+      ObjectLiteral.new(token, items)
     end
 
     #: () -> Item | Spread
     def parse_object_item
-      raise "TODO:"
+      return Spread.new(self.next, parse_expression) if kind == :token_triple_dot
+
+      key = parse_name
+      eat(:token_colon)
+      value = parse_expression
+      Item.new(key.token, key, value)
     end
 
     #: () -> Expression
     def parse_lambda_range_or_group
-      raise "TODO:"
+      token = eat(:token_lparen)
+      expr = parse_expression
+
+      case kind
+      when :token_double_dot
+        # A range literal
+        @pos += 1
+        stop = parse_expression
+        eat(:token_rparen, message: "expected a closing bracket")
+        RangeLiteral.new(token, expr, stop)
+      when :token_triple_dot
+        raise TemplateSyntaxError.new(
+          "too many dots",
+          current,
+          @source,
+          @template_name
+        )
+      when :token_comma
+        # A lambda expression, but we've already consumed the first parameter.
+        parse_partial_lambda(expr)
+      else
+        if peek.first == :token_arrow && kind == :token_rparen
+          # A lambda expression with a single parameter surrounded by parens.
+          parse_partial_lambda(expr)
+        else
+          eat(:token_rparen, message: "unbalanced brackets")
+          segments = PATH_PUNCTUATION.include?(kind) ? parse_path_segments : [] #: Array[t_path_segment]
+          GroupExpression.new(token, expr, segments)
+        end
+      end
     end
 
     #: (Expression) -> Lambda
     def parse_partial_lambda(expr)
-      raise "TODO:"
+      unless expr.is_a?(Variable) && @segments.empty? && @root.is_a?(Name)
+        raise TemplateSyntaxError.new(
+          "expected an identifier",
+          expr.token,
+          @source,
+          @template_name
+        )
+      end
+
+      params = [expr.root] #: Array[Name]
+      @pos += 1 if kind == :token_comma
+
+      loop do
+        break if kind == :token_paren
+
+        params << parse_ident
+        @pos += 1 if kind == :token_comma
+      end
+
+      eat(:token_rparen)
+      eat(:token_arrow)
+      Lambda.new(expr.token, params, parse_expression(precedence: Precedence::FILTER_ARG))
     end
 
     #: () -> Expression
     def parse_prefix
-      raise "TODO:"
+      token = self.next
+
+      case kind
+      when :token_not
+        NotExpression.new(token, parse_expression(precedence: Precedence::LOGICAL_NOT))
+      when :token_add
+        PosExpression.new(token, parse_expression(precedence: Precedence::NEG))
+      when :token_sub
+        NegExpression.new(token, parse_expression(precedence: Precedence::NEG))
+      else
+        raise TemplateSyntaxError.new(
+          "unknown prefix operator",
+          token,
+          @source,
+          @template_name
+        )
+      end
     end
 
     #: () -> Expression
@@ -641,9 +754,12 @@ module Luoma
       )
     end
 
+    # Parse a lambda expression without parameters enclosed in parentheses.
     #: () -> Lambda
     def parse_lambda
-      raise "TODO:"
+      param = parse_ident
+      eat(:token_arrow)
+      Lambda.new(param.token, [param], parse_expression(precedence: Precedence::FILTER_ARG))
     end
 
     #: (Expression) -> Expression
@@ -655,6 +771,109 @@ module Luoma
 
       right = parse_expression(precedence: PRECEDENCES[kind_] || Precedence::LOWEST)
       INFIX_OPERATORS[kind_].new(op_token, left, right)
+    end
+
+    #: (t_token) -> String
+    def unescape(token)
+      unescaped = [] # : Array[String]
+      scanner = StringScanner.new(Luoma.get_token_value(token, @source))
+
+      until scanner.eos?
+        if scanner.scan(RE_SLASH_U)
+          code_point = (scanner.captures&.first || raise).to_i(16)
+
+          if low_surrogate?(code_point)
+            raise TemplateSyntaxError.new(
+              "unexpected low surrogate",
+              token,
+              @source,
+              @template_name
+            )
+          end
+
+          if high_surrogate?(code_point)
+            unless scanner.scan(RE_SLASH_U)
+              raise TemplateSyntaxError.new(
+                "expected low surrogate",
+                token,
+                @source,
+                @template_name
+              )
+            end
+
+            low_surrogate = (scanner.captures&.first || raise).to_i(16)
+            code_point = 0x10000 + (
+              ((code_point & 0x03FF) << 10) | (low_surrogate & 0x03FF)
+            )
+          end
+
+          unescaped << code_point.chr(Encoding::UTF_8)
+          next
+        end
+
+        if scanner.scan(RE_ESCAPE_INTERPOLATION)
+          unescaped << "${"
+          next
+        end
+
+        ch = scanner.getch
+
+        break if ch.nil?
+
+        unless ch == "\\"
+          unescaped << ch
+          next
+        end
+
+        ch = scanner.getch
+
+        case ch
+        when "\""
+          unescaped << "\""
+        when "'"
+          unescaped << "'"
+        when "\\"
+          unescaped << "\\"
+        when "/"
+          unescaped << "/"
+        when "b"
+          unescaped << "\x08"
+        when "f"
+          unescaped << "\x0c"
+        when "n"
+          unescaped << "\n"
+        when "r"
+          unescaped << "\r"
+        when "t"
+          unescaped << "\t"
+        when nil
+          raise TemplateSyntaxError.new(
+            "incomplete escape sequence",
+            token,
+            @source,
+            @template_name
+          )
+        else
+          raise TemplateSyntaxError.new(
+            "unknown escape sequence",
+            token,
+            @source,
+            @template_name
+          )
+        end
+      end
+
+      unescaped.join
+    end
+
+    #: (Integer) -> bool
+    def high_surrogate?(code_point)
+      code_point.between?(0xD800, 0xDBFF)
+    end
+
+    #: (Integer) -> bool
+    def low_surrogate?(code_point)
+      code_point.between?(0xDC00, 0xDFFF)
     end
   end
 end

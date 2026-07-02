@@ -60,6 +60,22 @@ module Luoma
     def initialize: (t_token token, Expression left, Filter filter) -> void
   end
 
+  class PrefixExpression < Expression
+    @right: Expression
+
+    #  (t_token, Expression) -> void
+    def initialize: (t_token token, Expression right) -> void
+  end
+
+  class NotExpression < PrefixExpression
+  end
+
+  class PosExpression < PrefixExpression
+  end
+
+  class NegExpression < PrefixExpression
+  end
+
   class InfixExpression < Expression
     @left: untyped
 

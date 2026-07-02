@@ -43,6 +43,10 @@ module Luoma
     
     KEYWORD_ARGUMENT_DELIMITERS: Set[t_token_kind]
 
+    RE_SLASH_U: ::Regexp
+
+    RE_ESCAPE_INTERPOLATION: ::Regexp
+
     #  (?require_commas: bool?) -> Array[Expression | KeywordArgument]
     def parse_arguments: (?require_commas: bool?) -> Array[Expression | KeywordArgument]
 
@@ -74,8 +78,8 @@ module Luoma
     #  () -> Expression
     def parse_array_or_path: () -> Expression
 
-    #  (t_token, Expression) -> Expression
-    def parse_partial_array: (t_token token, Expression first) -> Expression
+    #  (t_token, Expression|Spread) -> Expression
+    def parse_partial_array: (t_token token, (Expression|Spread) first) -> Expression
 
     #  () -> ObjectLiteral
     def parse_object_literal: () -> ObjectLiteral
@@ -133,5 +137,11 @@ module Luoma
 
     #  (Expression) -> Expression
     def parse_infix: (Expression left) -> Expression
+                   
+    def unescape: (t_token token) -> String
+
+    def high_surrogate?: (Integer code_point) -> bool
+
+    def low_surrogate?: (Integer code_point) -> bool
   end
 end

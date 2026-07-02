@@ -144,6 +144,52 @@ module Luoma
     end
   end
 
+  class PrefixExpression < Expression
+    #: (t_token, Expression) -> void
+    def initialize(token, right)
+      super(token)
+      @right = right
+      @span = Luoma.span(token, right.span)
+    end
+
+    def children
+      [@right]
+    end
+  end
+
+  class NotExpression < PrefixExpression
+    def evaluate(context)
+      !context.env.truthy?(@right.evaluate(context), context)
+    end
+
+    #: () -> String
+    def to_s
+      "not #{@right}"
+    end
+  end
+
+  class PosExpression < PrefixExpression
+    def evaluate(context)
+      raise "TODO"
+    end
+
+    #: () -> String
+    def to_s
+      "+#{@right}"
+    end
+  end
+
+  class NegExpression < PrefixExpression
+    def evaluate(context)
+      raise "TODO"
+    end
+
+    #: () -> String
+    def to_s
+      "+#{@right}"
+    end
+  end
+
   class InfixExpression < Expression
     #: (t_token, Expression, Expression) -> void
     def initialize(token, left, right)
