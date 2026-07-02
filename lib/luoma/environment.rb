@@ -10,7 +10,7 @@ module Luoma
     attr_accessor :auto_escape, :auto_trim, :globals, :lexer, :loader, :parser, :strict_filters,
                   :suppress_blank_control_flow_blocks, :undefined, :filters, :tags, :max_assign_score_cumulative,
                   :max_assign_score, :max_context_depth, :max_render_score_cumulative, :max_render_score,
-                  :max_render_size
+                  :max_render_size, :predicates
 
     def initialize(
       auto_escape: nil,
@@ -46,7 +46,8 @@ module Luoma
       @undefined = undefined
 
       @tags = {} #: Hash[String, _Tag]
-      @filters = {} #: Hash[String, t_filter]
+      @filters = {} #: Hash[String, untyped]
+      @predicates = {} #: Hash[String, ^(untyped) -> bool]
       setup_tags_and_filters
 
       # Render context registers that persist when copying an instance of

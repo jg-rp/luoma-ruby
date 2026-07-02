@@ -1,0 +1,15 @@
+module Luoma
+  class RangeDrop < Drop
+    @start: Integer
+
+    @stop: Integer
+
+    @range: Range[Integer]
+
+    attr_reader start: Integer
+
+    attr_reader stop: Integer
+
+    def initialize: (Integer start, Integer stop) -> void
+  end
+end

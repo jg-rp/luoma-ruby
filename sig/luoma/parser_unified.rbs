@@ -1,4 +1,126 @@
 module Luoma
   class UnifiedParser < Parser
+    class Precedence
+      LOWEST: Integer
+
+      COALESCE: Integer
+
+      LOGICAL_OR: Integer
+
+      LOGICAL_AND: Integer
+
+      LOGICAL_NOT: Integer
+
+      COMPARISON: Integer
+
+      MEMBERSHIP: Integer
+
+      PIPE: Integer
+
+      FILTER_ARG: Integer
+
+      ADD: Integer
+
+      MUL: Integer
+
+      NEG: Integer
+
+    end
+
+    PRECEDENCES: Hash[t_token_kind, Integer]
+
+    INFIX_OPERATORS: Hash[t_token_kind, untyped]
+
+    TERMINATE_EXPRESSION: Set[t_token_kind]
+
+    TERMINATE_FILTER: Set[t_token_kind]
+
+    PATH_PUNCTUATION: Set[t_token_kind]
+
+    STRING_LITERAL_KINDS: Set[t_token_kind]
+
+    PATH_ROOT_KINDS: Set[t_token_kind]
+    
+    KEYWORD_ARGUMENT_DELIMITERS: Set[t_token_kind]
+
+    #  (?require_commas: bool?) -> Array[Expression | KeywordArgument]
+    def parse_arguments: (?require_commas: bool?) -> Array[Expression | KeywordArgument]
+
+    #  (?stop: Set[String]?) -> t_block
+    def parse_block: (?stop: Set[String]?) -> t_block
+
+    #  (?precedence: Integer, ?infix: bool?) -> Expression
+    def parse_expression: (?precedence: Integer, ?infix: bool?) -> Expression
+
+    # Parse an expression with optional filters.
+    #  (?precedence: Integer, ?infix: bool?) -> Expression
+    def parse_filtered_expression: (?precedence: Integer, ?infix: bool?) -> Expression
+
+    #  () -> Name
+    def parse_ident: () -> Name
+
+    #  (?require_commas: bool?) -> Array[KeywordArgument]
+    def parse_keyword_arguments: (?require_commas: bool?) -> Array[KeywordArgument]
+
+    #  () -> t_block
+    def parse_line_statements: () -> t_block
+
+    # Parse an identifier, possibly surrounded by quotes.
+    #  () -> Name
+    def parse_name: () -> Name
+
+    #  (?require_commas: bool?) -> Array[Expression]
+    def parse_positional_arguments: (?require_commas: untyped?) -> Array[Expression]
+
+    #  () -> StringLiteral
+    def parse_string_literal: () -> StringLiteral
+
+    #  () -> Markup
+    def parse_output: () -> Markup
+
+    #  () -> Markup
+    def parse_tag: () -> Markup
+
+    #  () -> Variable
+    def parse_path: () -> Variable
+
+    #  () -> Array[t_path_segment]
+    def parse_path_segments: () -> Array[t_path_segment]
+
+    #  () -> t_path_segment
+    def parse_bracketed_segment: () -> t_path_segment
+
+    #  () -> Expression
+    def parse_range_literal: () -> Expression
+
+    #  () -> Expression
+    def parse_true_literal: () -> Expression
+
+    #  () -> Expression
+    def parse_false_literal: () -> Expression
+
+    #  () -> Expression
+    def parse_null_literal: () -> Expression
+
+    #  () -> Expression
+    def parse_int_literal: () -> Expression
+
+    #  () -> Expression
+    def parse_float_literal: () -> Expression
+
+    #  () -> Expression
+    def parse_blank: () -> Expression
+
+    #  () -> Expression
+    def parse_empty: () -> Expression
+
+    #  (Expression) -> FilteredExpression
+    def parse_filters: (untyped left) -> FilteredExpression
+
+    #  (Expression) -> FilteredExpression
+    def parse_filter: (untyped left) -> FilteredExpression
+
+    #  (Expression) -> Expression
+    def parse_infix: (untyped left) -> Expression
   end
 end

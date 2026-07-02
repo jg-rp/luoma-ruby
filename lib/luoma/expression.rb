@@ -18,9 +18,7 @@ module Luoma
       raise "not implemented"
     end
 
-    #: (RenderContext) -> Array[_Traversable]
-    def children(context)
-      # TODO: remove `context`, add tree view
+    def children
       raise "not implemented"
     end
 
@@ -51,9 +49,8 @@ module Luoma
       obj
     end
 
-    #: (RenderContext) -> Array[_Traversable]
-    def children(context)
-      [@expr, *@segments.grep(Variable)]
+    def children
+      [@expr, *@segments.grep(Variable)] #: Array[_Traversable]
     end
 
     def with(token)
@@ -81,8 +78,7 @@ module Luoma
       end
     end
 
-    #: (RenderContext) -> Array[_Traversable]
-    def children(context)
+    def children
       [@consequence, @condition, @alternative].compact
     end
   end
@@ -138,8 +134,7 @@ module Luoma
       )
     end
 
-    #: (RenderContext) -> Array[_Traversable]
-    def children(context)
+    def children
       [@left, @filter]
     end
 
@@ -158,8 +153,7 @@ module Luoma
       @span = Luoma.span(left.span, right.span)
     end
 
-    #: (RenderContext) -> Array[_Traversable]
-    def children(context)
+    def children
       [@left, @right]
     end
   end
@@ -407,12 +401,11 @@ module Luoma
       end
     end
 
-    #: (RenderContext) -> Array[_Traversable]
-    def children(context)
+    def children
       if @root.is_a?(Variable)
-        [@root, *@segments.grep(Variable)]
+        [@root, *@segments.grep(Variable)] #: Array[_Traversable]
       else
-        @segments.filter.grep(Variable)
+        @segments.filter.grep(Variable) #: Array[_Traversable]
       end
     end
 
@@ -454,8 +447,7 @@ module Luoma
       @value
     end
 
-    #: (RenderContext) -> Array[_Traversable]
-    def children(context)
+    def children
       []
     end
 
@@ -484,8 +476,7 @@ module Luoma
       LambdaFunction.new(@params.map(&:value), @expr, context)
     end
 
-    #: (RenderContext) -> Array[_Traversable]
-    def children(context)
+    def children
       [@expr]
     end
 
@@ -514,8 +505,7 @@ module Luoma
       context.env.auto_escape ? HTMLSafeDrop.from(result) : result
     end
 
-    #: (RenderContext) -> Array[_Traversable]
-    def children(context)
+    def children
       @segments.grep_v(String) #: Array[Expression]
     end
 
@@ -544,8 +534,7 @@ module Luoma
       @value
     end
 
-    #: (RenderContext) -> Array[_Traversable]
-    def children(context)
+    def children
       []
     end
 
@@ -569,8 +558,7 @@ module Luoma
       @value
     end
 
-    #: (RenderContext) -> Array[_Traversable]
-    def children(context)
+    def children
       []
     end
 
@@ -594,8 +582,7 @@ module Luoma
       @value
     end
 
-    #: (RenderContext) -> Array[_Traversable]
-    def children(context)
+    def children
       []
     end
 
@@ -611,8 +598,7 @@ module Luoma
       nil
     end
 
-    #: (RenderContext) -> Array[_Traversable]
-    def children(context)
+    def children
       []
     end
 
@@ -638,8 +624,7 @@ module Luoma
       RangeDrop.new(start, stop)
     end
 
-    #: (RenderContext) -> Array[_Traversable]
-    def children(context)
+    def children
       [@start, @stop]
     end
 
@@ -671,8 +656,7 @@ module Luoma
       result
     end
 
-    #: (RenderContext) -> Array[_Traversable]
-    def children(context)
+    def children
       @items
     end
 
@@ -709,8 +693,7 @@ module Luoma
       result
     end
 
-    #: (RenderContext) -> Array[_Traversable]
-    def children(context)
+    def children
       @items
     end
 
@@ -734,7 +717,7 @@ module Luoma
 
     #: (RenderContext) -> untyped
     def evaluate(context)
-      func = context.env.predicates[@filter.name.value]
+      func = context.env.predicates[@value]
 
       if func.nil?
         :nothing
@@ -743,8 +726,7 @@ module Luoma
       end
     end
 
-    #: (RenderContext) -> Array[_Traversable]
-    def children(context)
+    def children
       []
     end
 
@@ -763,8 +745,7 @@ module Luoma
       @expr = expr
     end
 
-    #: (RenderContext) -> Array[_Traversable]
-    def children(context)
+    def children
       [@expr]
     end
 
@@ -784,8 +765,7 @@ module Luoma
       @expr = expr
     end
 
-    #: (RenderContext) -> Array[_Traversable]
-    def children(context)
+    def children
       [@expr]
     end
 
@@ -810,7 +790,7 @@ module Luoma
       @value
     end
 
-    def children(context)
+    def children
       []
     end
 
@@ -832,7 +812,7 @@ module Luoma
       @span = args.empty? ? token : Luoma.span(token, args.last.span)
     end
 
-    def children(context)
+    def children
       @args
     end
 
@@ -856,8 +836,7 @@ module Luoma
       @span = Luoma.span(token, expression.span)
     end
 
-    #: (RenderContext) -> Array[_Traversable]
-    def children(context)
+    def children
       [@expression]
     end
 
@@ -886,7 +865,7 @@ module Luoma
 
     #: (untyped) -> bool
     def call(obj)
-      raise "TODO:"
+      @func.call(obj)
     end
   end
 
@@ -900,13 +879,82 @@ module Luoma
 
     #: (Enumerable[untyped]) -> Array[untyped]
     def broadcast(enum)
-      raise "TODO:"
+      scope = {} #: Hash[String, untyped]
+      result = [] #: Array[untyped]
+
+      if @params.length == 1
+        param = @params[0]
+
+        @context.extends(scope) do
+          enum.each do |item|
+            scope[param] = item
+            result << @expr.evaluate(@context)
+          end
+        end
+      else
+        name_param = @params[0]
+        index_param = @params[1]
+
+        @context.extends(scope) do
+          enum.each_with_index do |item, i|
+            scope[index_param] = i
+            scope[name_param] = item
+            result << @expr.evaluate(@context)
+          end
+        end
+      end
+
+      result
     end
 
     #: (untyped, Integer) -> untyped
     def call(value, index)
-      raise "TODO:"
+      scope = { @params[0] => value }
+      scope[@params[1]] = index if @params.length > 1
+
+      @context.extends(scope) do
+        @expr.evaluate(@context)
+      end
     end
+  end
+
+  #: (Expression) -> String
+  def self.tree_view(e)
+    # (prefix, connector, class_name, inspect_value)
+    nodes = [] # : Array[[String, String, String, String]]
+
+    # @type var visit: ^(_Traversable, String, bool) -> void
+    visit = lambda do |node, prefix, is_last|
+      connector = if prefix.empty?
+                    ""
+                  elsif is_last
+                    "└── "
+                  else
+                    "├── "
+                  end
+
+      nodes << [prefix, connector, node.class.to_s, node.to_s]
+      child_prefix = prefix + (is_last ? "    " : "│   ")
+      node.children.each_with_index do |child, i|
+        last = i == node.children.length - 1
+        visit.call(child, child_prefix, last)
+      end
+    end
+
+    visit.call(e, "", true)
+
+    widths = nodes.map { |prefix, connector, cls| (prefix + connector + cls).length }
+    max_width = widths.max || 0
+
+    lines = [] # : Array[String]
+    nodes.zip(widths).each do |node, width|
+      prefix, connector, cls, val = node
+      left = prefix + connector + cls
+      padding = " " * (max_width - (width || raise) + 4)
+      lines << (left + padding + val)
+    end
+
+    lines.join("\n")
   end
 end
 

@@ -39,6 +39,8 @@ module Luoma
 
     @filters: Hash[String, untyped]
 
+    @predicates: Hash[String, ^(untyped) -> bool]
+
     @max_assign_score_cumulative: Integer?
 
     @max_assign_score: Integer?
@@ -66,6 +68,8 @@ module Luoma
     attr_accessor parser: _Parser
 
     attr_reader filters: Hash[String, untyped]
+
+    attr_reader predicates: Hash[String, ^(untyped) -> bool]
 
     attr_accessor strict_filters: bool
 
