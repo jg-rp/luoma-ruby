@@ -564,6 +564,12 @@ module Luoma
       @span = Luoma.span(@token, token)
       self
     end
+
+    # Return the string, or nil if the string literal contains interpolated expressions.
+    #: () -> String?
+    def value
+      @segments.first if @segments.length == 1 && @segments.first.is_a?(String) #: String?
+    end
   end
 
   class IntegerLiteral < Expression

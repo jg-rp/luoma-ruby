@@ -6,7 +6,7 @@ module Luoma
     def self.parse(token, tag_name, parser)
       identifier = parser.parse_ident
       parser.eat(:token_assign, message: "bad identifier or missing assignment operator")
-      expression = parser.parse_filtered_expression
+      expression = parser.parse_expression
       parser.carry_whitespace_control
       parser.eat(:token_tag_end)
       new(token, tag_name, identifier, expression)

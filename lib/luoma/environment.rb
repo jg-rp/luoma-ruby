@@ -122,7 +122,6 @@ module Luoma
       @tags["assign"] = AssignTag
       @tags["capture"] = CaptureTag
       @tags["case"] = CaseTag
-      @tags["comment"] = CommentTag
       @tags["cycle"] = CycleTag
       @tags["decrement"] = DecrementTag
       @tags["for"] = ForTag

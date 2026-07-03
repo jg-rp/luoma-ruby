@@ -22,8 +22,6 @@ module Luoma
 
     END_CASE_BLOCK: Set[String]
 
-    WHEN_DELIMITERS: Set[t_token_kind]
-
     attr_reader block: t_block
 
     attr_reader right: Array[Expression]

@@ -84,7 +84,6 @@ module Luoma
     attr_reader :block, :right
 
     END_CASE_BLOCK = Set["endcase", "when", "else"]
-    WHEN_DELIMITERS = Set[:token_comma, :token_or] #: Set[t_token_kind]
 
     #: (String, Parser) -> WhenBlock
     def self.parse(tag_name, parser)
@@ -98,8 +97,8 @@ module Luoma
       right = [] #: Array[Expression]
 
       loop do
-        right << parser.parse_expression(infix: false)
-        break unless WHEN_DELIMITERS.include?(parser.kind)
+        right << parser.parse_expression
+        break unless parser.kind == :token_comma
 
         parser.next
       end

@@ -257,6 +257,9 @@ module Luoma
     def initialize: (t_token token, Array[String|Expression] segments, t_token end_token) -> void
 
     def with: (t_token token) -> self
+            
+    #  () -> String?
+    def value: () -> String?
   end
 
   class IntegerLiteral < Expression

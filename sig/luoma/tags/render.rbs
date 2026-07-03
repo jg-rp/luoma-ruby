@@ -1,6 +1,6 @@
 module Luoma
   class RenderTag < Markup
-    @template_name: StringLiteral
+    @template_name: Name
 
     @for_loop: bool
 
@@ -15,7 +15,7 @@ module Luoma
     #  (t_token, String, Parser) -> Markup
     def self.parse: (t_token token, String tag_name, Parser parser) -> Markup
 
-    #  (t_token, String, StringLiteral, bool, Expression?, Name?, Array[KeywordArgument]) -> void
-    def initialize: (t_token token, String tag_name, StringLiteral template_name, bool for_loop, Expression? expression, Name? bind, Array[KeywordArgument] args) -> void
+    #  (t_token, String, Name, bool, Expression?, Name?, Array[KeywordArgument]) -> void
+    def initialize: (t_token token, String tag_name, Name template_name, bool for_loop, Expression? expression, Name? bind, Array[KeywordArgument] args) -> void
   end
 end

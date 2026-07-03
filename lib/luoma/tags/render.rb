@@ -7,6 +7,19 @@ module Luoma
     #: (t_token, String, Parser) -> Markup
     def self.parse(token, tag_name, parser)
       name_expr = parser.parse_string_literal
+      name_value = name_expr.value
+
+      unless name_value
+        raise TemplateSyntaxError.new(
+          "expected a string literal",
+          name_expr.span,
+          parser.source,
+          parser.template_name
+        )
+      end
+
+      name = Name.new(name_expr.token, name_value)
+
       for_loop = false
 
       bind_expr = case parser.current_value
@@ -30,7 +43,7 @@ module Luoma
       args = parser.parse_keyword_arguments(require_commas: false)
       parser.carry_whitespace_control
       parser.eat(:token_tag_end)
-      new(token, tag_name, name_expr, for_loop, bind_expr, bind_name, args)
+      new(token, tag_name, name, for_loop, bind_expr, bind_name, args)
     end
 
     #: (t_token, String, Name, bool, Expression?, Name?, Array[KeywordArgument]) -> void

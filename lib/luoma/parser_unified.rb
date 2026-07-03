@@ -67,7 +67,8 @@ module Luoma
       :token_else,
       :token_rparen,
       :token_eoi,
-      :token_interpolation_end
+      :token_interpolation_end,
+      :token_comma
     ].freeze #: Set[t_token_kind]
 
     TERMINATE_FILTER = Set[
@@ -375,6 +376,14 @@ module Luoma
       carry_whitespace_control
       eat(:token_out_end)
       OutputStatement.new(token, expr)
+    end
+
+    #: () -> Markup
+    def parse_comment
+      token = eat(:token_comment)
+      carry_whitespace_control
+      eat(:token_comment_end)
+      Comment.new(token, Luoma.get_token_value(token, @source))
     end
 
     #: () -> Markup

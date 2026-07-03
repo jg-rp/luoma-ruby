@@ -9,7 +9,7 @@ module Luoma
     def self.parse(token, tag_name, parser)
       blocks = [] #: Array[UnlessBlock | IfBlock | ElseBlock]
       parser.expect_expression
-      expression = parser.parse_expression(infix: true)
+      expression = parser.parse_expression
       parser.carry_whitespace_control
       parser.eat(:token_tag_end)
 
@@ -80,7 +80,7 @@ module Luoma
       parser.skip_whitespace_control
       token = parser.eat(:token_tag_name)
       parser.expect_expression
-      expression = parser.parse_expression(infix: true)
+      expression = parser.parse_expression
       parser.carry_whitespace_control
       parser.eat(:token_tag_end)
       UnlessBlock.new(token, tag_name, expression, parser.parse_block(stop: END_UNLESS_BLOCK))

@@ -11,6 +11,25 @@ module Luoma
       @range = (start...stop)
     end
 
+    #: (untyped, RenderContext) -> bool
+    def key?(obj, context)
+      obj == "first" || obj == "last" || obj == "size"
+    end
+
+    #: (String, RenderContext) -> untyped
+    def fetch(name, context, default: :nothing)
+      case name
+      when "first"
+        @start
+      when "last"
+        @stop
+      when "size"
+        @range.size
+      else
+        default
+      end
+    end
+
     def each(&block)
       return enum_for(:each) unless block
 
