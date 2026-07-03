@@ -21,7 +21,7 @@ module Luoma
 
     #: (untyped, RenderContext) -> bool
     def eq?(obj, context)
-      obj.nil? || obj.is_a?(UndefinedDrop) || obj.is_a?(BlankDrop)
+      obj.nil? || obj.is_a?(UndefinedDrop)
     end
   end
 

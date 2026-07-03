@@ -8,7 +8,7 @@ module Luoma
       super()
       @start = start
       @stop = stop
-      @range = (start...stop)
+      @range = (start..stop)
     end
 
     #: (untyped, RenderContext) -> bool
@@ -30,6 +30,10 @@ module Luoma
       end
     end
 
+    def to_a
+      @range.to_a
+    end
+
     def each(&block)
       return enum_for(:each) unless block
 
@@ -39,6 +43,11 @@ module Luoma
     #: (untyped, RenderContext) -> bool
     def eq?(obj, context)
       obj.is_a?(RangeDrop) && obj.start == obj.stop
+    end
+
+    #: (RenderContext) -> Integer
+    def length(context) # steep:ignore
+      @range.size
     end
 
     def slice(offset, limit, reversed)

@@ -336,10 +336,18 @@ module Luoma
                parse_int_literal
              when :token_float
                parse_float_literal
+             when :token_out_end, :token_wc, :token_tag_end
+               token = current
+               raise TemplateSyntaxError.new(
+                 "unexpected empty expression",
+                 token,
+                 @source,
+                 @template_name
+               )
              else
                token = current
                raise TemplateSyntaxError.new(
-                 "unexpected #{Luoma::TOKEN_KIND_MAP[token.first].inspect}",
+                 "expected an expression, found #{Luoma::TOKEN_KIND_MAP[token.first].inspect}",
                  token,
                  @source,
                  @template_name
@@ -509,7 +517,7 @@ module Luoma
     # Parse an array where we've consumed the opening bracket and first item.
     #: (t_token, Expression|Spread) -> Expression
     def parse_partial_array(token, first)
-      items = [] #: Array[Expression|Spread]
+      items = [first] #: Array[Expression|Spread]
 
       loop do
         break if kind == :token_rbracket
@@ -626,7 +634,7 @@ module Luoma
     def parse_prefix
       token = self.next
 
-      case kind
+      case token.first
       when :token_not
         NotExpression.new(token, parse_expression(precedence: Precedence::LOGICAL_NOT))
       when :token_add
@@ -776,7 +784,7 @@ module Luoma
       op_token = self.next
       kind_ = op_token.first
 
-      return parse_filter(op_token, left) if kind == :token_pipe
+      return parse_filter(op_token, left) if kind_ == :token_pipe
 
       right = parse_expression(precedence: PRECEDENCES[kind_] || Precedence::LOWEST)
       INFIX_OPERATORS[kind_].new(op_token, left, right)

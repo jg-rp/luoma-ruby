@@ -249,7 +249,7 @@ module Luoma
         return html_safe if html_safe
       end
 
-      s = obj.is_a?(Array) ? obj.each { |i| serialize(i, context, token) }.join : to_string(obj, context, token)
+      s = to_string(obj, context, token)
       @auto_escape ? Luoma.escape(s) : s
     end
 

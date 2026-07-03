@@ -170,7 +170,7 @@ module Luoma
 
   class PosExpression < PrefixExpression
     def evaluate(context)
-      raise "TODO"
+      context.env.to_decimal(@right.evaluate(context), default: :nothing)
     end
 
     #: () -> String
@@ -181,7 +181,8 @@ module Luoma
 
   class NegExpression < PrefixExpression
     def evaluate(context)
-      raise "TODO"
+      right = context.env.to_decimal(@right.evaluate(context), default: :nothing)
+      context.env.nothing?(right) ? :nothing : -right # steep:ignore
     end
 
     #: () -> String
