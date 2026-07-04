@@ -4,38 +4,55 @@ module Luoma
   class AssignTag < Markup
     #: (t_token, String, Parser) -> Markup
     def self.parse(token, tag_name, parser)
-      identifier = parser.parse_ident
-      parser.eat(:token_assign, message: "bad identifier or missing assignment operator")
-      # TODO: multi assign
-      expression = parser.parse_expression
+      bindings = [] #: Array[Item]
+
+      name = parser.parse_ident
+      assign_token = parser.eat(
+        :token_assign,
+        message: "bad identifier or missing assignment operator"
+      )
+
+      bindings << Item.new(assign_token, name, parser.parse_expression)
+
+      until parser.kind != :token_comma
+        parser.next
+        name = parser.parse_ident
+        assign_token = parser.eat(
+          :token_assign,
+          message: "bad identifier or missing assignment operator"
+        )
+
+        bindings << Item.new(assign_token, name, parser.parse_expression)
+      end
+
       parser.carry_whitespace_control
       parser.eat(:token_tag_end)
-      new(token, tag_name, identifier, expression)
+      new(token, tag_name, bindings)
     end
 
-    #: (t_token, String, Name, Expression) -> void
-    def initialize(token, tag_name, identifier, expression)
+    #: (t_token, String, Array[Item]) -> void
+    def initialize(token, tag_name, bindings)
       super(token)
       @blank = true
       @tag_name = tag_name
-
-      @identifier = identifier
-      @expression = expression
+      @bindings = bindings
     end
 
     #: (RenderContext, String) -> void
     def render(context, buffer)
-      context.assign(@identifier.value, @expression.evaluate(context))
+      @bindings.each do |binding|
+        context.assign(binding.key.value, binding.expr.evaluate(context))
+      end
     end
 
     #: () -> Array[Expression]
     def expressions
-      [@expression]
+      @bindings.map(&:expr)
     end
 
     #: () -> Array[Name]
     def template_scope
-      [@identifier]
+      @bindings.map(&:key)
     end
   end
 end

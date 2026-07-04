@@ -710,7 +710,7 @@ module Luoma
     def parse_filter(token, left)
       name = parse_ident
 
-      if TERMINATE_FILTER.include?(kind)
+      if TERMINATE_FILTER.include?(kind) || kind == :token_comma
         # No arguments
         return FilteredExpression.new(
           token,

@@ -67,6 +67,8 @@ module Luoma
     def self.find_index(context, left, key, value = nil)
       left = context.to_enumerable(left)
 
+      # TODO: LambdaExpr
+
       if context.nothing?(value)
         left.each_with_index do |item, index|
           return index if context.fetch(item, key)
@@ -83,6 +85,8 @@ module Luoma
     def self.has(context, left, key, value = nil) # rubocop:disable Naming/PredicateMethod
       left = context.to_enumerable(left)
 
+      # TODO: LambdaExpr
+
       if context.nothing?(value)
         left.each do |item|
           return true if context.fetch(item, key)
@@ -98,6 +102,7 @@ module Luoma
 
     # Return the first item in _left_, or `nil` if _left_ does not have a first item.
     def self.first(context, left)
+      # TODO: default to :nothing?
       case left
       when String
         left[0]
@@ -108,6 +113,7 @@ module Luoma
 
     # Return the last item in _left_, or `nil` if _left_ does not have a last item.
     def self.last(context, left)
+      # TODO: default to :nothing?
       case left
       when String
         left[-1]
@@ -137,6 +143,8 @@ module Luoma
       left = context.to_enumerable(left)
       key = context.to_string(key)
 
+      # TODO: LambdaExpr
+
       if context.nothing?(value)
         left.reject do |item|
           context.truthy?(context.fetch(item, key))
@@ -151,6 +159,8 @@ module Luoma
     def self.where(context, left, key, value = nil)
       left = context.to_enumerable(left)
       key = context.to_string(key)
+
+      # TODO: LambdaExpr
 
       if context.nothing?(value)
         left.filter do |item|
@@ -168,6 +178,8 @@ module Luoma
     def self.uniq(context, left, key = nil)
       left = context.to_enumerable(left)
 
+      # TODO: LambdaExpr
+
       if context.nothing?(key)
         left.to_a.uniq
       else
@@ -178,6 +190,8 @@ module Luoma
     # Return the sum of all numeric values in the input array.
     def self.sum(context, left, key = nil)
       left = context.to_enumerable(left)
+
+      # TODO: LambdaExpr
 
       if context.nothing?(key)
         left.sum { |v| context.to_numeric(v) }

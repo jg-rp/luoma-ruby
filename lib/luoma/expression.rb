@@ -60,7 +60,18 @@ module Luoma
 
     #: () -> String
     def to_s
-      "(#{@expr})" # TODO: segments
+      "(#{@expr})#{path(@segments)}"
+    end
+
+    private
+
+    #: (Array[t_path_segment]) -> String
+    def path(segments)
+      if segments.empty?
+        ""
+      else
+        segments.map { |s| s.is_a?(Name) ? ".#{s}" : "[#{s}]" }.join
+      end
     end
   end
 
@@ -577,7 +588,7 @@ module Luoma
 
     #: () -> String
     def to_s
-      @segments.map { |s| s.is_a?(String) ? s : "${#{s}}" }.join
+      @segments.map { |s| s.is_a?(String) ? s : "${#{s}}" }.join.inspect
     end
 
     def with(token)

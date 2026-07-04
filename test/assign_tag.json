@@ -1,0 +1,47 @@
+{
+  "tests": [
+    {
+      "name": "string literal",
+      "template": "{% assign foo = 'foo' %}{{ foo }}",
+      "result": "foo"
+    },
+    {
+      "name": "string literal, filtered",
+      "template": "{% assign foo = 'foo' | upcase %}{{ foo }}",
+      "result": "FOO"
+    },
+    {
+      "name": "shadow global variable",
+      "template": "{{ foo }}{% assign foo = 'foo' | upcase %}{{ foo }}",
+      "data": {
+        "foo": "bar"
+      },
+      "result": "barFOO"
+    },
+    {
+      "name": "range literal",
+      "template": "{% assign foo = (1..3) %}{{ foo | join: '#' }}",
+      "result": "1#2#3"
+    },
+    {
+      "name": "extra whitespace",
+      "template": "{% assign\nfoo\n= 'foo' %}{{ foo }}",
+      "result": "foo"
+    },
+    {
+      "name": "multiple, comma separated",
+      "template": "{% assign\n  foo = 'foo',\n  bar = 2 %}{{ foo }} {{ bar }}",
+      "result": "foo 2"
+    },
+    {
+      "name": "multiple, comma separated, filtered",
+      "template": "{% assign\n  foo = 'foo' | upcase ,\n  bar = 2 | plus: 5 %}{{ foo }} {{ bar }}",
+      "result": "FOO 7"
+    },
+    {
+      "name": "multiple, comma separated, filtered, parens",
+      "template": "{% assign bar = (2 | plus: 5), foo = 'foo' | upcase %}{{ foo }} {{ bar }}",
+      "result": "FOO 7"
+    }
+  ]
+}

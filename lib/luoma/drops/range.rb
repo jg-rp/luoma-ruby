@@ -34,10 +34,8 @@ module Luoma
       @range.to_a
     end
 
-    def each(&block)
-      return enum_for(:each) unless block
-
-      @range
+    def each(&)
+      @range.each
     end
 
     #: (untyped, RenderContext) -> bool

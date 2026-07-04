@@ -36,7 +36,11 @@ module Luoma
     #  (t_token, Expression, Array[t_path_segment]) -> void
     def initialize: (t_token token, Expression expr, Array[t_path_segment] segments) -> void
 
+    #  (t_token) -> self
     def with: (t_token token) -> self
+            
+    #  (Array[t_path_segment]) -> String
+    def path: (Array[t_path_segment]) -> String
   end
 
   class TernaryExpression < Expression
@@ -88,91 +92,36 @@ module Luoma
   end
 
   class CoalesceExpression < InfixExpression
-    #  (RenderContext) -> untyped
-    def evaluate: (RenderContext context) -> untyped
-
-    #  () -> String
-    def to_s: () -> ::String
   end
 
   class OrExpression < InfixExpression
-    #  (RenderContext) -> untyped
-    def evaluate: (RenderContext context) -> untyped
-
-    #  () -> String
-    def to_s: () -> ::String
   end
 
   class AndExpression < InfixExpression
-    #  (RenderContext) -> untyped
-    def evaluate: (RenderContext context) -> untyped
-
-    #  () -> String
-    def to_s: () -> ::String
   end
 
   class EqExpression < InfixExpression
-    #  (RenderContext) -> untyped
-    def evaluate: (RenderContext context) -> untyped
-
-    #  () -> String
-    def to_s: () -> ::String
   end
 
   class NeExpression < InfixExpression
-    #  (RenderContext) -> untyped
-    def evaluate: (RenderContext context) -> untyped
-
-    #  () -> String
-    def to_s: () -> ::String
   end
 
   class LtExpression < InfixExpression
-    #  (RenderContext) -> untyped
-    def evaluate: (RenderContext context) -> untyped
-
-    #  () -> String
-    def to_s: () -> ::String
   end
 
   class LeExpression < InfixExpression
-    #  (RenderContext) -> untyped
-    def evaluate: (RenderContext context) -> untyped
-
-    #  () -> String
-    def to_s: () -> ::String
   end
 
   class GtExpression < InfixExpression
-    #  (RenderContext) -> untyped
-    def evaluate: (RenderContext context) -> untyped
-
-    #  () -> String
-    def to_s: () -> ::String
   end
 
   class GeExpression < InfixExpression
-    #  (RenderContext) -> untyped
-    def evaluate: (RenderContext context) -> untyped
-
-    #  () -> String
-    def to_s: () -> ::String
   end
 
   class ContainsExpression < InfixExpression
-    #  (RenderContext) -> untyped
-    def evaluate: (RenderContext context) -> untyped
-
-    #  () -> String
-    def to_s: () -> ::String
   end
 
   class InExpression < InfixExpression
-    #  (RenderContext) -> untyped
-    def evaluate: (RenderContext context) -> untyped
-
-    #  () -> String
-    def to_s: () -> ::String
   end
 
   class AddExpression < InfixExpression
