@@ -120,8 +120,7 @@ module Luoma
           )
         end
 
-        # Pass the input value through
-        return @left.evaluate(context)
+        return :nothing
       end
 
       filter_context = FilterContext.new(@token, context)
@@ -540,7 +539,7 @@ module Luoma
 
     #: (RenderContext) -> untyped
     def evaluate(context)
-      LambdaFunction.new(@params.map(&:value), @expr, context)
+      LambdaExpr.new(@params.map(&:value), @expr, context)
     end
 
     def children
@@ -942,7 +941,7 @@ module Luoma
     end
   end
 
-  class LambdaFunction
+  class LambdaExpr
     #: (Array[String], Expression, RenderContext) -> void
     def initialize(params, expr, context)
       @params = params

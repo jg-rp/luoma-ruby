@@ -28,7 +28,7 @@
     {
       "name": "literal, interpolated key",
       "expression": "{'${a}': 1}",
-      "result": "{\"${a}\":1}"
+      "invalid": true
     },
     {
       "name": "literal, spread, trailing",

@@ -12,7 +12,7 @@ module Luoma
     #
     # If key is not `:nothing`, coerce it to a string before calling `fetch` on items in
     # _left_.
-    def self.compact: (FilterContext context, untyped left, ?::Symbol key) -> untyped
+    def self.compact: (FilterContext context, untyped left, ?untyped key) -> untyped
 
     # Return _left_ concatenated with _right_, or nil if _right_ is not an array.
     # Coerce _left_ to an array if it isn't an array already.

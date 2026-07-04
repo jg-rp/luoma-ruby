@@ -27,7 +27,7 @@ module Luoma
       max_render_score: nil,
       max_render_size: nil,
       parser: UnifiedParser,
-      strict_filters: true,
+      strict_filters: false,
       suppress_blank_control_flow_blocks: true,
       undefined: UndefinedDrop
     )

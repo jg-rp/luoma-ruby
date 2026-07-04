@@ -22,7 +22,14 @@ module Luoma
       case key
       when :nothing
         left.compact
+      when LambdaExpr
+        left.each_with_index.reject do |item, index|
+          value = key.call(item, index)
+          # TODO: convenience for nothing or nil
+          value.nil? || context.nothing?(value)
+        end.map(&:first)
       else
+        # TODO: reject nothing or nil
         left.reject do |item|
           item.respond_to?(:fetch) ? item.fetch(key, nil).nil? : true
         end
@@ -40,7 +47,7 @@ module Luoma
     def self.find(context, left, key, value = nil)
       left = context.to_enumerable(left)
 
-      if key.is_a?(LambdaFunction)
+      if key.is_a?(LambdaExpr)
         key.broadcast(left).zip(left) do |r, i|
           return i if context.truthy?(r)
         end
@@ -112,7 +119,7 @@ module Luoma
     def self.map(context, left, key)
       left = context.to_enumerable(left)
 
-      if key.is_a?(LambdaFunction)
+      if key.is_a?(LambdaExpr)
         key.broadcast(left)
       else
         key = context.to_string(key)

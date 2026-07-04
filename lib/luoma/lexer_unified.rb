@@ -188,9 +188,10 @@ module Luoma
 
     #: () -> void
     def accept_string
+      # `get_byte` returns a string, `peek_byte` returns an integer :(
       quote = @scanner.get_byte || raise
       byte = quote.ord
-      double = byte == 34 # "
+      double = quote == '"'
 
       quote_kind = double ? :token_double_quote : :token_single_quote #: t_token_kind
       unescaped_kind = double ? :token_double_quoted : :token_single_quoted #: t_token_kind
@@ -206,20 +207,20 @@ module Luoma
       end
 
       loop do
-        case @scanner.get_byte&.ord
-        when byte
+        case @scanner.get_byte
+        when quote
           @scanner.pos -= 1
           emit(current_kind) if @start < @scanner.pos
           @scanner.pos += 1
           emit(quote_kind)
           break
-        when 92 # \
+        when "\\"
           @scanner.pos -= 1
           # Emit unescaped segment, if any.
           emit(current_kind) if current_kind == unescaped_kind && @start < @scanner.pos
           @scanner.pos += 2
           current_kind = escaped_kind
-        when 36 # $
+        when "$"
           next unless @scanner.peek_byte == 123 # steep:ignore
 
           @scanner.pos -= 1

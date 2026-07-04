@@ -13,7 +13,7 @@ end
 def assert_test_case(test_case)
   if test_case["invalid"]
     assert_raises Luoma::LuomaError do
-      env.parse(test_case["template"]).render(test_case["data"])
+      Luoma.parse("{{ #{test_case["expression"]} }}").render(test_case["data"])
     end
   else
     template = Luoma.parse("{{ #{test_case["expression"]} }}")

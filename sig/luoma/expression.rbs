@@ -512,7 +512,7 @@ module Luoma
     def call: (untyped obj) -> bool
   end
 
-  class LambdaFunction
+  class LambdaExpr
     @params: Array[String]
 
     @expr: Expression
