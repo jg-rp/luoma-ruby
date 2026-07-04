@@ -131,7 +131,7 @@ module Luoma
                 )
               else
                 slice(
-                  target.is_a?(String) && target.empty? ? [] : context.env.to_a(target, context, @expression.span),
+                  target.is_a?(String) && target.empty? ? [] : context.env.to_a(target, context),
                   @offset.is_a?(Variable) && @offset.ident?("continue") ? :continue : @offset&.evaluate(context), # steep:ignore
                   @limit&.evaluate(context),
                   context
@@ -198,13 +198,13 @@ module Luoma
       offset_ = if offset == :continue
                   context.registers[:for][@offset_key]
                 else
-                  context.env.nothing?(offset) ? 0 : context.env.to_i(offset, context, @offset&.span || @token)
+                  context.env.nothing?(offset) ? 0 : context.env.to_i(offset, context, default: 0)
                 end
 
       limit_ = if context.env.nothing?(limit)
                  array.length
                else
-                 context.env.to_i(limit, context, @limit&.span || @token)
+                 context.env.to_i(limit, context, default: array.length)
                end
 
       array_ = array.slice(offset_, limit_) || []
@@ -217,13 +217,13 @@ module Luoma
       offset_ = if offset == :continue
                   context.registers[:for][@offset_key]
                 else
-                  context.env.nothing?(offset) ? nil : context.env.to_i(offset, context, @offset&.span || @token)
+                  context.env.nothing?(offset) ? nil : context.env.to_i(offset, context, default: 0)
                 end
 
       limit_ = if context.env.nothing?(limit)
                  drop.length(context)
                else
-                 context.env.to_i(limit, context, @limit&.span || @token)
+                 context.env.to_i(limit, context, default: drop.length(context))
                end
 
       array = drop.slice(offset_, limit_, @reversed).to_a

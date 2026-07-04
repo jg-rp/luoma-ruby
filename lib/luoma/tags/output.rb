@@ -9,11 +9,7 @@ module Luoma
 
     #: (RenderContext, String) -> void
     def render(context, buffer)
-      buffer << context.env.serialize(
-        @expression.evaluate(context),
-        context,
-        @expression.span
-      )
+      buffer << context.env.serialize(@expression.evaluate(context), context)
     end
 
     #: () -> Array[Expression]

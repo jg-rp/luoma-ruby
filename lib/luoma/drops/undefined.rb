@@ -21,7 +21,21 @@ module Luoma
 
     #: (untyped, RenderContext) -> bool
     def eq?(obj, context)
-      obj.nil? || obj.is_a?(UndefinedDrop)
+      obj.is_a?(UndefinedDrop)
+    end
+
+    #: (:data | :numeric | :string | :boolean, RenderContext) -> untyped
+    def to_primitive(hint, context)
+      case hint
+      when :data
+        nil
+      when :numeric
+        :nothing
+      when :string
+        ""
+      when :boolean
+        false
+      end
     end
   end
 

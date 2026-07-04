@@ -57,6 +57,11 @@ module Luoma
       @span = Luoma.span(@token, token)
       self
     end
+
+    #: () -> String
+    def to_s
+      "(#{@expr})" # TODO: segments
+    end
   end
 
   class TernaryExpression < Expression
@@ -80,6 +85,15 @@ module Luoma
 
     def children
       [@consequence, @condition, @alternative].compact
+    end
+
+    #: () -> String
+    def to_s
+      if @alternative
+        "#{@consequence} if #{@condition} else #{@alternative}"
+      else
+        "#{@consequence} if #{@condition}"
+      end
     end
   end
 
@@ -170,7 +184,7 @@ module Luoma
 
   class PosExpression < PrefixExpression
     def evaluate(context)
-      context.env.to_decimal(@right.evaluate(context), default: :nothing)
+      context.env.to_numeric(@right.evaluate(context), context, default: :nothing)
     end
 
     #: () -> String
@@ -181,7 +195,7 @@ module Luoma
 
   class NegExpression < PrefixExpression
     def evaluate(context)
-      right = context.env.to_decimal(@right.evaluate(context), default: :nothing)
+      right = context.env.to_numeric(@right.evaluate(context), context, default: :nothing)
       context.env.nothing?(right) ? :nothing : -right # steep:ignore
     end
 
@@ -347,8 +361,8 @@ module Luoma
   class AddExpression < InfixExpression
     #: (RenderContext) -> untyped
     def evaluate(context)
-      left = context.env.to_decimal(@left.evaluate(context), default: :nothing)
-      right = context.env.to_decimal(@right.evaluate(context), default: :nothing)
+      left = context.env.to_numeric(@left.evaluate(context), context, default: :nothing)
+      right = context.env.to_numeric(@right.evaluate(context), context, default: :nothing)
       left == :nothing || right == :nothing ? :nothing : left + right # steep:ignore
     end
 
@@ -361,8 +375,8 @@ module Luoma
   class SubExpression < InfixExpression
     #: (RenderContext) -> untyped
     def evaluate(context)
-      left = context.env.to_decimal(@left.evaluate(context), default: :nothing)
-      right = context.env.to_decimal(@right.evaluate(context), default: :nothing)
+      left = context.env.to_numeric(@left.evaluate(context), context, default: :nothing)
+      right = context.env.to_numeric(@right.evaluate(context), context, default: :nothing)
       left == :nothing || right == :nothing ? :nothing : left - right # steep:ignore
     end
 
@@ -375,8 +389,8 @@ module Luoma
   class MulExpression < InfixExpression
     #: (RenderContext) -> untyped
     def evaluate(context)
-      left = context.env.to_decimal(@left.evaluate(context), default: :nothing)
-      right = context.env.to_decimal(@right.evaluate(context), default: :nothing)
+      left = context.env.to_numeric(@left.evaluate(context), context, default: :nothing)
+      right = context.env.to_numeric(@right.evaluate(context), context, default: :nothing)
       left == :nothing || right == :nothing ? :nothing : left * right # steep:ignore
     end
 
@@ -389,9 +403,12 @@ module Luoma
   class DivExpression < InfixExpression
     #: (RenderContext) -> untyped
     def evaluate(context)
-      left = context.env.to_decimal(@left.evaluate(context), default: :nothing)
-      right = context.env.to_decimal(@right.evaluate(context), default: :nothing)
-      left == :nothing || right == :nothing || right.zero? ? :nothing : left / right # steep:ignore
+      lhs = context.env.to_numeric(@left.evaluate(context), context, default: :nothing)
+      rhs = context.env.to_numeric(@right.evaluate(context), context, default: :nothing)
+      return :nothing if lhs == :nothing || rhs == :nothing || rhs.zero? # steep:ignore
+
+      result = lhs.to_d / rhs # steep:ignore
+      result.frac.zero? && lhs.is_a?(::Integer) && rhs.is_a?(::Integer) ? result.to_i : result
     end
 
     #: () -> String
@@ -403,9 +420,12 @@ module Luoma
   class ModExpression < InfixExpression
     #: (RenderContext) -> untyped
     def evaluate(context)
-      left = context.env.to_decimal(@left.evaluate(context), default: :nothing)
-      right = context.env.to_decimal(@right.evaluate(context), default: :nothing)
-      left == :nothing || right == :nothing || right.zero? ? :nothing : left % right # steep:ignore
+      lhs = context.env.to_numeric(@left.evaluate(context), context, default: :nothing)
+      rhs = context.env.to_numeric(@right.evaluate(context), context, default: :nothing)
+      return :nothing if lhs == :nothing || rhs == :nothing || rhs.zero? # steep:ignore
+
+      result = lhs.to_d % rhs # steep:ignore
+      result.frac.zero? && lhs.is_a?(::Integer) && rhs.is_a?(::Integer) ? result.to_i : result
     end
 
     #: () -> String
@@ -546,7 +566,7 @@ module Luoma
     #: (RenderContext) -> untyped
     def evaluate(context)
       result = @segments.map do |s|
-        s.is_a?(String) ? s : context.env.to_string(s.evaluate(context), context, s.span)
+        s.is_a?(String) ? s : context.env.to_string(s.evaluate(context), context)
       end.join
 
       context.env.auto_escape ? HTMLSafeDrop.from(result) : result
@@ -672,8 +692,8 @@ module Luoma
 
     #: (RenderContext) -> untyped
     def evaluate(context)
-      start = context.env.to_i(@start.evaluate(context), context, @span, default: 0)
-      stop = context.env.to_i(@stop.evaluate(context), context, @span, default: 0)
+      start = context.env.to_i(@start.evaluate(context), context, default: 0)
+      stop = context.env.to_i(@stop.evaluate(context), context, default: 0)
       RangeDrop.new(start, stop)
     end
 
@@ -700,7 +720,7 @@ module Luoma
 
       @items.each do |item|
         if item.is_a?(Spread)
-          result.concat(context.env.to_a(item.expr.evaluate(context), context, item.expr.token))
+          result.concat(context.env.to_a(item.expr.evaluate(context), context))
         else
           result << item.evaluate(context)
         end
@@ -737,7 +757,7 @@ module Luoma
 
       @items.each do |item|
         if item.is_a?(Spread)
-          result.update(context.env.to_h(item.expr.evaluate(context), context, item.expr.token))
+          result.update(context.env.to_h(item.expr.evaluate(context), context))
         else
           result[item.key.value] = item.expr.evaluate(context)
         end

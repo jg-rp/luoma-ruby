@@ -504,7 +504,7 @@ module Luoma
       else
         expr = parse_expression
 
-        if kind != :token_comma && (expr.is_a?(StringLiteral) || expr.is_a?(Variable))
+        if kind != :token_comma && expr.is_a?(StringLiteral)
           # A path, backtrack.
           @pos = start_pos
           parse_path
@@ -606,7 +606,7 @@ module Luoma
 
     #: (Expression) -> Lambda
     def parse_partial_lambda(expr)
-      unless expr.is_a?(Variable) && @segments.empty? && @root.is_a?(Name)
+      unless expr.is_a?(Variable) && expr.segments.empty? && expr.root.is_a?(Name)
         raise TemplateSyntaxError.new(
           "expected an identifier",
           expr.token,
@@ -619,7 +619,7 @@ module Luoma
       @pos += 1 if kind == :token_comma
 
       loop do
-        break if kind == :token_paren
+        break if kind == :token_rparen
 
         params << parse_ident
         @pos += 1 if kind == :token_comma

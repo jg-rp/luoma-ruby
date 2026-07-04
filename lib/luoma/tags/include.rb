@@ -38,11 +38,7 @@ module Luoma
 
     #: (RenderContext, String) -> void
     def render(context, buffer)
-      name = context.env.to_string(
-        @template_name.evaluate(context),
-        context,
-        @template_name.token
-      )
+      name = context.env.to_string(@template_name.evaluate(context), context)
 
       begin
         template = context.env.get_template(
@@ -85,11 +81,7 @@ module Luoma
 
     #: (RenderContext) -> Partial?
     def partial(static_context)
-      name = static_context.env.to_string(
-        @template_name.evaluate(static_context),
-        static_context,
-        @template_name.token
-      )
+      name = static_context.env.to_string(@template_name.evaluate(static_context), static_context)
 
       template = static_context.env.get_template(
         name,

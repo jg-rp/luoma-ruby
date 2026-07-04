@@ -31,52 +31,42 @@ module Luoma
 
     #: (untyped) -> Array[untyped]
     def to_a(obj)
-      @env.to_a(obj, @render_context, @token)
+      @env.to_a(obj, @render_context)
+    end
+
+    #: (untyped) -> Hash[untyped, untyped]
+    def to_h(obj)
+      @env.to_h(obj, @render_context)
     end
 
     #: (untyped) -> Integer
-    def to_i(obj)
-      @env.to_i(obj, @render_context, @token)
-    end
-
-    #: (untyped) -> Integer
-    def to_integer(obj)
-      @env.to_integer(obj, @render_context, @token)
+    def to_i(obj, default: :nothing)
+      @env.to_i(obj, @render_context, default: default)
     end
 
     #: (untyped) -> String
     def to_string(obj)
-      @env.to_string(obj, @render_context, @token)
+      @env.to_string(obj, @render_context)
     end
 
     #: (untyped) -> Numeric
-    def to_numeric(obj, default: 0)
-      @env.to_numeric(obj, default: default)
-    end
-
-    #: (untyped) -> Numeric
-    def to_decimal(obj, default: 0)
-      @env.to_decimal(obj, default: default)
+    def to_numeric(obj, default: :nothing)
+      @env.to_numeric(obj, @render_context, default: default)
     end
 
     #: (untyped) -> Enumerable[untyped]
     def to_enumerable(obj)
-      @env.to_enumerable(obj)
+      @env.to_enumerable(obj, @render_context)
     end
 
     #: (untyped) -> untyped
     def to_date(obj)
-      @env.to_date(obj)
+      @env.to_date(obj, @render_context)
     end
 
     #: (untyped) -> bool
     def truthy?(obj)
       @env.truthy?(obj, @render_context)
-    end
-
-    #: (untyped) -> bool
-    def empty?(obj)
-      EMPTY.eq?(obj, @render_context)
     end
 
     #: (untyped) -> bool

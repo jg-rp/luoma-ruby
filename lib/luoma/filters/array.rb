@@ -40,7 +40,11 @@ module Luoma
     def self.find(context, left, key, value = nil)
       left = context.to_enumerable(left)
 
-      if context.nothing?(value)
+      if key.is_a?(LambdaFunction)
+        key.broadcast(left).zip(left) do |r, i|
+          return i if context.truthy?(r)
+        end
+      elsif context.nothing?(value)
         left.each do |item|
           return item if context.fetch(item, key)
         end
@@ -107,8 +111,13 @@ module Luoma
 
     def self.map(context, left, key)
       left = context.to_enumerable(left)
-      key = context.to_string(key)
-      left.map { |item| item[key] }
+
+      if key.is_a?(LambdaFunction)
+        key.broadcast(left)
+      else
+        key = context.to_string(key)
+        left.map { |item| item[key] }
+      end
     end
 
     # Return _left_ with all items in reverse order.

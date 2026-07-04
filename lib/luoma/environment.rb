@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "bigdecimal"
 require "json"
 
 module Luoma
@@ -11,6 +10,9 @@ module Luoma
                   :suppress_blank_control_flow_blocks, :undefined, :filters, :tags, :max_assign_score_cumulative,
                   :max_assign_score, :max_context_depth, :max_render_score_cumulative, :max_render_score,
                   :max_render_size, :predicates
+
+    RE_INTEGER = /\A-?\d+(?:[eE]\+?\d+)?\Z/
+    RE_DECIMAL = /((?:-?\d+\.\d+(?:[eE][+-]?\d+)?)|(-?\d+[eE]-\d+))/
 
     def initialize(
       auto_escape: nil,
@@ -242,19 +244,19 @@ module Luoma
       obj.is_a?(Drop) ? obj.to_primitive(:boolean, context) : obj == :nothing || !!obj
     end
 
-    #: (untyped, RenderContext, t_token) -> String
-    def serialize(obj, context, token)
+    #: (untyped, RenderContext) -> String
+    def serialize(obj, context)
       if @auto_escape && obj.is_a?(Drop)
         html_safe = obj.to_html_safe_s
         return html_safe if html_safe
       end
 
-      s = to_string(obj, context, token)
+      s = to_string(obj, context)
       @auto_escape ? Luoma.escape(s) : s
     end
 
-    #: (untyped, RenderContext, t_token) -> Array[untyped]
-    def to_a(obj, context, token)
+    #: (untyped, RenderContext) -> Array[untyped]
+    def to_a(obj, context)
       if obj.is_a?(Array)
         obj
       elsif obj.is_a?(String)
@@ -266,8 +268,8 @@ module Luoma
       end
     end
 
-    #: (untyped, RenderContext, t_token) -> Hash[untyped, untyped]
-    def to_h(obj, context, token)
+    #: (untyped, RenderContext) -> Hash[untyped, untyped]
+    def to_h(obj, context)
       if obj.is_a?(Hash)
         obj
       elsif obj.is_a(Drop)
@@ -282,80 +284,47 @@ module Luoma
 
     # Try to coerce `obj` to an integer using `#to_i` with a fallback to
     # `Integer(obj.to_s)` if `obj` does not respond to `to_i`.
-    #: (untyped, RenderContext, t_token, ?default: Integer?) -> Integer
-    def to_i(obj, context, token, default: nil)
+    #: [X] (untyped, RenderContext, ?default: X) -> (Integer | X)
+    def to_i(obj, context, default: :nothing)
       return obj if obj.is_a?(Integer)
       return obj.to_i if obj.respond_to?(:to_i) && !obj.is_a?(String)
 
       begin
         Integer(obj.to_s)
       rescue ::ArgumentError
-        return default if default
-
-        raise TemplateTypeError.new(
-          "invalid integer",
-          token,
-          context.template.source,
-          context.template.name
-        )
+        default
       end
     end
 
-    # Try to coerce `obj` to an integer using `Integer()`.
-    # Raise a type error if `obj` can't be coerced to an integer.
-    #: (untyped, RenderContext, t_token) -> Integer
-    def to_integer(obj, context, token)
-      return obj if obj.is_a?(Integer)
-
-      begin
-        Integer(obj.to_s)
-      rescue ::ArgumentError
-        raise TemplateTypeError.new(
-          "invalid integer",
-          token,
-          context.template.source,
-          context.template.name
-        )
-      end
-    end
-
-    #: (untyped, ?default: Numeric?) -> Numeric
-    def to_numeric(obj, default: 0)
+    #: [X] (untyped, ?default: X) -> (Numeric | X)
+    def to_numeric(obj, context, default: :nothing)
       case obj
-      when Float, Integer, BigDecimal, Numeric
-        # Numeric is the base class for heap allocated numbers.
+      when ::Float
+        BigDecimal(obj)
+      when Numeric
         obj
-      when String
-        # Cast to float before integer as `to_f` will parse exponents, `to_i` will not.
-        # Use `Float(obj)` instead of `obj.to_f` because `to_f` ignores trailing non-digit chars.
-        obj.match?(/\A-?\d+(?:[eE]\+?\d+)?\Z/) ? obj.to_f.to_i : Float(obj)
+      when ::String
+        case obj
+        when RE_INTEGER
+          obj.to_f.to_i
+        when RE_DECIMAL
+          BigDecimal(obj)
+        else
+          default
+        end
+      when true
+        1
+      when false
+        0
+      when Drop
+        obj.to_primitive(:numeric, context)
       else
         default
       end
-    rescue ArgumentError
-      default
-    end
-
-    # Cast `obj` to a number, favouring BigDecimal over Float.
-    # Returns `default` if `obj` can't be cast to a numeric value.
-    #: (untyped, ?default: Numeric?) -> Numeric
-    def to_decimal(obj, default: 0)
-      case obj
-      when String
-        obj.match?(/\A-?\d+(?:[eE]\+?\d+)?\Z/) ? obj.to_f.to_i : BigDecimal(obj)
-      when Float
-        BigDecimal(obj.to_s)
-      when Integer, BigDecimal, Numeric
-        obj
-      else
-        default
-      end
-    rescue ArgumentError
-      default
     end
 
     #: (untyped) -> Enumerable
-    def to_enumerable(obj)
+    def to_enumerable(obj, context)
       case obj
       when Array
         obj.flatten
@@ -370,15 +339,16 @@ module Luoma
       end
     end
 
-    #: (untyped, RenderContext, t_token) -> String
-    def to_string(obj, context, token)
+    #: (untyped, RenderContext) -> String
+    def to_string(obj, context)
       case obj
       when String
         obj
       when Hash, Array
         JSON.generate(obj)
       when BigDecimal
-        obj.to_s("F")
+        # obj.to_s("F") gives higher precision
+        obj.to_f.to_s
       when Drop
         obj.to_primitive(:string, context)
       when Symbol
@@ -390,7 +360,7 @@ module Luoma
 
     # Cast _obj_ to a  date and time. Return `nil` if casting fails.
     # NOTE: This was copied from Shopify/liquid.
-    def to_date(obj)
+    def to_date(obj, context)
       return obj if obj.respond_to?(:strftime)
 
       if obj.is_a?(String)

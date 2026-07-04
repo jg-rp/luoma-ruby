@@ -91,6 +91,10 @@ module Luoma
 
     attr_reader persistent_registers: Set[Symbol]
 
+    RE_INTEGER: Regexp
+
+    RE_DECIMAL: Regexp
+
     def initialize: (
       ?auto_escape: bool?,
       ?auto_trim: ('-' | '~' | nil), 
@@ -167,38 +171,30 @@ module Luoma
     #  (untyped, RenderContext) -> bool
     def truthy?: (untyped obj, RenderContext context) -> bool
 
-    #  (untyped, RenderContext, t_token) -> String
-    def serialize: (untyped obj, RenderContext context, t_token token) -> String
+    #  (untyped, RenderContext) -> String
+    def serialize: (untyped obj, RenderContext context) -> String
                  
-    #  (untyped, RenderContext, t_token) -> Array[untyped]
-    def to_a: (untyped obj, RenderContext context, t_token token) -> Array[untyped]
+    #  (untyped, RenderContext) -> Array[untyped]
+    def to_a: (untyped obj, RenderContext context) -> Array[untyped]
     
-    #  (untyped, RenderContext, t_token) -> Hash[untyped, untyped]
-    def to_h: (untyped obj, RenderContext context, t_token token) -> Hash[untyped, untyped]
+    #  (untyped, RenderContext) -> Hash[untyped, untyped]
+    def to_h: (untyped obj, RenderContext context) -> Hash[untyped, untyped]
 
-    #  (untyped, RenderContext, t_token, ?default: Integer?) -> Integer
-    def to_i: (untyped obj, RenderContext context, t_token token, ?default: Integer?) -> Integer
-            
-    #  (untyped, RenderContext, t_token) -> Integer
-    def to_integer: (untyped obj, RenderContext context, t_token token) -> Integer
+    # [X] (untyped, RenderContext, ?default: X) -> (Integer | X)
+    def to_i: [X] (untyped obj, RenderContext context, ?default: X) -> (Integer | X)
 
-    #  (untyped, ?default: Numeric?) -> Numeric
-    def to_numeric: (untyped obj, ?default: ::Numeric) -> Numeric
+    #  [X] (untyped, RenderContext, ?default: X) -> (Numeric | X)
+    def to_numeric: [X] (untyped obj, RenderContext context, ?default: X) -> (Numeric | X)
 
-    # Cast `obj` to a number, favouring BigDecimal over Float.
-    # Returns `default` if `obj` can't be cast to a numeric value.
-    #  (untyped, ?default: Numeric?) -> Numeric
-    def to_decimal: [X] (untyped obj, ?default: X) -> (Numeric | X)
+    #  (untyped, RenderContext) -> Enumerable
+    def to_enumerable: (untyped obj, RenderContext context) -> Enumerable[untyped]
 
-    #  (untyped) -> Enumerable
-    def to_enumerable: (untyped obj) -> Enumerable[untyped]
-
-    #  (untyped, RenderContext, t_token) -> String
-    def to_string: (untyped obj, RenderContext context, t_token token) -> String
+    #  (untyped, RenderContext) -> String
+    def to_string: (untyped obj, RenderContext context) -> String
                  
     # Cast _obj_ to a  date and time. Return `nil` if casting fails.
     # NOTE: This was copied from Shopify/liquid.
-    def to_date: (untyped obj) -> untyped
+    def to_date: (untyped obj, RenderContext context) -> untyped
 
     #  (String, String?, String?) -> String
     def trim: (String value, String? left, String? right) -> String

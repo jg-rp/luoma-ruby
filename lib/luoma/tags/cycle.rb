@@ -46,7 +46,7 @@ module Luoma
 
       index = context.registers[:cycles][key]
       expr = @items[index]
-      buffer << context.env.to_string(expr.evaluate(context), context, expr.span)
+      buffer << context.env.to_string(expr.evaluate(context), context)
 
       index += 1
       index = 0 if index > @items.size

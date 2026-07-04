@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "bigdecimal/util"
 require_relative "luoma/chain_hash"
 require_relative "luoma/context"
 require_relative "luoma/drop"

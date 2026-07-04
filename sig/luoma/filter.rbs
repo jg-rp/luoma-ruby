@@ -23,6 +23,9 @@ module Luoma
                   
     #  (untyped) -> Array[untyped]
     def to_a: (untyped obj) -> Array[untyped]
+            
+    #  (untyped) -> Hash[untyped, untyped]
+    def to_h: (untyped obj) -> Hash[untyped, untyped]
 
     #  (untyped) -> Integer
     def to_i: (untyped obj) -> Integer
@@ -33,11 +36,8 @@ module Luoma
     #  (untyped) -> String
     def to_string: (untyped obj) -> String
 
-    #  (untyped) -> Numeric
-    def to_numeric: (untyped obj, ?default: ::Numeric) -> Numeric
-
-    #  (untyped) -> Numeric
-    def to_decimal: (untyped obj, ?default: ::Numeric) -> Numeric
+    #  [X] (untyped, ?default: X) -> (Numeric | X)
+    def to_numeric: [X] (untyped obj, ?default: X) -> (Numeric | X)
 
     #  (untyped) -> Enumerable[untyped]
     def to_enumerable: (untyped obj) -> Enumerable[untyped]

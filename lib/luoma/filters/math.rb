@@ -25,14 +25,14 @@ module Luoma
     # Return the result of dividing `left` by `right`.
     # If both `left` and `right` are integers, integer division is performed.
     def self.divided_by(context, left, right)
-      context.to_decimal(left) / context.to_decimal(right) # steep:ignore
+      context.to_numeric(left) / context.to_numeric(right)
     rescue ZeroDivisionError => e
       raise context.type_error(e.message)
     end
 
     # Return the result of multiplying `left` by `right`.
     def self.times(context, left, right)
-      context.to_decimal(left) * context.to_decimal(right) # steep:ignore
+      context.to_numeric(left) * context.to_numeric(right)
     end
 
     # Return `left` rounded down to the next whole number.
@@ -42,24 +42,26 @@ module Luoma
 
     # Return `right` subtracted from `left`.
     def self.minus(context, left, right)
-      context.to_decimal(left) - context.to_decimal(right)
+      context.to_numeric(left) - context.to_numeric(right)
     end
 
     # Return the remainder of dividing `left` by `right`.
     def self.modulo(context, left, right)
-      context.to_decimal(left) % context.to_decimal(right)
+      context.to_numeric(left) % context.to_numeric(right)
     rescue ZeroDivisionError => e
       raise context.type_error(e.message)
     end
 
     # Return `right` added to `left`.
     def self.plus(context, left, right)
-      context.to_decimal(left) + context.to_decimal(right)
+      left_ = context.to_numeric(left, default: :nothing)
+      right_ = context.to_numeric(right, default: :nothing)
+      left_ == :nothing || right_ == :nothing ? :nothing : left_ + right_ # steep:ignore
     end
 
     # Return `left` rounded to _ndigits_ decimal digits.
     def self.round(context, left, ndigits = 0)
-      left = context.to_decimal(left)
+      left = context.to_numeric(left)
       return left.round if ndigits == 0 # rubocop:disable Style/NumericPredicate
 
       left.round(context.to_i(ndigits))
