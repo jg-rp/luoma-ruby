@@ -42,6 +42,11 @@
       "name": "multiple, comma separated, filtered, parens",
       "template": "{% assign bar = (2 | plus: 5), foo = 'foo' | upcase %}{{ foo }} {{ bar }}",
       "result": "FOO 7"
+    },
+    {
+      "name": "multiple, scope",
+      "template": "{% assign foo = 1, bar = foo + 1 %}{{ foo }} {{ bar }}",
+      "result": "1 2"
     }
   ]
 }

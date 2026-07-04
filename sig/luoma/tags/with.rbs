@@ -1,0 +1,15 @@
+module Luoma
+  class WithTag < Markup
+    @args: Array[KeywordArgument]
+    
+    @block: t_block
+
+    END_WITH_BLOCK: Set[String]
+
+    #  (t_token, String, Parser) -> Markup
+    def self.parse: (t_token token, String tag_name, Parser parser) -> Markup
+
+    #  (t_token, String, Array[KeywordArgument], t_block) -> void
+    def initialize: (t_token token, String tag_name, Array[KeywordArgument] args, t_block block) -> void
+  end
+end

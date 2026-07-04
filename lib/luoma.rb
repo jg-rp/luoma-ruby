@@ -48,6 +48,7 @@ require_relative "luoma/tags/output"
 require_relative "luoma/tags/raw"
 require_relative "luoma/tags/render"
 require_relative "luoma/tags/unless"
+require_relative "luoma/tags/with"
 
 module Luoma
   DEFAULT_ENVIRONMENT = Environment.new

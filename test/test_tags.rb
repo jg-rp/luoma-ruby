@@ -41,4 +41,12 @@ class TestTags < Minitest::Spec
       end
     end
   end
+
+  describe "with tag" do
+    load_test_cases("test/with_tag.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
 end

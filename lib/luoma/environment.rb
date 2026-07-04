@@ -135,6 +135,7 @@ module Luoma
       @tags["raw"] = RawTag
       @tags["render"] = RenderTag
       @tags["unless"] = UnlessTag
+      @tags["with"] = WithTag
 
       register_filter("abs", Luoma::Filters.method(:abs))
       register_filter("append", Luoma::Filters.method(:append))
