@@ -48,10 +48,8 @@ module Luoma
       @range.size
     end
 
-    def slice(offset, limit, reversed)
-      array = @range.to_a
-      array = array.slice(offset || 0, limit || array.length) || []
-      reversed ? array.reverse! : array
+    def slice(start, stop, step)
+      @range.to_a[(start...stop).step(step)] # steep:ignore
     end
 
     #: (:data | :numeric | :string | :boolean, RenderContext) -> untyped

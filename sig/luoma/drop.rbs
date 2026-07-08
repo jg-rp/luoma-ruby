@@ -29,8 +29,8 @@ module Luoma
     #  (RenderContext) -> Integer
     def length: (Luoma::RenderContext context) -> Integer
 
-    #  (Integer?, Integer?, bool?) -> Enumerable[untyped]
-    def slice: (Integer? offset, Integer? limit, bool? reversed) -> untyped
+    #  (Integer, Integer, Integer) -> Enumerable[untyped]
+    def slice: (Integer start, Integer stop, Integer step) -> untyped
 
     #  (:data | :numeric | :string | :boolean, RenderContext) -> untyped
     def to_primitive: (:data | :numeric | :string | :boolean hint, Luoma::RenderContext context) -> untyped

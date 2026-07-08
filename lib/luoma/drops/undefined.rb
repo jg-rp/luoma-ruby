@@ -73,7 +73,7 @@ module Luoma
       error
     end
 
-    def slice(offset, limit, reversed)
+    def slice(start, stop, step)
       error
     end
 

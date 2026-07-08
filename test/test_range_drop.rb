@@ -27,34 +27,6 @@ class TestRangeDrop < Minitest::Test
   end
 
   def test_slice
-    assert_equal([3, 4], Luoma::RangeDrop.new(2, 5).slice(1, 2, false).to_a)
-  end
-
-  def test_slice_negative_offset
-    assert_equal([4, 5], Luoma::RangeDrop.new(2, 5).slice(-2, 2, false).to_a)
-  end
-
-  def test_slice_just_offset
-    assert_equal([3, 4, 5], Luoma::RangeDrop.new(2, 5).slice(1, nil, false).to_a)
-  end
-
-  def test_slice_just_offset_out_of_range
-    assert_equal([], Luoma::RangeDrop.new(2, 5).slice(10, nil, false).to_a)
-  end
-
-  def test_slice_just_limit
-    assert_equal([2, 3], Luoma::RangeDrop.new(2, 5).slice(nil, 2, false).to_a)
-  end
-
-  def test_slice_just_limit_negative
-    assert_equal([], Luoma::RangeDrop.new(2, 5).slice(nil, -2, false).to_a)
-  end
-
-  def test_slice_start_out_of_range
-    assert_equal([], Luoma::RangeDrop.new(2, 5).slice(6, 2, false).to_a)
-  end
-
-  def test_slice_reversed
-    assert_equal([4, 3], Luoma::RangeDrop.new(2, 5).slice(1, 2, true).to_a)
+    assert_equal([3, 4], Luoma::RangeDrop.new(2, 5).slice(1, 3, 1).to_a)
   end
 end

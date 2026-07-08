@@ -8,15 +8,15 @@ module Luoma
       start_ = :nothing, stop_ = :nothing, step_ = :nothing,
       start: :nothing, stop: :nothing, step: :nothing
     )
-      left = context.to_a(left) unless left.is_a?(String)
+      left = context.to_a(left) unless left.is_a?(String) || left.is_a?(Drop)
+      length = left.is_a?(Drop) ? left.length(context.render_context) : left.length
 
       # Give priority to keyword arguments, default to nil if neither are given.
       start = start_ == :nothing ? nil : start_ if start == :nothing
       stop = stop_ == :nothing ? nil : stop_ if stop == :nothing
       step = step_ == :nothing ? nil : step_ if step == :nothing
-
       step = context.to_i(step || 1, default: 0)
-      length = left.length
+
       return [] if length.zero? || step.zero?
 
       start = context.to_i(start, default: 0) unless start.nil?
@@ -38,11 +38,15 @@ module Luoma
                           [stop, length].min
                         end
 
-      # This does not work for strings.
-      # left[(normalized_start...normalized_stop).step(step)]
-      #
-      # But this does.
-      (normalized_start...normalized_stop).step(step).map { |i| left[i] }
+      if left.is_a?(Drop)
+        left.slice(normalized_start, normalized_stop, step)
+      else
+        # This does not work for strings.
+        # left[(normalized_start...normalized_stop).step(step)]
+        #
+        # But this does.
+        (normalized_start...normalized_stop).step(step).map { |i| left[i] }
+      end
     end
   end
 end

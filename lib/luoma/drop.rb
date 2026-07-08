@@ -52,8 +52,8 @@ module Luoma
     end
 
     # TODO: pass context
-    #: (Integer?, Integer?, bool?) -> Enumerable[untyped]
-    def slice(offset, limit, reversed)
+    #: (Integer, Integer, Integer) -> Enumerable[untyped]
+    def slice(start, stop, step)
       self
     end
 

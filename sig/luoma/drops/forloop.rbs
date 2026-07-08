@@ -1,14 +1,10 @@
 module Luoma
   class ForLoopDrop < Drop
-    @name: String
-
     @length: Integer
 
     @parent: ForLoopDrop?
 
     @index: Integer
-
-    attr_reader name: String
 
     attr_reader length: Integer
 
@@ -16,8 +12,8 @@ module Luoma
 
     KEYS: Set[String]
 
-    #  (String, Integer, ForLoopDrop?) -> void
-    def initialize: (String name, Integer length, ForLoopDrop? parent) -> void
+    #  (Integer, ForLoopDrop?) -> void
+    def initialize: (Integer length, ForLoopDrop? parent) -> void
 
     def key?: (String key, RenderContext context) -> untyped
 

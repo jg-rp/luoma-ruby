@@ -167,6 +167,12 @@
       "template": "{{ s | slice: 1, 6, 2 | join }}",
       "data": { "s": "0123456789" },
       "result": "1 3 5"
+    },
+    {
+      "name": "range left",
+      "template": "{{ (0..9) | slice: 1, 6, 2 | join }}",
+      "data": {},
+      "result": "1 3 5"
     }
   ]
 }

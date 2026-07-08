@@ -261,7 +261,7 @@ module Luoma
       if obj.is_a?(Array)
         obj
       elsif obj.is_a?(String)
-        [obj]
+        obj.each_char.to_a
       elsif obj.respond_to?(:to_a)
         obj.to_a
       else

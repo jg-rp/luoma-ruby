@@ -59,11 +59,7 @@ module Luoma
       name = @identifier.value
       length = array.length
 
-      for_loop_drop = ForLoopDrop.new(
-        "#{name}-#{@expression}",
-        length,
-        context.forloops.last
-      )
+      for_loop_drop = ForLoopDrop.new(length, context.forloops.last)
 
       context.forloops << for_loop_drop
       namespace = { "forloop" => for_loop_drop } #: Hash[String, untyped]

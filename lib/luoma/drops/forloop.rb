@@ -2,10 +2,9 @@
 
 module Luoma
   class ForLoopDrop < Drop
-    attr_reader :name, :length, :parentloop
+    attr_reader :length, :parentloop
 
     KEYS = Set[
-      "name",
       "length",
       "index",
       "index0",
@@ -16,10 +15,9 @@ module Luoma
       "parentloop"
     ]
 
-    #: (String, Integer, ForLoopDrop?) -> void
-    def initialize(name, length, parent)
+    #: (Integer, ForLoopDrop?) -> void
+    def initialize(length, parent)
       super()
-      @name = name
       @length = length
       @parentloop = parent
       @index = -1
