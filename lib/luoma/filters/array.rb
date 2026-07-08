@@ -136,7 +136,7 @@ module Luoma
     # Return _left_ with all items in reverse order.
     # Coerce _left_ to an array if it isn't an array already.
     def self.reverse(context, left)
-      context.to_enumerable(left).to_a.reverse
+      context.to_a(left).reverse
     end
 
     def self.reject(context, left, key, value = nil)

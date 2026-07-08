@@ -114,7 +114,7 @@ module Luoma
       super(token)
       @left = left
       @filter = filter
-      @span = Luoma.span(token, filter.span)
+      @span = filter.span
     end
 
     #: (RenderContext) -> untyped
@@ -152,7 +152,7 @@ module Luoma
     rescue TypeError, ArgumentError => e
       raise FilterArgumentError.new(
         e.message,
-        @token,
+        @span,
         context.template.source,
         context.template.name
       )

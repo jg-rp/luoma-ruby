@@ -188,11 +188,6 @@ module Luoma
       raise "not implemented"
     end
 
-    #: () -> t_block
-    def parse_line_statements
-      raise "not implemented"
-    end
-
     # Parse an identifier, possibly surrounded by quotes.
     #: () -> Name
     def parse_name

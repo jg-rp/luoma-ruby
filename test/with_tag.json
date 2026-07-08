@@ -62,6 +62,11 @@
         "value": { "active": true }
       },
       "result": "facets__label facet-checkbox disabled active"
+    },
+    {
+      "name": "nested",
+      "template": "{% with x = 1 %}{% with y = 2 %}{{ x }} {{ y }}{% endwith %}{% endwith %}",
+      "result": "1 2"
     }
   ]
 }

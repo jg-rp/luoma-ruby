@@ -27,11 +27,8 @@ module Luoma
     #  (untyped) -> Hash[untyped, untyped]
     def to_h: (untyped obj) -> Hash[untyped, untyped]
 
-    #  (untyped) -> Integer
-    def to_i: (untyped obj) -> Integer
-
-    #  (untyped) -> Integer
-    def to_integer: (untyped obj) -> Integer
+    # [X] (untyped, ?default: X) -> (Integer | X)
+    def to_i: [X] (untyped obj, ?default: X) -> (Integer | X)
 
     #  (untyped) -> String
     def to_string: (untyped obj) -> String
