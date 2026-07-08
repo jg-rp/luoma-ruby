@@ -38,7 +38,7 @@ module Luoma
     #  () -> String
     def to_s: () -> String
 
-    #  () -> String?
-    def to_html_safe_s: () -> String?
+    #  (RenderContext) -> String?
+    def render: (RenderContext context) -> String?
   end
 end

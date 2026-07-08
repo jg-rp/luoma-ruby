@@ -57,7 +57,7 @@ module Luoma
 
     #: () -> String
     def to_s
-      "Liquid::ForLoopDrop"
+      "ForLoopDrop"
     end
   end
 end

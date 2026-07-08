@@ -122,6 +122,7 @@ module Luoma
     #: () -> void
     def setup_tags_and_filters
       @tags["assign"] = AssignTag
+      @tags["block"] = BlockTag
       @tags["capture"] = CaptureTag
       @tags["case"] = CaseTag
       @tags["cycle"] = CycleTag
@@ -247,9 +248,9 @@ module Luoma
 
     #: (untyped, RenderContext) -> String
     def serialize(obj, context)
-      if @auto_escape && obj.is_a?(Drop)
-        html_safe = obj.to_html_safe_s
-        return html_safe if html_safe
+      if obj.is_a?(Drop)
+        s = obj.render(context)
+        return s if s
       end
 
       s = to_string(obj, context)
@@ -327,14 +328,12 @@ module Luoma
     #: (untyped) -> Enumerable
     def to_enumerable(obj, context)
       case obj
-      when Array
-        obj.flatten
-      when Hash, String
-        [obj]
       when Drop
         obj.each
       when Enumerable
-        obj
+        obj.to_enum
+      when String
+        obj.each_char
       else
         obj.respond_to?(:each) ? obj.each : [obj]
       end

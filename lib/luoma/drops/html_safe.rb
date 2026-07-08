@@ -28,8 +28,8 @@ module Luoma
       end
     end
 
-    #: () -> String?
-    def to_html_safe_s
+    #: (RenderContext) -> String?
+    def render(context)
       @s
     end
   end

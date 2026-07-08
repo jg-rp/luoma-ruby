@@ -88,6 +88,7 @@ module Luoma
       )
 
       if @for_loop && bind_value.is_a?(Array)
+        # TODO: Remove looping and binding from `render` and `include`. Use a `for` loop instead.
         for_loop_drop = ForLoopDrop.new(
           bind_key,
           bind_value.length,

@@ -85,7 +85,7 @@ module Luoma
       error
     end
 
-    def to_html_safe_s
+    def render(context)
       error
     end
 
