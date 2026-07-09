@@ -122,11 +122,11 @@ module Luoma
     #: () -> void
     def setup_tags_and_filters
       @tags["assign"] = AssignTag
-      @tags["block"] = BlockTag
       @tags["capture"] = CaptureTag
       @tags["case"] = CaseTag
       @tags["cycle"] = CycleTag
       @tags["decrement"] = DecrementTag
+      @tags["define"] = DefineTag
       @tags["for"] = ForTag
       @tags["break"] = BreakTag
       @tags["continue"] = ContinueTag

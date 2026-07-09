@@ -122,8 +122,42 @@ module Luoma
       # Look for user-defined filters first.
       func = context.resolve(@filter.name.value)
 
-      # Fall back to environment defined filters.
-      func = context.env.filters[@filter.name.value] if func == :nothing || !func.is_a?(LambdaExpr)
+      if func.is_a?(LambdaExpr)
+        evaluate_lambda(func, context)
+      else
+        # Fall back to environment defined filters.
+        evaluate_filter(context)
+      end
+    end
+
+    def children
+      [@left, @filter]
+    end
+
+    #: () -> String
+    def to_s
+      "#{@left} | #{@filter}"
+    end
+
+    private
+
+    #: (LambdaExpr, RenderContext) -> untyped
+    def evaluate_lambda(expr, context)
+      if context.env.strict_filters && !@filter.kwargs.empty?
+        raise FilterArgumentError.new(
+          "#{@filter.name.value.inspect} accepts #{expr.params.length} positional arguments, found a keyword argument.",
+          @span,
+          context.template.source,
+          context.template.name
+        )
+      end
+
+      expr.call([@left.evaluate(context), *@filter.args.map { |arg| arg.evaluate(context) }])
+    end
+
+    #: (RenderContext) -> untyped
+    def evaluate_filter(context)
+      func = context.env.filters[@filter.name.value]
 
       if func.nil?
         if context.env.strict_filters
@@ -154,22 +188,13 @@ module Luoma
         )
       end
     rescue TypeError, ArgumentError => e
-      # TODO: Optionally consume arity errors by padding and evaluating/discarding arguments
+      # TODO: Suppress arity errors by padding and trimming if not strict_filters.
       raise FilterArgumentError.new(
         e.message,
         @span,
         context.template.source,
         context.template.name
       )
-    end
-
-    def children
-      [@left, @filter]
-    end
-
-    #: () -> String
-    def to_s
-      "#{@left} | #{@filter}"
     end
   end
 
@@ -958,6 +983,8 @@ module Luoma
   end
 
   class LambdaExpr
+    attr_reader :params
+
     #: (Array[String], Expression, RenderContext) -> void
     def initialize(params, expr, context)
       @params = params
@@ -965,8 +992,20 @@ module Luoma
       @context = context
     end
 
+    #: (Array[untyped]) -> untyped
+    def call(args)
+      # zip pads with `nil` and ignores excess args.
+      @context.extends(@params.zip(args).to_h) do
+        @expr.evaluate(@context)
+      end
+    end
+
+    # Call this lambda expression for each item in `enum`, passing item and
+    # index as arguments if this expression accepts two arguments, otherwise
+    # just item. Excess parameters are ignored.
+    #
     #: (Enumerable[untyped]) -> Array[untyped]
-    def broadcast(enum)
+    def broadcast_with_index(enum)
       scope = {} #: Hash[String, untyped]
       result = [] #: Array[untyped]
 
@@ -995,8 +1034,12 @@ module Luoma
       result
     end
 
+    # Call this lambda expression, passing `value` and `index` as arguments
+    # if this expression accepts two arguments, otherwise just `value`. Excess
+    # parameters are ignored.
+    #
     #: (untyped, Integer) -> untyped
-    def call(value, index)
+    def call_with_index(value, index)
       scope = { @params[0] => value }
       scope[@params[1]] = index if @params.length > 1
 

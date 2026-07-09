@@ -62,6 +62,10 @@ module Luoma
     @span: t_token
 
     def initialize: (t_token token, Expression left, Filter filter) -> void
+                  
+    def evaluate_lambda: (LambdaExpr expr, RenderContext context) -> untyped
+                       
+    def evaluate_filter: (RenderContext context) -> untyped
   end
 
   class PrefixExpression < Expression
@@ -468,14 +472,19 @@ module Luoma
 
     @context: RenderContext
 
+    attr_reader params: Array[String]
+
     #  (Array[String], Expression, RenderContext) -> void
     def initialize: (Array[String] params, Expression expr, RenderContext context) -> void
 
+    #  (Array[Untyped]) -> untyped
+    def call: (Array[untyped] args) -> untyped
+
     #  (Enumerable[untyped]) -> Array[untyped]
-    def broadcast: (Enumerable[untyped] enum) -> Array[untyped]
+    def broadcast_with_index: (Enumerable[untyped] enum) -> Array[untyped]
 
     #  (untyped, Integer) -> untyped
-    def call: (untyped value, Integer index) -> untyped
+    def call_with_index: (untyped value, Integer index) -> untyped
   end
 
   #  (Expression) -> String

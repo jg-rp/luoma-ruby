@@ -198,6 +198,10 @@ module Luoma
       expr
     end
 
+    def parse_lambda_expression
+      raise "TODO:"
+    end
+
     #: () -> Name
     def parse_ident
       token = eat(:token_ident)

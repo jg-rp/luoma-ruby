@@ -24,7 +24,7 @@ module Luoma
         left.compact
       when LambdaExpr
         left.each_with_index.reject do |item, index|
-          value = key.call(item, index)
+          value = key.call_with_index(item, index)
           # TODO: convenience for nothing or nil
           value.nil? || context.nothing?(value)
         end.map(&:first)
@@ -48,7 +48,7 @@ module Luoma
       left = context.to_enumerable(left)
 
       if key.is_a?(LambdaExpr)
-        key.broadcast(left).zip(left) do |r, i|
+        key.broadcast_with_index(left).zip(left) do |r, i|
           return i if context.truthy?(r)
         end
       elsif context.nothing?(value)
@@ -126,7 +126,7 @@ module Luoma
       left = context.to_enumerable(left)
 
       if key.is_a?(LambdaExpr)
-        key.broadcast(left)
+        key.broadcast_with_index(left)
       else
         key = context.to_string(key)
         left.map { |item| item[key] }
