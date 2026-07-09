@@ -1,12 +1,12 @@
 module Luoma
-  class BlockTag < Markup
+  class DefineTag < Markup
     @identifier: Name
 
     @block: t_block
 
     @drop: BlockDrop
 
-    END_BLOCK: Set[String]
+    END_DEFINE_BLOCK: Set[String]
 
     #  (t_token, String, Parser) -> Markup
     def self.parse: (t_token token, String tag_name, Parser parser) -> Markup

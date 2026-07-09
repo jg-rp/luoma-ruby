@@ -119,7 +119,11 @@ module Luoma
 
     #: (RenderContext) -> untyped
     def evaluate(context)
-      func = context.env.filters[@filter.name.value]
+      # Look for user-defined filters first.
+      func = context.resolve(@filter.name.value)
+
+      # Fall back to environment defined filters.
+      func = context.env.filters[@filter.name.value] if func == :nothing || !func.is_a?(LambdaExpr)
 
       if func.nil?
         if context.env.strict_filters
@@ -150,6 +154,7 @@ module Luoma
         )
       end
     rescue TypeError, ArgumentError => e
+      # TODO: Optionally consume arity errors by padding and evaluating/discarding arguments
       raise FilterArgumentError.new(
         e.message,
         @span,
@@ -998,6 +1003,11 @@ module Luoma
       @context.extends(scope) do
         @expr.evaluate(@context)
       end
+    end
+
+    #: () -> String
+    def to_s
+      "(#{@params.join(", ")}) => #{@expr}"
     end
   end
 

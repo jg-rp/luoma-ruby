@@ -1,16 +1,19 @@
 # frozen_string_literal: true
 
 module Luoma
-  class BlockTag < Markup
-    END_BLOCK = Set["endblock"]
+  class DefineTag < Markup
+    END_DEFINE_BLOCK = Set["enddefine"]
 
     #: (t_token, String, Parser) -> Markup
     def self.parse(token, tag_name, parser)
       identifier = parser.parse_ident
+
+      # TODO: look for `=`
+
       parser.carry_whitespace_control
       parser.eat(:token_tag_end)
-      block = parser.parse_block(stop: END_BLOCK)
-      parser.eat_empty_tag("endblock")
+      block = parser.parse_block(stop: END_DEFINE_BLOCK)
+      parser.eat_empty_tag("enddefine")
       new(token, tag_name, identifier, block)
     end
 

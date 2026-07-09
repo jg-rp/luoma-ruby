@@ -1,0 +1,8 @@
+module Luoma
+  class ExpressionDrop < Drop
+    @expr: LambdaExpr
+
+    #  (LambdaExpr) -> void
+    def initialize: (LambdaExpr expr) -> void
+  end
+end
