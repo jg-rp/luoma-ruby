@@ -2,6 +2,8 @@ module Luoma
   class ExpressionDrop < Drop
     @expr: LambdaExpr
 
+    attr_reader expr: LambdaExpr
+
     #  (LambdaExpr) -> void
     def initialize: (LambdaExpr expr) -> void
   end

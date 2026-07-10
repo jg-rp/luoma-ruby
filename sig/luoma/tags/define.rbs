@@ -2,15 +2,15 @@ module Luoma
   class DefineTag < Markup
     @identifier: Name
 
-    @block: t_block
+    @block_or_expr: (t_block | Lambda)
 
-    @drop: BlockDrop
+    @drop: (BlockDrop | ExpressionDrop) 
 
     END_DEFINE_BLOCK: Set[String]
 
     #  (t_token, String, Parser) -> Markup
     def self.parse: (t_token token, String tag_name, Parser parser) -> Markup
 
-    def initialize: (t_token token, String tag_name, Name identifier, t_block block) -> void
+    def initialize: (t_token token, String tag_name, Name identifier, (t_block | Lambda) block_or_expr) -> void
   end
 end

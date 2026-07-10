@@ -120,10 +120,10 @@ module Luoma
     #: (RenderContext) -> untyped
     def evaluate(context)
       # Look for user-defined filters first.
-      func = context.resolve(@filter.name.value)
+      obj = context.resolve(@filter.name.value)
 
-      if func.is_a?(LambdaExpr)
-        evaluate_lambda(func, context)
+      if obj.is_a?(ExpressionDrop)
+        evaluate_lambda(obj.expr, context)
       else
         # Fall back to environment defined filters.
         evaluate_filter(context)
