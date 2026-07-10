@@ -47,6 +47,29 @@
       "name": "multiple, scope",
       "template": "{% assign foo = 1, bar = foo + 1 %}{{ foo }} {{ bar }}",
       "result": "1 2"
+    },
+    {
+      "name": "expression",
+      "template": "{% assign squash = (x, y) => x | strip | split: ' ' | join: (y or '-') %}{{ s | squash }} {{ s | squash: '*' }} {{ s | squash: ' ' }}",
+      "data": { "s": "    foo    bar   " },
+      "result": "foo-bar foo*bar foo bar"
+    },
+    {
+      "name": "expression, rendered",
+      "template": "{% assign squash = (x, y) => x | strip | split: ' ' | join: (y or '-') %}{{ squash }}",
+      "result": "(x, y) => x | strip | split: \" \" | join: (y or \"-\")"
+    },
+    {
+      "name": "expression, excess arguments are ignored",
+      "template": "{% assign squash = (x, y) => x | strip | split: ' ' | join: (y or '-') %}{{ s | squash: '^', 'foo' }}",
+      "data": { "s": "    foo    bar   " },
+      "result": "foo^bar"
+    },
+    {
+      "name": "expression, missing arguments are null",
+      "template": "{% assign squash = (x, y, z) => x | strip | split: ' ' | join: (y or z or '-') %}{{ s | squash }}",
+      "data": { "s": "    foo    bar   " },
+      "result": "foo-bar"
     }
   ]
 }

@@ -1,0 +1,19 @@
+{
+  "tests": [
+    {
+      "name": "block",
+      "template": "{% assign you = 'World' %}{% define x %}Hello, {{ you }}!{% enddefine %}{% assign you = 'Sue' %}{{ x }} {% assign you = 'Mick' %}{{ x }}",
+      "result": "Hello, Sue! Hello, Mick!"
+    },
+    {
+      "name": "block, filtered",
+      "template": "{% assign you = 'World' %}{% define x %}Hello, {{ you }}!{% enddefine %}{{ x | upcase }}",
+      "result": "HELLO, WORLD!"
+    },
+    {
+      "name": "block, shadowed",
+      "template": "{% assign you = 'World' %}{% define x %}Hello, {{ you }}!{% enddefine %}{% with x = 'foo' %}{{ x }}{% endwith%}",
+      "result": "foo"
+    }
+  ]
+}

@@ -198,29 +198,6 @@ module Luoma
       expr
     end
 
-    #: () -> Lambda
-    def parse_lambda_expression
-      token = current
-      params = [] #: Array[Name]
-
-      if kind ==  :token_lparen
-        @pos += 1
-        loop do
-          break if kind == :token_rparen
-
-          params << parse_ident
-          @pos += 1 if kind == :token_comma
-        end
-
-        eat(:token_rparen)
-      else
-        params << parse_ident
-      end
-
-      eat(:token_arrow)
-      Lambda.new(token, params, parse_expression)
-    end
-
     #: () -> Name
     def parse_ident
       token = eat(:token_ident)
@@ -346,7 +323,7 @@ module Luoma
              when :token_lbrace
                parse_object_literal
              when :token_lparen
-               parse_lambda_range_or_group
+               parse_lambda_range_or_group(precedence: precedence)
              when :token_not, :token_add, :token_sub
                parse_prefix
              when :token_true
@@ -594,7 +571,7 @@ module Luoma
     end
 
     #: () -> Expression
-    def parse_lambda_range_or_group
+    def parse_lambda_range_or_group(precedence:)
       token = eat(:token_lparen)
       expr = parse_expression
 
@@ -614,11 +591,11 @@ module Luoma
         )
       when :token_comma
         # A lambda expression, but we've already consumed the first parameter.
-        parse_partial_lambda(expr)
+        parse_partial_lambda(expr, precedence: precedence)
       else
         if peek.first == :token_arrow && kind == :token_rparen
           # A lambda expression with a single parameter surrounded by parens.
-          parse_partial_lambda(expr)
+          parse_partial_lambda(expr, precedence: precedence)
         else
           eat(:token_rparen, message: "unbalanced brackets")
           segments = PATH_PUNCTUATION.include?(kind) ? parse_path_segments : [] #: Array[t_path_segment]
@@ -630,7 +607,7 @@ module Luoma
     # Parse a lambda expression where we've already consumed the opening paren
     # and first parameter.
     #: (Expression) -> Lambda
-    def parse_partial_lambda(expr)
+    def parse_partial_lambda(expr, precedence:)
       unless expr.is_a?(Variable) && expr.segments.empty? && expr.root.is_a?(Name)
         raise TemplateSyntaxError.new(
           "expected an identifier",
@@ -652,7 +629,7 @@ module Luoma
 
       eat(:token_rparen)
       eat(:token_arrow)
-      Lambda.new(expr.token, params, parse_expression(precedence: Precedence::FILTER_ARG))
+      Lambda.new(expr.token, params, parse_expression(precedence: precedence))
     end
 
     #: () -> Expression

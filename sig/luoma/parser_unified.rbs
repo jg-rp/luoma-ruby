@@ -87,11 +87,11 @@ module Luoma
     #  () -> Item | Spread
     def parse_object_item: () -> (Item | Spread)
 
-    #  () -> Expression
-    def parse_lambda_range_or_group: () -> Expression
+    #  (precedence: Integer) -> Expression
+    def parse_lambda_range_or_group: (precedence: Integer) -> Expression
 
-    #  (Expression) -> Lambda
-    def parse_partial_lambda: (Expression expr) -> Expression
+    #  (Expression, precedence: Integer) -> Lambda
+    def parse_partial_lambda: (Expression expr, precedence: Integer) -> Expression
 
     #  () -> Expression
     def parse_prefix: () -> Expression

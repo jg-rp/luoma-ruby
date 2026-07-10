@@ -61,9 +61,6 @@ module Luoma
     #  () -> void
     def expect_expression: () -> void
                          
-    #  () -> Lambda
-    def parse_lambda_expression: () -> Lambda
-
     #  (?require_commas: bool?) -> Array[Expression | KeywordArgument]
     def parse_arguments: (?require_commas: bool?) -> Array[Expression | KeywordArgument]
 

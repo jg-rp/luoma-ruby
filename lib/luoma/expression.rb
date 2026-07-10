@@ -580,7 +580,7 @@ module Luoma
 
     #: (RenderContext) -> untyped
     def evaluate(context)
-      LambdaExpr.new(@params.map(&:value), @expr, context)
+      ExpressionDrop.new(LambdaExpr.new(@params.map(&:value), @expr, context))
     end
 
     def children

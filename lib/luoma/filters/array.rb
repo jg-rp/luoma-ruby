@@ -22,9 +22,9 @@ module Luoma
       case key
       when :nothing
         left.compact
-      when LambdaExpr
+      when ExpressionDrop
         left.each_with_index.reject do |item, index|
-          value = key.call_with_index(item, index)
+          value = key.expr.call_with_index(item, index)
           # TODO: convenience for nothing or nil
           value.nil? || context.nothing?(value)
         end.map(&:first)
@@ -47,8 +47,8 @@ module Luoma
     def self.find(context, left, key, value = nil)
       left = context.to_enumerable(left)
 
-      if key.is_a?(LambdaExpr)
-        key.broadcast_with_index(left).zip(left) do |r, i|
+      if key.is_a?(ExpressionDrop)
+        key.expr.broadcast_with_index(left).zip(left) do |r, i|
           return i if context.truthy?(r)
         end
       elsif context.nothing?(value)
@@ -67,7 +67,7 @@ module Luoma
     def self.find_index(context, left, key, value = nil)
       left = context.to_enumerable(left)
 
-      # TODO: LambdaExpr
+      # TODO: ExpressionDrop
 
       if context.nothing?(value)
         left.each_with_index do |item, index|
@@ -85,7 +85,7 @@ module Luoma
     def self.has(context, left, key, value = nil) # rubocop:disable Naming/PredicateMethod
       left = context.to_enumerable(left)
 
-      # TODO: LambdaExpr
+      # TODO: ExpressionDrop
 
       if context.nothing?(value)
         left.each do |item|
@@ -125,8 +125,8 @@ module Luoma
     def self.map(context, left, key)
       left = context.to_enumerable(left)
 
-      if key.is_a?(LambdaExpr)
-        key.broadcast_with_index(left)
+      if key.is_a?(ExpressionDrop)
+        key.expr.broadcast_with_index(left)
       else
         key = context.to_string(key)
         left.map { |item| item[key] }
@@ -143,7 +143,7 @@ module Luoma
       left = context.to_enumerable(left)
       key = context.to_string(key)
 
-      # TODO: LambdaExpr
+      # TODO: ExpressionDrop
 
       if context.nothing?(value)
         left.reject do |item|
@@ -160,7 +160,7 @@ module Luoma
       left = context.to_enumerable(left)
       key = context.to_string(key)
 
-      # TODO: LambdaExpr
+      # TODO: ExpressionDrop
 
       if context.nothing?(value)
         left.filter do |item|
@@ -178,7 +178,7 @@ module Luoma
     def self.uniq(context, left, key = nil)
       left = context.to_enumerable(left)
 
-      # TODO: LambdaExpr
+      # TODO: ExpressionDrop
 
       if context.nothing?(key)
         left.to_a.uniq
@@ -191,7 +191,7 @@ module Luoma
     def self.sum(context, left, key = nil)
       left = context.to_enumerable(left)
 
-      # TODO: LambdaExpr
+      # TODO: ExpressionDrop
 
       if context.nothing?(key)
         left.sum { |v| context.to_numeric(v) }
