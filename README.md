@@ -13,6 +13,9 @@ TODO:
 - Strings are iterated and sliced like an array of characters.
 - `{% render %}` and `{% include %}` don't accept binding or looping arguments. Use a `{% for %}` loop instead.
 
+- First-class blocks with `{% define %} ... {% enddefine%}`
+- First-class expressions with `{% assign x = <lambda expr> %}`
+
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).

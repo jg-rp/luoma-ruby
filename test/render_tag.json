@@ -1,0 +1,60 @@
+{
+  "tests": [
+    {
+      "name": "string literal name",
+      "template": "{% render 'product-hero', product: product %}",
+      "data": {
+        "product": {
+          "title": "foo",
+          "tags": ["sports", "garden"]
+        }
+      },
+      "templates": {
+        "product-hero": "{{ product.title }}\n{% for tag in product.tags %}- {{ tag }} {% endfor %}"
+      },
+      "result": "foo\n- sports - garden ",
+      "tags": ["render tag"]
+    },
+    {
+      "name": "more arguments",
+      "template": "{% render 'product-args', foo: 'hello', bar: 'there' %}",
+      "templates": {
+        "product-args": "{{ foo }} {{ bar }}"
+      },
+      "result": "hello there",
+      "tags": ["render tag"]
+    },
+    {
+      "name": "keyword arguments, no leading coma",
+      "template": "{% render 'product-args' foo: 'hello', bar: 'there' %}",
+      "templates": {
+        "product-args": "{{ foo }} {{ bar }}"
+      },
+      "result": "hello there",
+      "tags": ["render tag"]
+    },
+    {
+      "name": "parent variables go out of scope",
+      "template": "{% assign greeting = 'good morning' %}{{ greeting }} {% render 'outer-scope' %}{{ greeting }}",
+      "templates": {
+        "outer-scope": "{{ greeting }}"
+      },
+      "result": "good morning good morning",
+      "tags": ["assign tag", "render tag"]
+    },
+    {
+      "name": "assigned variables do not leak into outer scope",
+      "template": "{% render 'assign-outer-scope', customer: customer %} {{ last_name }}",
+      "data": {
+        "customer": {
+          "first_name": "Holly"
+        }
+      },
+      "templates": {
+        "assign-outer-scope": "Hello, {{ customer.first_name }}{% assign last_name = 'Smith' %}"
+      },
+      "result": "Hello, Holly ",
+      "tags": ["render tag"]
+    }
+  ]
+}
