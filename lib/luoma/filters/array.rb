@@ -8,6 +8,54 @@ module Luoma
       context.to_enumerable(left).map { |item| context.to_string(item) }.join(context.to_string(sep))
     end
 
+    # If _left_ is enumerable, return _left_ flattened to _depth_. Otherwise
+    # return _left_.
+    def self.flatten(context, left, depth = nil)
+      return left unless left.is_a?(Enumerable)
+
+      context.to_a(left).flatten(
+        depth.nil? ? depth : context.to_numeric(depth, default: 1).to_i # steep:ignore
+      )
+    end
+
+    # Return true if at least one item in _left_ is truthy.
+    def self.any(context, left, key = :nothing, value = :nothing)
+      left = context.to_enumerable(left)
+
+      case key
+      when :nothing
+        left.any? { |item| context.truthy?(item) }
+      when ExpressionDrop
+        key.expr.broadcast_with_index(left).any? { |item| context.truthy?(item) }
+      else
+        key = context.to_string(key)
+        if value == :nothing
+          left.map { |item| item[key] }.any? { |item| context.truthy?(item) }
+        else
+          left.map { |item| item[key] }.any?(value)
+        end
+      end
+    end
+
+    # Return true if all items in _left_ are truthy.
+    def self.all(context, left, key = :nothing, value = :nothing)
+      left = context.to_enumerable(left)
+
+      case key
+      when :nothing
+        left.all? { |item| context.truthy?(item) }
+      when ExpressionDrop
+        key.expr.broadcast_with_index(left).all? { |item| context.truthy?(item) }
+      else
+        key = context.to_string(key)
+        if value == :nothing
+          left.map { |item| item[key] }.all? { |item| context.truthy?(item) }
+        else
+          left.map { |item| item[key] }.all?(value)
+        end
+      end
+    end
+
     # Return a copy of _left_ with nil items removed.
     # Coerce _left_ to an array-like object if it is not one already.
     #
@@ -36,26 +84,34 @@ module Luoma
       end
     end
 
-    # Return _left_ concatenated with _right_, or nil if _right_ is not an array.
-    # Coerce _left_ to an array if it isn't an array already.
+    # Return _left_ concatenated with _right_.
+    # Coerce _left_ and _right_ to an array if they aren't arrays already.
     def self.concat(context, left, right)
-      raise context.argument_error("expected an array") unless right.respond_to?(:to_ary)
-
-      context.to_enumerable(left).to_a.concat(right)
+      context.to_a(left).concat(context.to_a(right))
     end
 
-    def self.find(context, left, key, value = nil)
+    # Return the first item in _left_ where _key_ is equal to _value_, or nil
+    # if no such item exists.
+    #
+    # If _value_ is not given, return the first item where _key_ is truthy.
+    #
+    # If _key_ is a Lambda expression, evaluate the expression for each item in
+    # _left_ and return the first item where the expression results in a truthy
+    # value, ignoring _value_.
+    def self.find(context, left, key, value = :nothing)
       left = context.to_enumerable(left)
 
       if key.is_a?(ExpressionDrop)
         key.expr.broadcast_with_index(left).zip(left) do |r, i|
           return i if context.truthy?(r)
         end
-      elsif context.nothing?(value)
+      elsif value == :nothing
+        key = context.to_string(key)
         left.each do |item|
-          return item if context.fetch(item, key)
+          return item if context.truthy?(context.fetch(item, key))
         end
       else
+        key = context.to_string(key)
         left.each do |item|
           return item if context.fetch(item, key) == value
         end
@@ -64,16 +120,29 @@ module Luoma
       nil
     end
 
-    def self.find_index(context, left, key, value = nil)
+    # Return the index of the first item in _left_ where _key_ is equal to
+    # _value_, or nil if no such item exists.
+    #
+    # If _value_ is not given, return the index of the first item where _key_
+    # is truthy.
+    #
+    # If _key_ is a Lambda expression, evaluate the expression for each item in
+    # _left_ and return the index of the  first item where the expression
+    # results in a truthy value, ignoring _value_.
+    def self.find_index(context, left, key, value = :nothing)
       left = context.to_enumerable(left)
 
-      # TODO: ExpressionDrop
-
-      if context.nothing?(value)
+      if key.is_a?(ExpressionDrop)
+        key.expr.broadcast_with_index(left).each_with_index do |item, index|
+          return index if context.truthy?(item)
+        end
+      elsif value == :nothing
+        key = context.to_string(key)
         left.each_with_index do |item, index|
-          return index if context.fetch(item, key)
+          return index if context.truthy?(context.fetch(item, key))
         end
       else
+        key = context.to_string(key)
         left.each_with_index do |item, index|
           return index if context.fetch(item, key) == value
         end
@@ -82,16 +151,29 @@ module Luoma
       nil
     end
 
-    def self.has(context, left, key, value = nil) # rubocop:disable Naming/PredicateMethod
+    # Return true if _left_ contains _key_ equal to _value_.
+    #
+    # If _value_ is not given, return true if _left_ contains _key_ and the
+    # associated value is truthy.
+    #
+    # If _key_ is a lambda expression, evaluate the expression for each item in
+    # _left_ and return true if any result is truthy, ignoring _value_.
+    #
+    # This is similar to `any`, but requires a `key`.
+    def self.has(context, left, key, value = :nothing)
       left = context.to_enumerable(left)
 
-      # TODO: ExpressionDrop
-
-      if context.nothing?(value)
+      if key.is_a?(ExpressionDrop)
+        key.expr.broadcast_with_index(left).each do |item|
+          return true if context.truthy?(item)
+        end
+      elsif value == :nothing
+        key = context.to_string(key)
         left.each do |item|
-          return true if context.fetch(item, key)
+          return true if context.truthy?(context.fetch(item, key))
         end
       else
+        key = context.to_string(key)
         left.each do |item|
           return true if context.fetch(item, key) == value
         end
@@ -100,25 +182,35 @@ module Luoma
       false
     end
 
-    # Return the first item in _left_, or `nil` if _left_ does not have a first item.
+    # Return the first item in _left_, or `:nothing` if _left_ does not have a
+    # first item.
+    #
+    # Coerce _left_ to an array if it is not a string, hash or array.
     def self.first(context, left)
-      # TODO: default to :nothing?
       case left
       when String
-        left[0]
+        left.empty? ? :nothing : left[0]
+      when Hash, Array
+        left.empty? ? :nothing : left.first
       else
-        left.first if left.respond_to?(:first)
+        left_ = context.to_a(left)
+        left_.empty? ? :nothing : left_.first
       end
     end
 
-    # Return the last item in _left_, or `nil` if _left_ does not have a last item.
+    # Return the last item in _left_, or `:nothing` if _left_ does not have a
+    # last item.
+    #
+    # Coerce _left_ to an array if it is not a string or array.
     def self.last(context, left)
-      # TODO: default to :nothing?
       case left
       when String
-        left[-1]
+        left.empty? ? :nothing : left[-1]
+      when Array
+        left.empty? ? :nothing : left.last
       else
-        left.last if left.respond_to?(:last)
+        left_ = context.to_a(left)
+        left_.empty? ? :nothing : left_.last
       end
     end
 
@@ -139,34 +231,40 @@ module Luoma
       context.to_a(left).reverse
     end
 
-    def self.reject(context, left, key, value = nil)
+    def self.reject(context, left, key, value = :nothing)
       left = context.to_enumerable(left)
-      key = context.to_string(key)
 
-      # TODO: ExpressionDrop
-
-      if context.nothing?(value)
+      if key.is_a?(ExpressionDrop)
+        left.each_with_index.reject do |item, index|
+          context.truthy?(key.expr.call_with_index(item, index))
+        end
+      elsif context.nothing?(value)
+        key = context.to_string(key)
         left.reject do |item|
           context.truthy?(context.fetch(item, key))
         end
       else
+        key = context.to_string(key)
         left.reject do |item|
           context.fetch(item, key) == value
         end
       end
     end
 
-    def self.where(context, left, key, value = nil)
+    def self.where(context, left, key, value = :nothing)
       left = context.to_enumerable(left)
-      key = context.to_string(key)
 
-      # TODO: ExpressionDrop
-
-      if context.nothing?(value)
+      if key.is_a?(ExpressionDrop)
+        left.each_with_index.filter do |item, index|
+          context.truthy?(key.expr.call_with_index(item, index))
+        end
+      elsif context.nothing?(value)
+        key = context.to_string(key)
         left.filter do |item|
           context.truthy?(context.fetch(item, key))
         end
       else
+        key = context.to_string(key)
         left.filter do |item|
           context.fetch(item, key) == value
         end
@@ -175,15 +273,16 @@ module Luoma
 
     # Deduplicate items in _left_.
     # Coerce _left_ to an array if it isn't an array already.
-    def self.uniq(context, left, key = nil)
-      left = context.to_enumerable(left)
+    def self.uniq(context, left, key = :nothing)
+      left = context.to_a(left)
 
-      # TODO: ExpressionDrop
-
-      if context.nothing?(key)
-        left.to_a.uniq
+      if key == :nothing
+        left.uniq
+      elsif key.is_a?(ExpressionDrop)
+        # TODO: ExpressionDrop
       else
-        left.to_a.uniq { |item| context.fetch(item, key) }
+        key = context.to_string(key)
+        left.uniq { |item| context.fetch(item, key) }
       end
     end
 
@@ -196,6 +295,7 @@ module Luoma
       if context.nothing?(key)
         left.sum { |v| context.to_numeric(v) }
       else
+        key = context.to_string(key)
         left.sum { |v| context.to_numeric(context.fetch(v, key)) }
       end
     end

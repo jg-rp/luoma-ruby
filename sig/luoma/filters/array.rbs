@@ -4,6 +4,16 @@ module Luoma
     # Coerce items in _left_ to strings if they aren't strings already.
     def self.join: (FilterContext context, untyped left, ?::String sep) -> untyped
 
+    # If _left_ is enumerable, return _left_ flattened to _depth_. Otherwise
+    # return _left_.
+    def self.flatten: (FilterContext context, untyped left, ?untyped? depth) -> untyped
+                    
+    # Return _true_ if at least one item in _left_ is truthy.
+    def self.any: (FilterContext context, untyped left, ?untyped key, ?untyped value) -> untyped
+                
+    # Return true if all items in _left_ are truthy.
+    def self.all: (FilterContext context, untyped left, ?untyped key, ?untyped value) -> untyped
+
     # Return a copy of _left_ with nil items removed.
     # Coerce _left_ to an array-like object if it is not one already.
     #

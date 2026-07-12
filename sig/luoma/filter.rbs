@@ -41,7 +41,7 @@ module Luoma
                      
     #  (untyped) -> untyped
     def to_date: (untyped obj) -> untyped
-                     
+               
     #  (untyped) -> bool
     def nothing?: (untyped obj) -> bool
                 

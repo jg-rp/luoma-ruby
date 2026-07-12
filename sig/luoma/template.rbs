@@ -1,5 +1,6 @@
 module Luoma
   type t_block = Array[String | Luoma::Markup]
+               
   class Template
     @env: Environment
 

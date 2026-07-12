@@ -76,8 +76,6 @@ module Luoma
 
     #: (untyped, untyped, ?default: untyped?) -> untyped
     def fetch(obj, key, default: :nothing)
-      raise argument_error("can't read property #{obj}[#{key}]") if nothing?(obj)
-
       obj.respond_to?(:[]) && key.is_a?(String) ? obj[key] : default
     end
   end

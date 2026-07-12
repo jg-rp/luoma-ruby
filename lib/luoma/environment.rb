@@ -139,6 +139,8 @@ module Luoma
       @tags["with"] = WithTag
 
       register_filter("abs", Luoma::Filters.method(:abs))
+      register_filter("all", Luoma::Filters.method(:all))
+      register_filter("any", Luoma::Filters.method(:any))
       register_filter("append", Luoma::Filters.method(:append))
       register_filter("at_least", Luoma::Filters.method(:at_least))
       register_filter("at_most", Luoma::Filters.method(:at_most))
@@ -159,6 +161,7 @@ module Luoma
       register_filter("find_index", Luoma::Filters.method(:find_index))
       register_filter("find", Luoma::Filters.method(:find))
       register_filter("first", Luoma::Filters.method(:first))
+      register_filter("flatten", Luoma::Filters.method(:flatten))
       register_filter("floor", Luoma::Filters.method(:floor))
       register_filter("has", Luoma::Filters.method(:has))
       register_filter("join", Luoma::Filters.method(:join))
