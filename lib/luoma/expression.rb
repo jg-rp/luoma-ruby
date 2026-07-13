@@ -45,8 +45,21 @@ module Luoma
     #: (RenderContext) -> untyped
     def evaluate(context)
       obj = @expr.evaluate(context)
-      obj = context.resolve_path(obj, @segments.map { |s| s.evaluate(context) }) unless @segments.empty?
-      obj
+
+      return obj if @segments.empty?
+
+      obj, index = context.resolve_path(obj, @segments.map { |s| s.evaluate(context) })
+
+      if obj == :nothing
+        context.env.undefined.new(
+          path(@segments[0..index] || raise),
+          @span,
+          context.template.source,
+          context.template.name
+        )
+      else
+        obj
+      end
     end
 
     def children
@@ -535,7 +548,7 @@ module Luoma
       root = @root.is_a?(Name) ? @root.to_s : "[#{@root}]"
       return root if segments.empty?
 
-      segments_ = segments.map { |s| s.is_a?(Name) ? ".#{s}" : "[#{s}]" }.join
+      segments_ = segments.map { |s| s.is_a?(Name) || s.is_a?(Predicate) ? ".#{s}" : "[#{s}]" }.join
       "#{root}#{segments_}"
     end
   end
@@ -845,7 +858,7 @@ module Luoma
 
     #: () -> String
     def to_s
-      @value
+      "#{@value}?"
     end
   end
 

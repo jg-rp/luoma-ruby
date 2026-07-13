@@ -118,13 +118,7 @@ module Luoma
     #  (Array[untyped], untyped) -> untyped
     def resolve_array_segment: (Array[untyped] obj, untyped segment) -> untyped
 
-    #  (String, untyped) -> untyped
-    def resolve_string_segment: (String obj, untyped segment) -> untyped
-
     #  (Hash[untyped, untyped], untyped) -> untyped
     def resolve_hash_segment: (Hash[untyped, untyped] obj, untyped segment) -> untyped
-
-    #  (untyped, untyped) -> untyped
-    def resolve_unknown_segment: (untyped obj, untyped segment) -> untyped
   end
 end

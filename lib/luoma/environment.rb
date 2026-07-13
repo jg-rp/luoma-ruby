@@ -50,7 +50,7 @@ module Luoma
       @tags = {} #: Hash[String, _Tag]
       @filters = {} #: Hash[String, untyped]
       @predicates = {} #: Hash[String, ^(untyped) -> bool]
-      setup_tags_and_filters
+      setup_tags_filters_and_predicates
 
       # Render context registers that persist when copying an instance of
       # `RenderContext`.
@@ -85,42 +85,53 @@ module Luoma
       @loader.load(self, name, globals: globals, context: context, **)
     end
 
-    # Add or replace a filter. The same callable can be registered multiple times with
-    # different names.
+    # Add or replace a filter. The same callable can be registered multiple
+    # times with different names.
     #
-    # If _callable_ accepts a keyword parameter called `context`, the active render
-    # context will be passed to `#call`.
+    # When evaluated as a filter, _callable_ will be called with an instance of
+    # `FilterContext` as the first argument, and the result of the expression
+    # to the left of the pipe operator as the second argument.
     #
-    # @param name [String] The name of the filter, as used by template authors.
-    # @param callable [responds to call] An object that responds to `#call(left, ...)`
-    #   and `#parameters`. Like a Proc or Method.
+    # Remaining positional and keyword arguments are passed through from the
+    # filter invocation.
+    #
     #: (String, untyped) -> void
     def register_filter(name, callable)
       @filters[name] = callable
     end
 
     # Remove a filter from the filter register.
-    # @param name [String] The name of the filter.
+    #: (String) -> untyped
     def delete_filter(name)
       @filters.delete(name)
     end
 
     # Add or replace a tag.
-    # @param name [String] The tag's name, as used by template authors.
-    # @param tag [responds to parse: ([Symbol, String?, Integer], Parser) -> Tag]
+    #: (String, _Tag) -> void
     def register_tag(name, tag)
       @tags[name] = tag
     end
 
     # Remove a tag from the tag register.
-    # @param name [String] The name of the tag.
-    # @return [_Tag | nil]
+    #: (String) -> (_Tag | nil)
     def delete_tag(name)
       @tags.delete(name)
     end
 
+    # Add or replace a predicate function.
+    #: (String, ^(untyped) -> bool) -> void
+    def register_predicate(name, callable)
+      @predicates[name] = callable
+    end
+
+    # Remove a predicate from the predicate register.
+    #: (String) -> (^(untyped) -> bool | nil)
+    def delete_predicate(name)
+      @predicates.delete(name)
+    end
+
     #: () -> void
-    def setup_tags_and_filters
+    def setup_tags_filters_and_predicates
       @tags["assign"] = AssignTag
       @tags["capture"] = CaptureTag
       @tags["case"] = CaseTag
@@ -201,6 +212,15 @@ module Luoma
       register_filter("url_decode", Luoma::Filters.method(:url_decode))
       register_filter("url_encode", Luoma::Filters.method(:url_encode))
       register_filter("where", Luoma::Filters.method(:where))
+
+      register_predicate("array", Luoma::Predicates.method(:array?))
+      register_predicate("blank", Luoma::Predicates.method(:blank?))
+      register_predicate("defined", Luoma::Predicates.method(:defined?))
+      register_predicate("empty", Luoma::Predicates.method(:empty?))
+      register_predicate("null", Luoma::Predicates.method(:null?))
+      register_predicate("number", Luoma::Predicates.method(:number?))
+      register_predicate("object", Luoma::Predicates.method(:object?))
+      register_predicate("string", Luoma::Predicates.method(:string?))
     end
 
     #: (untyped, untyped, RenderContext, t_token) -> bool

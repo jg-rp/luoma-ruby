@@ -1,0 +1,18 @@
+module Luoma
+  module Predicates
+    #  (untyped) -> bool
+    def self.null?: (untyped value) -> bool
+
+    #  (untyped) -> bool
+    def self.string?: (untyped value) -> bool
+
+    #  (untyped) -> bool
+    def self.number?: (untyped value) -> bool
+
+    #  (untyped) -> bool
+    def self.array?: (untyped value) -> bool
+
+    #  (untyped) -> bool
+    def self.object?: (untyped value) -> bool
+  end
+end

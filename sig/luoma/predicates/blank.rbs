@@ -1,0 +1,6 @@
+module Luoma
+  module Predicates
+    #  (untyped) -> bool
+    def self.blank?: (untyped value) -> bool
+  end
+end

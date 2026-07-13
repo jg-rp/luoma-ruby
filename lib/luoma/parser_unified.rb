@@ -445,6 +445,26 @@ module Luoma
         when :token_dot
           @pos += 1
           token = eat(:token_ident)
+
+          if kind == :token_question
+            @pos += 1
+            segments << Predicate.new(
+              token,
+              Luoma.get_token_value(token, @source)
+            )
+
+            if PATH_PUNCTUATION.include?(kind)
+              raise TemplateSyntaxError.new(
+                "unexpected segment after predicate",
+                current,
+                @source,
+                @template_name
+              )
+            end
+
+            break
+          end
+
           segments << Name.new(token, Luoma.get_token_value(token, @source))
         else
           break

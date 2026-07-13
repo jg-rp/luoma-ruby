@@ -99,4 +99,12 @@ class TestExpressions < Minitest::Spec
       end
     end
   end
+
+  describe "variables" do
+    load_expressions("test/variable.json").each do |test_case|
+      it test_case["name"] do
+        assert_expression(test_case)
+      end
+    end
+  end
 end

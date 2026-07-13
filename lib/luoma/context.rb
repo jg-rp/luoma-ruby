@@ -97,6 +97,8 @@ module Luoma
       segments.each do |segment|
         segment_index += 1
 
+        return [segment.call(obj), segment_index] if segment.is_a?(PredicateFunction)
+
         obj = case obj
               when Drop
                 segment = segment.to_primitive(:string, self) if segment.is_a?(Drop)
@@ -104,13 +106,11 @@ module Luoma
               when Array
                 segment = segment.to_primitive(:numeric, self) if segment.is_a?(Drop)
                 resolve_array_segment(obj, segment)
-              when String
-                resolve_string_segment(obj, segment)
               when Hash
                 segment = segment.to_primitive(:data, self) if segment.is_a?(Drop)
                 resolve_hash_segment(obj, segment)
               else
-                resolve_unknown_segment(obj, segment)
+                :nothing
               end
 
         return [:nothing, segment_index] if obj == :nothing
@@ -228,29 +228,8 @@ module Luoma
                 segment.negative? && obj.length >= segment.abs ? obj.length + segment : segment
               end
 
-      return obj[index] if index && index < obj.length
-
-      case segment
-      when "first"
-        obj.first
-      when "last"
-        obj.last
-      when "size"
-        obj.length
-      else
-        :nothing
-      end
-    end
-
-    #: (String, untyped) -> untyped
-    def resolve_string_segment(obj, segment)
-      case segment
-      when "first"
-        obj[0]
-      when "last"
-        obj[-1]
-      when "size"
-        obj.length
+      if index && index < obj.length
+        obj[index]
       else
         :nothing
       end
@@ -258,26 +237,8 @@ module Luoma
 
     #: (Hash[untyped, untyped], untyped) -> untyped
     def resolve_hash_segment(obj, segment)
-      return obj[segment] if obj.key?(segment)
-
-      case segment
-      when "first"
-        obj.first
-      when "size"
-        obj.size
-      else
-        :nothing
-      end
-    end
-
-    #: (untyped, untyped) -> untyped
-    def resolve_unknown_segment(obj, segment)
-      if segment == "size" && obj.respond_to?(:size)
-        obj.size
-      elsif segment == "first" && obj.respond_to?(:first)
-        obj.first
-      elsif segment == "last" && obj.respond_to?(:last)
-        obj.last
+      if obj.key?(segment)
+        obj[segment]
       else
         :nothing
       end

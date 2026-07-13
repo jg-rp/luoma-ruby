@@ -1,5 +1,5 @@
 module Luoma
-  type t_path_segment = Name | StringLiteral | IndexSelector | Variable
+  type t_path_segment = Name | StringLiteral | IndexSelector | Variable | Predicate
 
   interface _Traversable
     def children: () -> Array[_Traversable]
