@@ -990,8 +990,8 @@ module Luoma
     end
 
     #: (untyped) -> bool
-    def call(obj)
-      @func.call(obj)
+    def call(context, obj)
+      @func.call(context, obj)
     end
   end
 

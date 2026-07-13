@@ -2,9 +2,9 @@
 
 module Luoma
   module Predicates
-    #: (untyped) -> bool
-    def self.defined?(value)
-      !(value == :nothing || value.is_a?(UndefinedDrop))
+    #: (RenderContext, untyped) -> bool
+    def self.defined?(context, obj)
+      !(obj == :nothing || obj.is_a?(UndefinedDrop))
     end
   end
 end

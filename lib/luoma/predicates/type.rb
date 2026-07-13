@@ -2,29 +2,34 @@
 
 module Luoma
   module Predicates
-    #: (untyped) -> bool
-    def self.null?(value)
-      value.nil?
+    #: (RenderContext, untyped) -> bool
+    def self.null?(context, obj)
+      obj.nil?
     end
 
-    #: (untyped) -> bool
-    def self.string?(value)
-      value.is_a?(String)
+    #: (RenderContext, untyped) -> bool
+    def self.string?(context, obj)
+      obj.is_a?(String)
     end
 
-    #: (untyped) -> bool
-    def self.number?(value)
-      value.is_a?(Numeric)
+    #: (RenderContext, untyped) -> bool
+    def self.number?(context, obj)
+      obj.is_a?(Numeric)
     end
 
-    #: (untyped) -> bool
-    def self.array?(value)
-      value.is_a?(Array)
+    #: (RenderContext, untyped) -> bool
+    def self.array?(context, obj)
+      obj.is_a?(Array)
     end
 
-    #: (untyped) -> bool
-    def self.object?(value)
-      value.is_a?(Hash)
+    #: (RenderContext, untyped) -> bool
+    def self.object?(context, obj)
+      obj.is_a?(Hash)
+    end
+
+    #: (RenderContext, untyped) -> bool
+    def self.numeric?(context, obj)
+      obj.is_a?(Numeric) || (context.env.to_numeric(obj, context) != :nothing)
     end
   end
 end

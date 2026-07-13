@@ -107,12 +107,18 @@ module Luoma
       :token_double_quoted
     ].freeze #: Set[t_token_kind]
 
-    PATH_ROOT_KINDS = Set[
+    PATH_SEGMENT_KINDS = Set[
       :token_ident,
       :token_false,
       :token_true,
       :token_null,
-      :token_nil
+      :token_nil,
+      :token_and,
+      :token_or,
+      :token_orElse,
+      :token_not,
+      :token_in,
+      :token_contains
     ].freeze #: Set[t_token_kind]
 
     KEYWORD_ARGUMENT_DELIMITERS = Set[
@@ -324,23 +330,36 @@ module Luoma
                parse_object_literal
              when :token_lparen
                parse_lambda_range_or_group(precedence: precedence)
-             when :token_not, :token_add, :token_sub
+             when :token_not
+               PATH_PUNCTUATION.include?(peek.first) ? parse_path : parse_prefix
+             when :token_add, :token_sub
                parse_prefix
              when :token_true
-               parse_true_literal
+               PATH_PUNCTUATION.include?(peek.first) ? parse_path : parse_true_literal
              when :token_false
-               parse_false_literal
+               PATH_PUNCTUATION.include?(peek.first) ? parse_path : parse_false_literal
              when :token_null, :token_nil
-               parse_null_literal
+               PATH_PUNCTUATION.include?(peek.first) ? parse_path : parse_null_literal
              when :token_int
                parse_int_literal
              when :token_float
                parse_float_literal
+             when :token_and, :token_or, :token_orElse, :token_contains, :token_in, :token_if, :token_else
+               if PATH_PUNCTUATION.include?(peek.first) || TERMINATE_EXPRESSION.include?(peek.first)
+                 parse_path
+               else
+                 token = current
+                 raise TemplateSyntaxError.new(
+                   "unexpected operator #{Luoma.get_token_value(token, @source).inspect}",
+                   token,
+                   @source,
+                   @template_name
+                 )
+               end
              when :token_out_end, :token_wc, :token_tag_end
-               token = current
                raise TemplateSyntaxError.new(
                  "unexpected empty expression",
-                 token,
+                 current,
                  @source,
                  @template_name
                )
@@ -417,7 +436,7 @@ module Luoma
     def parse_path
       token = current
 
-      root = if PATH_ROOT_KINDS.include?(token.first)
+      root = if PATH_SEGMENT_KINDS.include?(token.first)
                @pos += 1
                Name.new(token, Luoma.get_token_value(token, @source))
              else
@@ -444,7 +463,7 @@ module Luoma
           segments << parse_bracketed_segment
         when :token_dot
           @pos += 1
-          token = eat(:token_ident)
+          token = eat_one_of(PATH_SEGMENT_KINDS)
 
           if kind == :token_question
             @pos += 1
@@ -484,7 +503,7 @@ module Luoma
         IndexSelector.new(
           token, Luoma.get_token_value(token, @source).to_i
         ).with(eat(:token_rbracket))
-      when :token_ident, :token_blank, :token_empty, :token_false, :token_true, :token_null, :token_nil
+      when :token_ident, :token_false, :token_true, :token_null, :token_nil, :token_not, :token_and, :token_or
         @pos -= 1
         path = parse_path
         eat(:token_rbracket)

@@ -1,6 +1,6 @@
 module Luoma
   module Predicates
-    #  (untyped) -> bool
-    def self.defined?: (untyped value) -> bool
+    #  (RenderContext, untyped) -> bool
+    def self.defined?: (RenderContext context, untyped value) -> bool
   end
 end

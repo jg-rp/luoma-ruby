@@ -39,7 +39,7 @@ module Luoma
 
     STRING_LITERAL_KINDS: Set[t_token_kind]
 
-    PATH_ROOT_KINDS: Set[t_token_kind]
+    PATH_SEGMENT_KINDS: Set[t_token_kind]
     
     KEYWORD_ARGUMENT_DELIMITERS: Set[t_token_kind]
 

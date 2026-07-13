@@ -1,18 +1,21 @@
 module Luoma
   module Predicates
-    #  (untyped) -> bool
-    def self.null?: (untyped value) -> bool
+    #  (RenderContext, untyped) -> bool
+    def self.null?: (RenderContext context, untyped obj) -> bool
 
-    #  (untyped) -> bool
-    def self.string?: (untyped value) -> bool
+    #  (RenderContext, untyped) -> bool
+    def self.string?: (RenderContext context, untyped obj) -> bool
 
-    #  (untyped) -> bool
-    def self.number?: (untyped value) -> bool
+    #  (RenderContext, untyped) -> bool
+    def self.number?: (RenderContext context, untyped obj) -> bool
 
-    #  (untyped) -> bool
-    def self.array?: (untyped value) -> bool
+    #  (RenderContext, untyped) -> bool
+    def self.array?: (RenderContext context, untyped obj) -> bool
 
-    #  (untyped) -> bool
-    def self.object?: (untyped value) -> bool
+    #  (RenderContext, untyped) -> bool
+    def self.object?: (RenderContext context, untyped obj) -> bool
+                    
+    #  (RenderContext, untyped) -> bool
+    def self.numeric?: (RenderContext context, untyped obj) -> bool
   end
 end

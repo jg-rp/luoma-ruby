@@ -1,0 +1,340 @@
+{
+  "tests": [
+    {
+      "name": "blank, null",
+      "template": "{{ a.blank? }}",
+      "data": {
+        "a": null
+      },
+      "result": "true"
+    },
+    {
+      "name": "blank, string",
+      "template": "{{ a.blank? }}",
+      "data": {
+        "a": "foo"
+      },
+      "result": "false"
+    },
+    {
+      "name": "blank, empty string",
+      "template": "{{ a.blank? }}",
+      "data": {
+        "a": ""
+      },
+      "result": "true"
+    },
+    {
+      "name": "blank, whitespace string",
+      "template": "{{ a.blank? }}",
+      "data": {
+        "a": "  \t\n  "
+      },
+      "result": "true"
+    },
+    {
+      "name": "blank, array",
+      "template": "{{ a.blank? }}",
+      "data": {
+        "a": [1, 2, 3]
+      },
+      "result": "false"
+    },
+    {
+      "name": "blank, empty array",
+      "template": "{{ a.blank? }}",
+      "data": {
+        "a": []
+      },
+      "result": "true"
+    },
+    {
+      "name": "blank, object",
+      "template": "{{ a.blank? }}",
+      "data": {
+        "a": { "b": "c" }
+      },
+      "result": "false"
+    },
+    {
+      "name": "blank, empty object",
+      "template": "{{ a.blank? }}",
+      "data": {
+        "a": {}
+      },
+      "result": "true"
+    },
+    {
+      "name": "blank, undefined",
+      "template": "{{ x.blank? }}",
+      "data": {},
+      "result": "false"
+    },
+    {
+      "name": "empty, null",
+      "template": "{{ a.empty? }}",
+      "data": {
+        "a": null
+      },
+      "result": "false"
+    },
+    {
+      "name": "empty, string",
+      "template": "{{ a.empty? }}",
+      "data": {
+        "a": "foo"
+      },
+      "result": "false"
+    },
+    {
+      "name": "empty, empty string",
+      "template": "{{ a.empty? }}",
+      "data": {
+        "a": ""
+      },
+      "result": "true"
+    },
+    {
+      "name": "empty, whitespace string",
+      "template": "{{ a.empty? }}",
+      "data": {
+        "a": "  \t\n  "
+      },
+      "result": "false"
+    },
+    {
+      "name": "empty, array",
+      "template": "{{ a.empty? }}",
+      "data": {
+        "a": [1, 2, 3]
+      },
+      "result": "false"
+    },
+    {
+      "name": "empty, empty array",
+      "template": "{{ a.empty? }}",
+      "data": {
+        "a": []
+      },
+      "result": "true"
+    },
+    {
+      "name": "empty, object",
+      "template": "{{ a.empty? }}",
+      "data": {
+        "a": { "b": "c" }
+      },
+      "result": "false"
+    },
+    {
+      "name": "empty, empty object",
+      "template": "{{ a.empty? }}",
+      "data": {
+        "a": {}
+      },
+      "result": "true"
+    },
+    {
+      "name": "empty, undefined",
+      "template": "{{ x.empty? }}",
+      "data": {},
+      "result": "false"
+    },
+    {
+      "name": "defined, null",
+      "template": "{{ a.defined? }}",
+      "data": {
+        "a": null
+      },
+      "result": "true"
+    },
+    {
+      "name": "defined, string",
+      "template": "{{ a.defined? }}",
+      "data": {
+        "a": "foo"
+      },
+      "result": "true"
+    },
+    {
+      "name": "defined, empty string",
+      "template": "{{ a.defined? }}",
+      "data": {
+        "a": ""
+      },
+      "result": "true"
+    },
+    {
+      "name": "defined, whitespace string",
+      "template": "{{ a.defined? }}",
+      "data": {
+        "a": "  \t\n  "
+      },
+      "result": "true"
+    },
+    {
+      "name": "defined, array",
+      "template": "{{ a.defined? }}",
+      "data": {
+        "a": [1, 2, 3]
+      },
+      "result": "true"
+    },
+    {
+      "name": "defined, empty array",
+      "template": "{{ a.defined? }}",
+      "data": {
+        "a": []
+      },
+      "result": "true"
+    },
+    {
+      "name": "defined, object",
+      "template": "{{ a.defined? }}",
+      "data": {
+        "a": { "b": "c" }
+      },
+      "result": "true"
+    },
+    {
+      "name": "defined, empty object",
+      "template": "{{ a.defined? }}",
+      "data": {
+        "a": {}
+      },
+      "result": "true"
+    },
+    {
+      "name": "defined, undefined",
+      "template": "{{ x.defined? }}",
+      "data": {},
+      "result": "false"
+    },
+    {
+      "name": "defined, divide by zero",
+      "template": "{{ (2 / 0).defined? }}",
+      "data": {},
+      "result": "false"
+    },
+    {
+      "name": "null, null",
+      "template": "{{ a.null? }}",
+      "data": { "a": null },
+      "result": "true"
+    },
+    {
+      "name": "null, undefined",
+      "template": "{{ a.null? }}",
+      "data": {},
+      "result": "false"
+    },
+    {
+      "name": "null, false",
+      "template": "{{ a.null? }}",
+      "data": { "a": false },
+      "result": "false"
+    },
+    {
+      "name": "string, null",
+      "template": "{{ a.string? }}",
+      "data": { "a": null },
+      "result": "false"
+    },
+    {
+      "name": "string, string",
+      "template": "{{ a.string? }}",
+      "data": { "a": "foo" },
+      "result": "true"
+    },
+    {
+      "name": "string, empty string",
+      "template": "{{ a.string? }}",
+      "data": { "a": "" },
+      "result": "true"
+    },
+    {
+      "name": "string, undefined",
+      "template": "{{ a.string? }}",
+      "data": {},
+      "result": "false"
+    },
+    {
+      "name": "number, undefined",
+      "template": "{{ a.number? }}",
+      "data": {},
+      "result": "false"
+    },
+    {
+      "name": "number, integer",
+      "template": "{{ a.number? }}",
+      "data": { "a": 123 },
+      "result": "true"
+    },
+    {
+      "name": "number, float",
+      "template": "{{ a.number? }}",
+      "data": { "a": 123.45 },
+      "result": "true"
+    },
+    {
+      "name": "number, true",
+      "template": "{{ a.number? }}",
+      "data": { "a": true },
+      "result": "false"
+    },
+    {
+      "name": "number, false",
+      "template": "{{ a.number? }}",
+      "data": { "a": false },
+      "result": "false"
+    },
+    {
+      "name": "array, array",
+      "template": "{{ a.array? }}",
+      "data": { "a": [] },
+      "result": "true"
+    },
+    {
+      "name": "array, string",
+      "template": "{{ a.array? }}",
+      "data": { "a": "foo" },
+      "result": "false"
+    },
+    {
+      "name": "object, object",
+      "template": "{{ a.object? }}",
+      "data": { "a": {} },
+      "result": "true"
+    },
+    {
+      "name": "object, array",
+      "template": "{{ a.object? }}",
+      "data": { "a": [1, 2, 3] },
+      "result": "false"
+    },
+    {
+      "name": "numeric, integer",
+      "template": "{{ a.numeric? }}",
+      "data": { "a": 1 },
+      "result": "true"
+    },
+    {
+      "name": "numeric, float",
+      "template": "{{ a.numeric? }}",
+      "data": { "a": 1.2 },
+      "result": "true"
+    },
+    {
+      "name": "numeric, numeric string",
+      "template": "{{ a.numeric? }}",
+      "data": { "a": "1.2" },
+      "result": "true"
+    },
+    {
+      "name": "numeric, string",
+      "template": "{{ a.numeric? }}",
+      "data": { "a": "foo" },
+      "result": "false"
+    }
+  ]
+}

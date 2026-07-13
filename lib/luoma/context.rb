@@ -97,7 +97,7 @@ module Luoma
       segments.each do |segment|
         segment_index += 1
 
-        return [segment.call(obj), segment_index] if segment.is_a?(PredicateFunction)
+        return [segment.call(self, obj), segment_index] if segment.is_a?(PredicateFunction)
 
         obj = case obj
               when Drop

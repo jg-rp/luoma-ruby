@@ -219,6 +219,7 @@ module Luoma
       register_predicate("empty", Luoma::Predicates.method(:empty?))
       register_predicate("null", Luoma::Predicates.method(:null?))
       register_predicate("number", Luoma::Predicates.method(:number?))
+      register_predicate("numeric", Luoma::Predicates.method(:numeric?))
       register_predicate("object", Luoma::Predicates.method(:object?))
       register_predicate("string", Luoma::Predicates.method(:string?))
     end

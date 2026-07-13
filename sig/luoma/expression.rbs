@@ -452,17 +452,17 @@ module Luoma
   class PredicateFunction
     @name: String
 
-    @func: ^(untyped) -> bool
+    @func: untyped
 
     attr_reader name: String
 
-    attr_reader func: ^(untyped) -> bool
+    attr_reader func: untyped
 
-    #  (String, ^(untyped) -> bool) -> void
-    def initialize: (String name, ^(untyped) -> bool func) -> void
+    #  (String, untyped) -> void
+    def initialize: (String name, untyped func) -> void
 
-    #  (untyped) -> bool
-    def call: (untyped obj) -> bool
+    #  (RenderContext, untyped) -> bool
+    def call: (RenderContext context, untyped obj) -> bool
   end
 
   class LambdaExpr

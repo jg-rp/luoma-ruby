@@ -3,13 +3,11 @@
 require "json"
 require "test_helper"
 
-class TestFilters < Minitest::Spec
+class TestPredicates < Minitest::Spec
   make_my_diffs_pretty!
 
-  # TODO:
-
-  describe "slice filter" do
-    load_test_cases("test/slice_filter.json").each do |test_case|
+  describe "predicates" do
+    load_test_cases("test/predicates.json").each do |test_case|
       it test_case["name"] do
         assert_test_case(test_case)
       end

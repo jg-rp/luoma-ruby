@@ -2,13 +2,13 @@
 
 module Luoma
   module Predicates
-    #: (untyped) -> bool
-    def self.empty?(value)
-      case value
-      when Array, Object, String
-        value.empty? # steep:ignore
+    #: (RenderContext, untyped) -> bool
+    def self.empty?(context, obj)
+      case obj
+      when Array, Hash, String
+        obj.empty?
       else
-        value.respond_to?(:length) ? value.length.zero? : false
+        obj.respond_to?(:length) ? obj.length.zero? : false
       end
     end
   end
