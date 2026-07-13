@@ -1,0 +1,100 @@
+{
+  "tests": [
+    {
+      "name": "strings",
+      "template": "{% case title %}{% when 'foo' %}foo{% when 'Hello' %}bar{% endcase %}",
+      "data": {
+        "title": "Hello"
+      },
+      "result": "bar"
+    },
+    {
+      "name": "variables",
+      "template": "{% case title %}{% when other %}foo{% when 'goodbye' %}bar{% endcase %}",
+      "data": {
+        "title": "Hello",
+        "other": "Hello"
+      },
+      "result": "foo"
+    },
+
+    {
+      "name": "undefined when",
+      "template": "{% case title %}{% when nosuchthing %}foo{% when 'Hello' %}bar{% endcase %}",
+      "data": {
+        "title": "Hello"
+      },
+      "result": "bar"
+    },
+    {
+      "name": "undefined case",
+      "template": "{% case nosuchthing %}{% when 'foo' %}foo{% when 'bar' %}bar{% endcase %}",
+      "result": ""
+    },
+    {
+      "name": "no match and no default",
+      "template": "{% case title %}{% when 'foo' %}foo{% when 'bar' %}bar{% endcase %}",
+      "data": {
+        "title": "Hello"
+      },
+      "result": ""
+    },
+    {
+      "name": "no match with default",
+      "template": "{% case title %}{% when 'foo' %}foo{% else %}bar{% endcase %}",
+      "data": {
+        "title": "Hello"
+      },
+      "result": "bar"
+    },
+    {
+      "name": "just default",
+      "template": "{% case title %}{% else %}bar{% endcase %}",
+      "data": {
+        "title": "Hello"
+      },
+      "result": "bar"
+    },
+    {
+      "name": "no whens or default",
+      "template": "{% case title %}{% endcase %}",
+      "data": {
+        "title": "Hello"
+      },
+      "result": ""
+    },
+    {
+      "name": "whitespace between case and first when",
+      "template": "{% case title %}  \n\t{% when 'foo' %}foo\n{% when 'Hello' %}bar{% endcase %}",
+      "data": {
+        "title": "Hello"
+      },
+      "result": "bar"
+    },
+    {
+      "name": "comma separated when expression",
+      "template": "{% case title %}{% when 'foo' %}foo{% when 'bar', 'Hello' %}bar{% endcase %}",
+      "data": {
+        "title": "Hello"
+      },
+      "result": "bar"
+    },
+    {
+      "name": "multiple matching blocks",
+      "template": "{% case title %}{% when 'Hello' %}foo{% when a, 'Hello' %}bar{% endcase %}",
+      "data": {
+        "title": "Hello",
+        "a": "Hello"
+      },
+      "result": "foo"
+    },
+    {
+      "name": "empty when tag",
+      "template": "{% case foo %}{% when %}bar{% endcase %}",
+      "data": {
+        "foo": "bar"
+      },
+      "invalid": true
+    }
+  ]
+}

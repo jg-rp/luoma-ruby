@@ -6,12 +6,10 @@ module Luoma
 
     END_CASE_BLOCK: Set[String]
 
-    CASE_BLOCKS: Set[String]
-
     #  (t_token, String, Parser) -> Markup
     def self.parse: (t_token token, String tag_name, Parser parser) -> Markup
 
-    #  (t_token, String, Expression, Array[WhenBlock|ElseBlock]) -> void
+    #  (t_token, String, Expression, Array[WhenBlock], ElseBlock?) -> void
     def initialize: (t_token token, String tag_name, Expression expression, Array[WhenBlock|ElseBlock] blocks) -> void
   end
 

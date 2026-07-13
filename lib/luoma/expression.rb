@@ -845,6 +845,8 @@ module Luoma
     def evaluate(context)
       func = context.env.predicates[@value]
 
+      # TODO: strict predicate like strict filters
+
       if func.nil?
         :nothing
       else

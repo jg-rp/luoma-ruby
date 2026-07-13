@@ -3,7 +3,6 @@
 module Luoma
   class CaseTag < Markup
     END_CASE_BLOCK = Set["endcase", "when", "else"]
-    CASE_BLOCKS = Set["when", "else"]
 
     #: (t_token, String, Parser) -> Markup
     def self.parse(token, tag_name, parser)
@@ -16,17 +15,15 @@ module Luoma
       parser.eat(:token_text) if parser.kind == :token_text
 
       blocks = [] #: Array[WhenBlock|ElseBlock]
+      blocks << WhenBlock.parse("when", parser) while parser.tag?("when")
 
-      loop do
-        case parser.tags(CASE_BLOCKS)
-        when "when"
-          blocks << WhenBlock.parse("when", parser)
-        when "else"
-          else_token = parser.eat_tag("else")
-          blocks << ElseBlock.new(else_token, "else", parser.parse_block(stop: END_CASE_BLOCK))
-        else
-          break
-        end
+      if parser.tag?("else")
+        else_token = parser.eat_tag("else")
+        blocks << ElseBlock.new(
+          else_token,
+          "else",
+          parser.parse_block(stop: END_CASE_BLOCK)
+        )
       end
 
       parser.eat_empty_tag("endcase")
@@ -46,24 +43,17 @@ module Luoma
     #: (RenderContext, String) -> void
     def render(context, buffer)
       left = @expression.evaluate(context)
-      alt = true
 
       @blocks.each do |block|
         if block.is_a?(ElseBlock)
-          # Render any and all `else` blocks as long as we haven't had a
-          # successful `when` block.
-          Luoma.render_block(block.block, context, buffer) if alt
-          next
-        end
-
-        block.right.each do |expr|
-          # Render each `when` blocks potentially many times, once for each
-          # expression equal to `left`. There can be multiple expressions per
-          # `{% when %}` tags and all `{% when %}` tags always fall-through to
-          # subsequent `{% when %}` tags, but not `{% else %}` tags.
-          if context.env.eq?(left, expr.evaluate(context), context, expr.span)
-            alt = false
-            Luoma.render_block(block.block, context, buffer)
+          return Luoma.render_block(block.block, context, buffer)
+        else
+          block.right.each do |expr|
+            right = expr.evaluate(context)
+            if (right.is_a?(PredicateFunction) && context.env.truthy?(right.call(context, left), context)) ||
+               context.env.eq?(left, right, context, expr.span)
+              return Luoma.render_block(block.block, context, buffer)
+            end
           end
         end
       end
@@ -91,13 +81,20 @@ module Luoma
       parser.skip_whitespace_control
       token = parser.eat(:token_tag_name)
 
-      # Leading commas are OK
-      parser.next if parser.kind == :token_comma
-
       right = [] #: Array[Expression]
 
       loop do
-        right << parser.parse_expression
+        expr = parser.parse_expression
+        right << if parser.kind == :token_question &&
+                    expr.is_a?(Variable) &&
+                    expr.segments.empty? &&
+                    expr.root.is_a?(Name)
+                   parser.next
+                   Predicate.new(expr.token, expr.root.value)
+                 else
+                   expr
+                 end
+
         break unless parser.kind == :token_comma
 
         parser.next

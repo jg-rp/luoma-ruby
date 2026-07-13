@@ -238,6 +238,7 @@ module Luoma
 
     #: (untyped, untyped, RenderContext, t_token) -> bool
     def eq?(left, right, context, token)
+      # TODO: Don't accepts token
       return left.eq?(right, context) if left.is_a?(Drop)
       return right.eq?(left, context) if right.is_a?(Drop)
 
@@ -246,6 +247,8 @@ module Luoma
 
     #: (untyped, untyped, RenderContext, t_token) -> bool
     def lt?(left, right, context, token)
+      # TODO: Fixme
+      # TODO: Don't accepts token
       return left.lt?(right, context) if left.is_a?(Drop)
       return right.gt?(left, context) if right.is_a?(Drop)
 
