@@ -23,7 +23,7 @@ module Luoma
       # Leading commas are OK
       parser.next if parser.kind == :token_comma
 
-      args = parser.parse_keyword_arguments(require_commas: false)
+      args = parser.parse_keyword_arguments(require_commas: true)
       parser.carry_whitespace_control
       parser.eat(:token_tag_end)
       new(token, tag_name, name, args)

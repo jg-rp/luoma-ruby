@@ -1,10 +1,22 @@
 # frozen_string_literal: true
 
 module Luoma
-  class IncludeTag < Markup
+  class ImportTag < Markup
     #: (t_token, String, Parser) -> Markup
     def self.parse(token, tag_name, parser)
-      name_expr = parser.parse_expression
+      name_expr = parser.parse_string_literal
+      name_value = name_expr.value
+
+      unless name_value
+        raise TemplateSyntaxError.new(
+          "expected a string literal",
+          name_expr.span,
+          parser.source,
+          parser.template_name
+        )
+      end
+
+      name = Name.new(name_expr.token, name_value)
 
       # Leading commas are OK
       parser.next if parser.kind == :token_comma
@@ -12,10 +24,10 @@ module Luoma
       args = parser.parse_keyword_arguments(require_commas: true)
       parser.carry_whitespace_control
       parser.eat(:token_tag_end)
-      new(token, tag_name, name_expr, args)
+      new(token, tag_name, name, args)
     end
 
-    #: (t_token, String, Expression, Array[KeywordArgument]) -> void
+    #: (t_token, String, Name, Array[KeywordArgument]) -> void
     def initialize(token, tag_name, template_name, args)
       super(token)
       @tag_name = tag_name
@@ -25,13 +37,11 @@ module Luoma
 
     #: (RenderContext, String) -> void
     def render(context, buffer)
-      name = context.env.to_string(@template_name.evaluate(context), context)
-
       begin
         template = context.env.get_template(
-          name,
+          @template_name.value,
           context: context,
-          tag: "include"
+          tag: "import"
         )
       rescue TemplateNotFoundError => e
         raise NoSuchTemplateError.new(
@@ -45,7 +55,7 @@ module Luoma
       scope = @args.to_h { |arg| [arg.name.value, arg.expression.evaluate(context)] }
 
       context.extends(scope, template: template) do
-        template.render_with_context(context, buffer)
+        template.render_with_context(context, +"") # Discard output.
       end
     end
 

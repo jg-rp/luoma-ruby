@@ -1,6 +1,6 @@
 # Luoma
 
-TODO: 
+TODO:
 
 ## TODO:
 
@@ -23,7 +23,7 @@ TODO:
 - First-class expressions with `{% assign x = <lambda expr> %}`
 - Type predicates
 - Case tag accepts type predicates
-
+- `{% import %}` is a cross between `{% include %}` and `{% render %}`. It requires a string argument and renders a template just for its side effects, discarding any output.
 
 ## License
 

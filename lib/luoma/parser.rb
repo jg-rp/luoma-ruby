@@ -178,11 +178,6 @@ module Luoma
       raise "not implemented"
     end
 
-    #: () -> Lambda
-    def parse_lambda_expression
-      raise "not implemented"
-    end
-
     #: () -> Name
     def parse_ident
       raise "not implemented"

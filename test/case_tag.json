@@ -95,6 +95,15 @@
         "foo": "bar"
       },
       "invalid": true
+    },
+    {
+      "name": "type predicate",
+      "template": "{% case title %}{% when 'Hi' %}foo{% when string? %}bar{% when 'Hello' %}baz{% endcase %}",
+      "data": {
+        "title": "Hello",
+        "a": "Hello"
+      },
+      "result": "bar"
     }
   ]
 }

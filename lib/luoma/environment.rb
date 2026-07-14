@@ -142,6 +142,7 @@ module Luoma
       @tags["break"] = BreakTag
       @tags["continue"] = ContinueTag
       @tags["if"] = IfTag
+      @tags["import"] = ImportTag
       @tags["increment"] = IncrementTag
       @tags["include"] = IncludeTag
       @tags["raw"] = RawTag
