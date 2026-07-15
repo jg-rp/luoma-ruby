@@ -5,7 +5,7 @@ require_relative "chain_hash"
 module Luoma
   class RenderContext
     attr_reader :env, :template, :disabled_tags, :context_depth, :assign_score, :assign_score_cumulative,
-                :registers, :globals, :scopes
+                :registers, :globals, :scopes, :locals
 
     attr_accessor :render_score, :render_score_cumulative, :interrupts, :forloops
 

@@ -13,7 +13,7 @@ module Luoma
     RE_INT = /\d+(?:[eE]\+?\d+)?/
     RE_MARKUP_START = /\{[%{#]/
     RE_OUTPUT_END = /\}\}/
-    RE_PUNCTUATION = /!=|>=|<=|==|=>|\.{1,3}|[?\[\]|:,()*\/<>=]|([+-](?![}%#]\}))|(%(?!\}))/
+    RE_PUNCTUATION = /!=|>=|<=|==|=>|->|\.{1,3}|[?\[\]|:,()*\/<>=]|([+-](?![}%#]\}))|(%(?!\}))/
     RE_RAW_END = /\{%[+~-]?\s*endraw\s*[+~-]?%\}/
     RE_TAG_END = /%\}/
     RE_TAG_NAME = /[a-z][a-z_0-9]*/
@@ -65,6 +65,7 @@ module Luoma
       "==" => :token_eq,
       "!=" => :token_ne,
       "=>" => :token_arrow,
+      "->" => :token_arrow,
       "+" => :token_add,
       "-" => :token_sub,
       "%" => :token_mod,

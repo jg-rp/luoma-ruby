@@ -4,8 +4,6 @@ module Luoma
 
     @args: Array[KeywordArgument]
 
-    DISABLED_TAGS: Set[String]
-
     #  (t_token, String, Parser) -> Markup
     def self.parse: (t_token token, String tag_name, Parser parser) -> Markup
 

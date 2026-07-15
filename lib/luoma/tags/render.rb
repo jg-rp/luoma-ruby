@@ -2,8 +2,6 @@
 
 module Luoma
   class RenderTag < Markup
-    DISABLED_TAGS = Set["include"]
-
     #: (t_token, String, Parser) -> Markup
     def self.parse(token, tag_name, parser)
       name_expr = parser.parse_string_literal
@@ -59,7 +57,6 @@ module Luoma
       ctx = context.copy(
         @args.to_h { |arg| [arg.name.value, arg.expression.evaluate(context)] },
         block_scope: false,
-        disabled_tags: DISABLED_TAGS,
         template: template
       )
 

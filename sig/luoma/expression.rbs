@@ -59,13 +59,15 @@ module Luoma
 
     @filter: Filter
 
+    @name: String?
+
     @span: t_token
 
     def initialize: (t_token token, Expression left, Filter filter) -> void
                   
     def evaluate_lambda: (LambdaExpr expr, RenderContext context) -> untyped
                        
-    def evaluate_filter: (RenderContext context) -> untyped
+    def evaluate_filter: (String name, RenderContext context) -> untyped
   end
 
   class PrefixExpression < Expression
@@ -392,7 +394,7 @@ module Luoma
   class Filter
     @token: t_token
 
-    @name: Name
+    @name: Variable
 
     @args: Array[Expression]
 
@@ -404,14 +406,14 @@ module Luoma
 
     attr_reader span: t_token
 
-    attr_reader name: Name
+    attr_reader name: Variable
 
     attr_reader kwargs: Array[KeywordArgument]
 
     attr_reader args: Array[Expression]
 
     #  (t_token, Name, Array[Expression | KeywordArgument])
-    def initialize: (t_token token, Name name, Array[Expression] args, Array[KeywordArgument] kwargs) -> void
+    def initialize: (t_token token, Variable name, Array[Expression] args, Array[KeywordArgument] kwargs) -> void
 
     def children: () -> Array[Luoma::_Traversable]
 

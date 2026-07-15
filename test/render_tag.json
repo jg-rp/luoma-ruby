@@ -12,8 +12,7 @@
       "templates": {
         "product-hero": "{{ product.title }}\n{% for tag in product.tags %}- {{ tag }} {% endfor %}"
       },
-      "result": "foo\n- sports - garden ",
-      "tags": ["render tag"]
+      "result": "foo\n- sports - garden "
     },
     {
       "name": "more arguments",
@@ -21,8 +20,7 @@
       "templates": {
         "product-args": "{{ foo }} {{ bar }}"
       },
-      "result": "hello there",
-      "tags": ["render tag"]
+      "result": "hello there"
     },
     {
       "name": "keyword arguments, no leading coma",
@@ -30,8 +28,7 @@
       "templates": {
         "product-args": "{{ foo }} {{ bar }}"
       },
-      "result": "hello there",
-      "tags": ["render tag"]
+      "result": "hello there"
     },
     {
       "name": "parent variables go out of scope",
@@ -39,8 +36,7 @@
       "templates": {
         "outer-scope": "{{ greeting }}"
       },
-      "result": "good morning good morning",
-      "tags": ["assign tag", "render tag"]
+      "result": "good morning good morning"
     },
     {
       "name": "assigned variables do not leak into outer scope",
@@ -53,8 +49,7 @@
       "templates": {
         "assign-outer-scope": "Hello, {{ customer.first_name }}{% assign last_name = 'Smith' %}"
       },
-      "result": "Hello, Holly ",
-      "tags": ["render tag"]
+      "result": "Hello, Holly "
     }
   ]
 }

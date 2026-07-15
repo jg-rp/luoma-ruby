@@ -12,8 +12,7 @@
       "templates": {
         "product-hero": "{{ product.title }}\n{% for tag in product.tags %}- {{ tag }}\n{% endfor %}"
       },
-      "result": "foo\n- sports\n- garden\n",
-      "tags": ["include tag"]
+      "result": "foo\n- sports\n- garden\n"
     },
     {
       "name": "variable name",
@@ -28,8 +27,7 @@
       "templates": {
         "product-hero": "{{ product.title }}\n{% for tag in product.tags %}- {{ tag }}\n{% endfor %}"
       },
-      "result": "foo\n- sports\n- garden\n",
-      "tags": ["include tag"]
+      "result": "foo\n- sports\n- garden\n"
     },
     {
       "name": "more keyword arguments",
@@ -37,8 +35,7 @@
       "templates": {
         "product-args": "{{ foo }} {{ bar }}"
       },
-      "result": "hello there",
-      "tags": ["include tag"]
+      "result": "hello there"
     },
     {
       "name": "keyword arguments without leading comma",
@@ -46,8 +43,7 @@
       "templates": {
         "product-args": "{{ foo }} {{ bar }}"
       },
-      "result": "hello there",
-      "tags": ["include tag"]
+      "result": "hello there"
     },
     {
       "name": "use globals from outer scope",
@@ -60,8 +56,7 @@
       "templates": {
         "outer-scope": "Hello, {{ customer.first_name }}"
       },
-      "result": "Hello, Holly",
-      "tags": ["include tag"]
+      "result": "Hello, Holly"
     },
     {
       "name": "assign persists in outer scope",
@@ -74,8 +69,7 @@
       "templates": {
         "assign-outer-scope": "Hello, {{ customer.first_name }}{% assign last_name = 'Smith' %}"
       },
-      "result": "Hello, Holly Smith",
-      "tags": ["include tag"]
+      "result": "Hello, Holly Smith"
     },
     {
       "name": "break from include",
@@ -88,8 +82,7 @@
       "templates": {
         "tag-break": "{{ tag | upcase }}{% break %}"
       },
-      "result": "SPORTS",
-      "tags": ["for tag", "include tag"]
+      "result": "SPORTS"
     },
     {
       "name": "break from nested include",
@@ -103,8 +96,7 @@
         "tag": "{{ tag | upcase }}{% include 'break' %}",
         "break": " break!{% break %}"
       },
-      "result": "SPORTS break!",
-      "tags": ["for tag", "include tag"]
+      "result": "SPORTS break!"
     },
     {
       "name": "arguments go out of scope",
@@ -112,8 +104,7 @@
       "templates": {
         "product-args": "{{ foo }} {{ bar }}"
       },
-      "result": "hello there",
-      "tags": ["include tag"]
+      "result": "hello there"
     },
     {
       "name": "assign to a keyword argument",
@@ -121,8 +112,7 @@
       "templates": {
         "product-args": "{{ foo }}{% assign foo = 'goodbye' %} {{ foo }}"
       },
-      "result": "hello hello goodbye",
-      "tags": ["include tag"]
+      "result": "hello hello goodbye"
     }
   ]
 }

@@ -323,7 +323,7 @@ module Luoma
              when :token_single_quote, :token_double_quote
                parse_string_literal
              when :token_ident
-               parse_path
+               peek.first == :token_arrow ? parse_lambda : parse_path
              when :token_lbracket
                parse_array_or_path
              when :token_lbrace
@@ -749,7 +749,7 @@ module Luoma
 
     #: (Expression) -> FilteredExpression
     def parse_filter(token, left)
-      name = parse_ident
+      name = parse_path
 
       if TERMINATE_FILTER.include?(kind) || kind == :token_comma
         # No arguments
@@ -812,7 +812,7 @@ module Luoma
       )
     end
 
-    # Parse a lambda expression without parameters enclosed in parentheses.
+    # Parse a lambda expression with a single parameter not enclosed in parentheses.
     #: () -> Lambda
     def parse_lambda
       param = parse_ident

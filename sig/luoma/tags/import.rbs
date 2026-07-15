@@ -2,12 +2,14 @@ module Luoma
   class ImportTag < Markup
     @template_name: Name
 
+    @namespace: Name?
+
     @args: Array[KeywordArgument]
 
     #  (t_token, String, Parser) -> Markup
     def self.parse: (t_token token, String tag_name, Parser parser) -> Markup
 
     #  (t_token, String, Name, Array[KeywordArgument]) -> void
-    def initialize: (t_token token, String tag_name, Name template_name, Array[KeywordArgument] args) -> void
+    def initialize: (t_token token, String tag_name, Name template_name, Name? namespace, Array[KeywordArgument] args) -> void
   end
 end

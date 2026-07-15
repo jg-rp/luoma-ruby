@@ -128,18 +128,31 @@ module Luoma
       @left = left
       @filter = filter
       @span = filter.span
+
+      # Filter names are stored as instances of `Variable` so we can "call"
+      # namespaced lambda expressions from the `{% import %}` tag.
+      #
+      # Here we extract an identifier from that variable for use with
+      # environment-defined filters that are never namespaced.
+      @name = filter.name.root.value if filter.name.segments.empty? && filter.name.root.is_a?(Name)
     end
 
     #: (RenderContext) -> untyped
     def evaluate(context)
-      # Look for user-defined filters first.
-      obj = context.resolve(@filter.name.value)
+      obj = @filter.name.evaluate(context)
 
       if obj.is_a?(ExpressionDrop)
+        # User-defined filter.
         evaluate_lambda(obj.expr, context)
-      else
-        # Fall back to environment defined filters.
-        evaluate_filter(context)
+      elsif @name
+        evaluate_filter(@name, context) # steep:ignore
+      elsif context.env.strict_filters
+        raise FilterArgumentError.new(
+          "expected a filter name",
+          @token,
+          context.template.source,
+          context.template.name
+        )
       end
     end
 
@@ -158,7 +171,7 @@ module Luoma
     def evaluate_lambda(expr, context)
       if context.env.strict_filters && !@filter.kwargs.empty?
         raise FilterArgumentError.new(
-          "#{@filter.name.value.inspect} accepts #{expr.params.length} positional arguments, found a keyword argument.",
+          "#{@filter.name.evaluate(context).inspect} accepts #{expr.params.length} positional arguments, found a keyword argument.",
           @span,
           context.template.source,
           context.template.name
@@ -169,13 +182,13 @@ module Luoma
     end
 
     #: (RenderContext) -> untyped
-    def evaluate_filter(context)
-      func = context.env.filters[@filter.name.value]
+    def evaluate_filter(name, context)
+      func = context.env.filters[name]
 
       if func.nil?
         if context.env.strict_filters
           raise FilterNotFoundError.new(
-            "unknown filter #{@filter.name.value.inspect}",
+            "unknown filter #{name.inspect}",
             @filter.token,
             context.template.source,
             context.template.name
@@ -931,7 +944,7 @@ module Luoma
   class Filter
     attr_reader :token, :span, :name, :args, :kwargs
 
-    #: (t_token, Name, Array[Expression], Array[KeywordArgument])
+    #: (t_token, Variable, Array[Expression], Array[KeywordArgument])
     def initialize(token, name, args, kwargs)
       @token = token
       @name = name
@@ -945,7 +958,7 @@ module Luoma
     end
 
     def to_s
-      return @name.value if @args.empty? && @kwargs.empty?
+      return @name.to_s if @args.empty? && @kwargs.empty?
 
       args = @args.join(",")
       args << ", " << @kwargs.join(",") unless @kwargs.empty?

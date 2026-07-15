@@ -83,6 +83,8 @@ module Luoma
 
     attr_reader globals: _Namespace
 
+    attr_reader locals: Hash[String, untyped]
+
     #  (Template, ?globals: _Namespace?) -> void
     def initialize: (Template template, ?globals: _Namespace?, ?disabled_tags: Set[String]?, ?context_depth: Integer?, ?assign_score_carry: Integer?, ?render_score_carry: Integer?) -> void
 

@@ -46,6 +46,14 @@ class TestTags < Minitest::Spec
     end
   end
 
+  describe "import tag" do
+    load_test_cases("test/import_tag.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
   describe "include tag" do
     load_test_cases("test/include_tag.json").each do |test_case|
       it test_case["name"] do

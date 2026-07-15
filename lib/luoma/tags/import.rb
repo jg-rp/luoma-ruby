@@ -18,20 +18,26 @@ module Luoma
 
       name = Name.new(name_expr.token, name_value)
 
+      namespace = if parser.current_value == "as"
+                    parser.next
+                    parser.parse_ident
+                  end
+
       # Leading commas are OK
       parser.next if parser.kind == :token_comma
 
       args = parser.parse_keyword_arguments(require_commas: true)
       parser.carry_whitespace_control
       parser.eat(:token_tag_end)
-      new(token, tag_name, name, args)
+      new(token, tag_name, name, namespace, args)
     end
 
-    #: (t_token, String, Name, Array[KeywordArgument]) -> void
-    def initialize(token, tag_name, template_name, args)
+    #: (t_token, String, Name, Name?, Array[KeywordArgument]) -> void
+    def initialize(token, tag_name, template_name, namespace, args)
       super(token)
       @tag_name = tag_name
       @template_name = template_name
+      @namespace = namespace
       @args = args
     end
 
@@ -52,10 +58,20 @@ module Luoma
         )
       end
 
-      scope = @args.to_h { |arg| [arg.name.value, arg.expression.evaluate(context)] }
+      ctx = context.copy(
+        @args.to_h { |arg| [arg.name.value, arg.expression.evaluate(context)] },
+        block_scope: false,
+        template: template
+      )
 
-      context.extends(scope, template: template) do
-        template.render_with_context(context, +"") # Discard output.
+      template.render_with_context(ctx, +"") # Discard output.
+      context.render_score_cumulative += ctx.render_score
+
+      # Update locals only.
+      if @namespace
+        context.assign(@namespace.value, ctx.locals) # steep:ignore
+      else
+        context.locals.update(ctx.locals)
       end
     end
 

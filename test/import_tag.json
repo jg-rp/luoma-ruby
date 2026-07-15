@@ -1,0 +1,58 @@
+{
+  "tests": [
+    {
+      "name": "string literal name",
+      "template": "{% import 'product-hero' %}",
+      "data": {
+        "product": {
+          "title": "foo",
+          "tags": ["sports", "garden"]
+        }
+      },
+      "templates": {
+        "product-hero": "{{ product.title }}\n{% for tag in product.tags %}- {{ tag }}\n{% endfor %}"
+      },
+      "result": ""
+    },
+    {
+      "name": "more keyword arguments",
+      "template": "{% import 'product-args', foo: 'hello', bar: 'there' %}",
+      "templates": {
+        "product-args": "{{ foo }} {{ bar }}"
+      },
+      "result": ""
+    },
+    {
+      "name": "assign persists in outer scope",
+      "template": "{% import 'assign-outer-scope' %} {{ last_name }}",
+      "data": {
+        "customer": {
+          "first_name": "Holly"
+        }
+      },
+      "templates": {
+        "assign-outer-scope": "Hello, {{ customer.first_name }}{% assign last_name = 'Smith' %}"
+      },
+      "result": " Smith"
+    },
+    {
+      "name": "arguments go out of scope",
+      "template": "{% import 'product-args', foo: 'hello', bar: 'there' %}{{ foo }}",
+      "templates": {
+        "product-args": "{{ foo }} {{ bar }}"
+      },
+      "result": ""
+    },
+    {
+      "name": "namespaced",
+      "template": "{% import 'utils' as utils %}{{ a | utils.squash }}",
+      "data": {
+        "a": "   foo \n bar"
+      },
+      "templates": {
+        "utils": "{% assign squash = (x) -> x | strip | split: ' ' | join %}"
+      },
+      "result": "foo bar"
+    }
+  ]
+}
