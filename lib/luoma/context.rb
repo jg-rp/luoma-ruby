@@ -7,7 +7,7 @@ module Luoma
     attr_reader :env, :template, :disabled_tags, :context_depth, :assign_score, :assign_score_cumulative,
                 :registers, :globals, :scopes, :locals
 
-    attr_accessor :render_score, :render_score_cumulative, :interrupts, :forloops
+    attr_accessor :render_score, :render_score_cumulative, :interrupts
 
     #: (Template, ?globals: _Namespace?) -> void
     def initialize(
@@ -68,16 +68,10 @@ module Luoma
       # `{% continue %}`, for example.
       @interrupts = [] #: Array[Symbol]
 
-      # A stack of `ForLoopDrop` instances used to populate `forloop.parent`
-      @forloops = [] #: Array[ForLoopDrop]
-
       # Registers supporting stateful tags. It's OK to use this map for storing
       # custom tag state.
       @registers = {
-        cycles: Hash.new(0),
-        for: Hash.new(0),
-        extends: Hash.new { |hash, key| hash[key] = [] },
-        macros: {} #: Hash[String, untyped]
+        cycles: Hash.new(0)
       }
     end
 

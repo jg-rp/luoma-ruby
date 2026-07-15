@@ -4,7 +4,7 @@ TODO:
 
 ## TODO:
 
-- Pass ExpressionDrop as argument to array filter
+- 
 
 ## Notes
 
@@ -14,7 +14,7 @@ TODO:
 - There's no `{% unless %}` tag. Use `{% if not (...) %}` or `{% if a != b %}`.
 - `{% for %}` does not accept arguments. Use the `slice` and `reverse` filters instead.
 - The `slice` filter accepts `start`, `stop` and `step` arguments instead of `limit` and `offset`. `start`, `stop` and `step` can be positional or keyword and positive or negative.
-- `forloop` does not have a `name` property.
+- There's no `forloop` drop. Use optional index and array binding syntax: `{% for a, index, array in ... %}`.
 - Strings are iterated and sliced like an array of characters.
 - `{% render %}` and `{% include %}` don't accept binding or looping arguments. Use a `{% for %}` loop instead.
 - There's no `empty` or `blank` objects. Use `thing.empty?` and `thing.blank?` instead.

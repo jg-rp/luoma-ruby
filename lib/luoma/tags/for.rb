@@ -6,7 +6,13 @@ module Luoma
 
     #: (t_token, String, Parser) -> Markup
     def self.parse(token, tag_name, parser)
-      identifier = parser.parse_ident
+      params = [parser.parse_ident] #: Array[Name]
+
+      while parser.kind == :token_comma
+        parser.next
+        params << parser.parse_ident
+      end
+
       parser.eat(:token_in, message: "missing 'in'")
       parser.expect_expression
       expr = parser.parse_expression
@@ -22,14 +28,14 @@ module Luoma
 
       parser.eat_empty_tag("endfor")
 
-      new(token, tag_name, identifier, expr, block, default)
+      new(token, tag_name, params, expr, block, default)
     end
 
-    #: (t_token, String, Name, Expression, t_block, t_block?) -> void
-    def initialize(token, tag_name, identifier, expression, block, default)
+    #: (t_token, String, Array[Name], Expression, t_block, t_block?) -> void
+    def initialize(token, tag_name, params, expression, block, default)
       super(token)
       @tag_name = tag_name
-      @identifier = identifier
+      @params = params
       @expression = expression
 
       @blank = Luoma.blank_block?(block) && (!default || Luoma.blank_block?(default))
@@ -56,19 +62,19 @@ module Luoma
         return
       end
 
-      name = @identifier.value
+      name_param = @params.first.value
+      index_param = @params[1].value if @params.length > 1
+      array_param = @params[2].value if @params.length > 2
+
       length = array.length
-
-      for_loop_drop = ForLoopDrop.new(length, context.forloops.last)
-
-      context.forloops << for_loop_drop
-      namespace = { "forloop" => for_loop_drop } #: Hash[String, untyped]
+      namespace = {} #: Hash[String, untyped]
 
       context.extends(namespace) do
         index = 0
         while index < length
-          namespace[name] = array[index]
-          for_loop_drop.next
+          namespace[name_param] = array[index]
+          namespace[index_param] = index if index_param
+          namespace[array_param] = array if array_param
           index += 1
 
           Luoma.render_block(@block, context, buffer)
@@ -80,8 +86,6 @@ module Luoma
             break
           end
         end
-      ensure
-        context.forloops.pop
       end
     end
 

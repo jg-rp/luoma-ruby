@@ -1,6 +1,6 @@
 module Luoma
   class ForTag < Markup
-    @identifier: Name
+    @params: Array[Name]
 
     @expression: Expression
 
@@ -13,11 +13,11 @@ module Luoma
     #  (t_token, String, Parser) -> Markup
     def self.parse: (t_token token, String tag_name, Parser parser) -> Markup
 
-    #: (t_token, String, Name, Expression, t_block, t_block?) -> void
+    #: (t_token, String, Array[Name], Expression, t_block, t_block?) -> void
     def initialize: (
       t_token token, 
       String tag_name, 
-      Name identifier, 
+      Array[Name] params, 
       Expression expression, 
       t_block block, 
       t_block? default, 

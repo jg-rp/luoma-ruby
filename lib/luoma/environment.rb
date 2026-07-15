@@ -135,15 +135,12 @@ module Luoma
       @tags["assign"] = AssignTag
       @tags["capture"] = CaptureTag
       @tags["case"] = CaseTag
-      @tags["cycle"] = CycleTag
-      @tags["decrement"] = DecrementTag
       @tags["define"] = DefineTag
       @tags["for"] = ForTag
       @tags["break"] = BreakTag
       @tags["continue"] = ContinueTag
       @tags["if"] = IfTag
       @tags["import"] = ImportTag
-      @tags["increment"] = IncrementTag
       @tags["include"] = IncludeTag
       @tags["raw"] = RawTag
       @tags["render"] = RenderTag
