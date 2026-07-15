@@ -76,7 +76,7 @@ module Luoma
 
     #: (untyped, untyped, ?default: untyped?) -> untyped
     def fetch(obj, key, default: :nothing)
-      obj.respond_to?(:[]) && key.is_a?(String) ? obj[key] : default
+      obj.respond_to?(:[]) && obj.respond_to?(:key?) && key.is_a?(String) && obj.key?(key) ? obj[key] : default
     end
   end
 end

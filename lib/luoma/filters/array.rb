@@ -73,13 +73,12 @@ module Luoma
       when ExpressionDrop
         left.each_with_index.reject do |item, index|
           value = key.expr.call_with_index(item, index)
-          # TODO: convenience for nothing or nil
           value.nil? || context.nothing?(value)
         end.map(&:first)
       else
-        # TODO: reject nothing or nil
         left.reject do |item|
-          item.respond_to?(:fetch) ? item.fetch(key, nil).nil? : true
+          value = context.fetch(item, key)
+          value.nil? || context.nothing?(value)
         end
       end
     end
@@ -279,7 +278,7 @@ module Luoma
       if key == :nothing
         left.uniq
       elsif key.is_a?(ExpressionDrop)
-        # TODO: ExpressionDrop
+        key.expr.broadcast_with_index(left).zip(left).uniq { |r, _item| r }.map(&:last)
       else
         key = context.to_string(key)
         left.uniq { |item| context.fetch(item, key) }
@@ -287,13 +286,13 @@ module Luoma
     end
 
     # Return the sum of all numeric values in the input array.
-    def self.sum(context, left, key = nil)
+    def self.sum(context, left, key = :nothing)
       left = context.to_enumerable(left)
 
-      # TODO: ExpressionDrop
-
-      if context.nothing?(key)
+      if key == :nothing
         left.sum { |v| context.to_numeric(v) }
+      elsif key.is_a?(ExpressionDrop)
+        key.expr.broadcast_with_index(left).sum { |v| context.to_numeric(v) }
       else
         key = context.to_string(key)
         left.sum { |v| context.to_numeric(context.fetch(v, key)) }

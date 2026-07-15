@@ -62,19 +62,18 @@ module Luoma
         return
       end
 
+      namespace = {} #: Hash[String, untyped]
+      namespace[@params[2].value] = array if @params.length > 2
+
       name_param = @params.first.value
       index_param = @params[1].value if @params.length > 1
-      array_param = @params[2].value if @params.length > 2
-
       length = array.length
-      namespace = {} #: Hash[String, untyped]
 
       context.extends(namespace) do
         index = 0
         while index < length
           namespace[name_param] = array[index]
           namespace[index_param] = index if index_param
-          namespace[array_param] = array if array_param
           index += 1
 
           Luoma.render_block(@block, context, buffer)
