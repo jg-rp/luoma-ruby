@@ -11,7 +11,7 @@ module Luoma
     # If _left_ is enumerable, return _left_ flattened to _depth_. Otherwise
     # return _left_.
     def self.flatten(context, left, depth = nil)
-      return left unless left.is_a?(Enumerable)
+      left = context.to_enumerable(left)
 
       context.to_a(left).flatten(
         depth.nil? ? depth : context.to_numeric(depth, default: 1).to_i # steep:ignore

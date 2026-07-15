@@ -1,0 +1,94 @@
+{
+  "tests": [
+    {
+      "name": "array",
+      "template": "{{ a | flatten }}",
+      "data": { "a": [1, 2, 3] },
+      "result": "[1,2,3]"
+    },
+    {
+      "name": "array of arrays",
+      "template": "{{ a | flatten }}",
+      "data": {
+        "a": [
+          ["a", "b"],
+          ["c", "d"],
+          ["e", "f"]
+        ]
+      },
+      "result": "[\"a\",\"b\",\"c\",\"d\",\"e\",\"f\"]"
+    },
+    {
+      "name": "array of arrays of arrays",
+      "template": "{{ a | flatten }}",
+      "data": {
+        "a": [
+          ["a", ["b"]],
+          ["c", ["d"]],
+          ["e", ["f"]]
+        ]
+      },
+      "result": "[\"a\",\"b\",\"c\",\"d\",\"e\",\"f\"]"
+    },
+    {
+      "name": "not an array",
+      "template": "{{ x | flatten }}",
+      "data": {
+        "x": null
+      },
+      "result": "[null]"
+    },
+    {
+      "name": "array of arrays of arrays, max depth",
+      "template": "{{ a | flatten: 1 }}",
+      "data": {
+        "a": [
+          ["a", ["b"]],
+          ["c", ["d"]],
+          ["e", ["f"]]
+        ]
+      },
+      "result": "[\"a\",[\"b\"],\"c\",[\"d\"],\"e\",[\"f\"]]"
+    },
+    {
+      "name": "array of arrays of arrays, max depth is a numeric string",
+      "template": "{{ a | flatten: \"1\" }}",
+      "data": {
+        "a": [
+          ["a", ["b"]],
+          ["c", ["d"]],
+          ["e", ["f"]]
+        ]
+      },
+      "result": "[\"a\",[\"b\"],\"c\",[\"d\"],\"e\",[\"f\"]]"
+    },
+    {
+      "name": "array of arrays of arrays, max depth is a non-numeric string",
+      "template": "{{ a | flatten: \"foo\" }}",
+      "data": {
+        "a": [
+          ["a", ["b"]],
+          ["c", ["d"]],
+          ["e", ["f"]]
+        ]
+      },
+      "result": "[\"a\",[\"b\"],\"c\",[\"d\"],\"e\",[\"f\"]]"
+    },
+    {
+      "name": "object",
+      "template": "{{ o | flatten }}",
+      "data": {
+        "o": { "a": 1, "b": 2 }
+      },
+      "result": "[\"a\",1,\"b\",2]"
+    },
+    {
+      "name": "object with array values",
+      "template": "{{ o | flatten }}",
+      "data": {
+        "o": { "a": [1, 2], "b": [3, 4] }
+      },
+      "result": "[\"a\",1,2,\"b\",3,4]"
+    }
+  ]
+}
