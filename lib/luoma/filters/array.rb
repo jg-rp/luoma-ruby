@@ -150,39 +150,6 @@ module Luoma
       nil
     end
 
-    # Return true if _left_ contains _key_ equal to _value_.
-    #
-    # If _value_ is not given, return true if _left_ contains _key_ and the
-    # associated value is truthy.
-    #
-    # If _key_ is a lambda expression, evaluate the expression for each item in
-    # _left_ and return true if any result is truthy, ignoring _value_.
-    #
-    # This is similar to `any`, but requires a `key`.
-    def self.has(context, left, key, value = :nothing)
-      # TODO: Handle hashes separately
-      # TODO: Handle drops as maps?
-      left = context.to_enumerable(left)
-
-      if key.is_a?(ExpressionDrop)
-        key.expr.broadcast_with_index(left).each do |item|
-          return true if context.truthy?(item)
-        end
-      elsif value == :nothing
-        key = context.to_string(key)
-        left.each do |item|
-          return true if context.truthy?(context.fetch(item, key))
-        end
-      else
-        key = context.to_string(key)
-        left.each do |item|
-          return true if context.fetch(item, key) == value
-        end
-      end
-
-      false
-    end
-
     # Return the first item in _left_, or `:nothing` if _left_ does not have a
     # first item.
     #
@@ -222,7 +189,7 @@ module Luoma
         key.expr.broadcast_with_index(left)
       else
         key = context.to_string(key)
-        left.map { |item| item[key] }
+        left.map { |item| context.fetch(item, key) }
       end
     end
 

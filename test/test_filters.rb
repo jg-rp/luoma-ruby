@@ -54,8 +54,16 @@ class TestFilters < Minitest::Spec
     end
   end
 
-  describe "has filter" do
-    load_test_cases("test/has_filter.json").each do |test_case|
+  describe "first filter" do
+    load_test_cases("test/first_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
+  describe "flatten filter" do
+    load_test_cases("test/flatten_filter.json").each do |test_case|
       it test_case["name"] do
         assert_test_case(test_case)
       end
@@ -70,8 +78,24 @@ class TestFilters < Minitest::Spec
     end
   end
 
-  describe "flatten filter" do
-    load_test_cases("test/flatten_filter.json").each do |test_case|
+  describe "last filter" do
+    load_test_cases("test/last_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
+  describe "map filter" do
+    load_test_cases("test/map_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
+  describe "reverse filter" do
+    load_test_cases("test/reverse_filter.json").each do |test_case|
       it test_case["name"] do
         assert_test_case(test_case)
       end

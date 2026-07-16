@@ -1,0 +1,106 @@
+{
+  "tests": [
+    {
+      "name": "array of objects",
+      "template": "{{ a | map: 'title' | join: '#' }}",
+      "data": {
+        "a": [
+          {
+            "title": "foo"
+          },
+          {
+            "title": "bar"
+          },
+          {
+            "title": "baz"
+          }
+        ]
+      },
+      "result": "foo#bar#baz"
+    },
+    {
+      "name": "array of objects, missing property",
+      "template": "{{ a | map: 'title' | join: '#' }}",
+      "data": {
+        "a": [
+          {
+            "title": "foo"
+          },
+          {
+            "title": "bar"
+          },
+          {
+            "heading": "baz"
+          }
+        ]
+      },
+      "result": "foo#bar#"
+    },
+    {
+      "name": "not an array",
+      "template": "{{ a | map: 'title' | join: '#' }}",
+      "data": {
+        "a": 123
+      },
+      "result": ""
+    },
+    {
+      "name": "array containing a non object",
+      "template": "{{ a | map: 'title' | join: '#' }}",
+      "data": {
+        "a": [
+          {
+            "title": "foo"
+          },
+          {
+            "title": "bar"
+          },
+          5,
+          []
+        ]
+      },
+      "result": "foo#bar##"
+    },
+    {
+      "name": "undefined argument",
+      "template": "{{ a | map: nosuchthing | join: '#' }}",
+      "data": {
+        "a": [
+          {
+            "title": "foo"
+          },
+          {
+            "title": "bar"
+          }
+        ]
+      },
+      "result": "#"
+    },
+    {
+      "name": "argument is explicit nil",
+      "template": "{{ a | map: nil  | join: '#' }}",
+      "data": {
+        "a": [
+          {
+            "title": "foo"
+          },
+          {
+            "title": "bar"
+          }
+        ]
+      },
+      "result": "#"
+    },
+    {
+      "name": "object",
+      "template": "{{ a | map: 'title'  | join: '#' }}",
+      "data": {
+        "a": {
+          "title": "foo",
+          "some": "thing"
+        }
+      },
+      "result": "#"
+    }
+  ]
+}

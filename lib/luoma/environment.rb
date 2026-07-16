@@ -167,7 +167,6 @@ module Luoma
       register_filter("first", Luoma::Filters.method(:first))
       register_filter("flatten", Luoma::Filters.method(:flatten))
       register_filter("floor", Luoma::Filters.method(:floor))
-      register_filter("has", Luoma::Filters.method(:has))
       register_filter("join", Luoma::Filters.method(:join))
       register_filter("last", Luoma::Filters.method(:last))
       register_filter("lstrip", Luoma::Filters.method(:lstrip))
