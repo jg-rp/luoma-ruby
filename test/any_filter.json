@@ -1,0 +1,83 @@
+{
+  "tests": [
+    {
+      "name": "array, empty",
+      "template": "{{ a | any }}",
+      "data": { "a": [] },
+      "result": "false"
+    },
+    {
+      "name": "array, all truthy",
+      "template": "{{ a | any }}",
+      "data": { "a": [true, true, true] },
+      "result": "true"
+    },
+    {
+      "name": "array, all falsy",
+      "template": "{{ a | any }}",
+      "data": { "a": [false, false, false] },
+      "result": "false"
+    },
+    {
+      "name": "array, some truthy",
+      "template": "{{ a | any }}",
+      "data": { "a": [false, true, false] },
+      "result": "true"
+    },
+    {
+      "name": "object",
+      "template": "{{ o | any }}",
+      "data": { "o": { "a": false } },
+      "result": "true"
+    },
+    {
+      "name": "object, empty",
+      "template": "{{ o | any }}",
+      "data": { "o": {} },
+      "result": "false"
+    },
+    {
+      "name": "array of objects, string key, all falsy",
+      "template": "{{ a | any: 'i' }}",
+      "data": {
+        "a": [
+          { "x": 1, "i": false },
+          { "x": 2, "i": false }
+        ]
+      },
+      "result": "false"
+    },
+    {
+      "name": "array of objects, string key, some truthy",
+      "template": "{{ a | any: 'i' }}",
+      "data": {
+        "a": [{ "i": false }, { "i": true }]
+      },
+      "result": "true"
+    },
+    {
+      "name": "array of objects, string key with value, all falsy",
+      "template": "{{ a | any: 'i', 'x' }}",
+      "data": {
+        "a": [{ "i": "y" }, { "i": "z" }]
+      },
+      "result": "false"
+    },
+    {
+      "name": "array of objects, string key with value, some truthy",
+      "template": "{{ a | any: 'i', 'x' }}",
+      "data": {
+        "a": [{ "i": "y" }, { "i": "x" }]
+      },
+      "result": "true"
+    },
+    {
+      "name": "array of objects, lambda key, some truthy",
+      "template": "{{ a | any: o => o.i == 'x' }}",
+      "data": {
+        "a": [{ "i": "y" }, { "i": "x" }]
+      },
+      "result": "true"
+    }
+  ]
+}

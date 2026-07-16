@@ -6,6 +6,14 @@ require "test_helper"
 class TestFilters < Minitest::Spec
   make_my_diffs_pretty!
 
+  describe "any filter" do
+    load_test_cases("test/any_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
   describe "join filter" do
     load_test_cases("test/join_filter.json").each do |test_case|
       it test_case["name"] do
@@ -14,7 +22,7 @@ class TestFilters < Minitest::Spec
     end
   end
 
-  describe "join flatten" do
+  describe "flatten filter" do
     load_test_cases("test/flatten_filter.json").each do |test_case|
       it test_case["name"] do
         assert_test_case(test_case)
