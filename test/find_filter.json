@@ -1,0 +1,103 @@
+{
+  "tests": [
+    {
+      "name": "array of strings",
+      "template": "{{ a | find: 'z' }}",
+      "data": {
+        "a": ["x", "y", "z"]
+      },
+      "result": "z"
+    },
+    {
+      "name": "array of strings, substring match",
+      "template": "{{ a | find: 'oo' }}",
+      "data": {
+        "a": ["x", "y", "zoo"]
+      },
+      "result": ""
+    },
+    {
+      "name": "array of strings, no match",
+      "template": "{{ a | find: 'foo' }}",
+      "data": {
+        "a": ["x", "y", "zoo"]
+      },
+      "result": ""
+    },
+    {
+      "name": "mixed array, default value",
+      "template": "{{ a | find: 'z' }}",
+      "data": {
+        "a": ["x", null, "z", false, true]
+      },
+      "result": "z"
+    },
+    {
+      "name": "string input, character match",
+      "template": "{{ a | find: 'z' }}",
+      "data": {
+        "a": "zoo"
+      },
+      "result": "z"
+    },
+    {
+      "name": "string input, string value, match",
+      "template": "{{ a | find: 'z', 'z' }}",
+      "data": {
+        "a": "zoo"
+      },
+      "result": ""
+    },
+    {
+      "name": "string input, string value, no match",
+      "template": "{{ a | find: 'z', 'y' }}",
+      "data": {
+        "a": "zoo"
+      },
+      "result": ""
+    },
+    {
+      "name": "object",
+      "template": "{% assign b = a | find: 'z' %}{{ b.z }}",
+      "data": {
+        "a": {
+          "z": 42
+        }
+      },
+      "result": ""
+    },
+    {
+      "name": "array of objects, int value, match",
+      "template": "{% assign b = a | find: 'z', 42 %}{{ b.foo }}",
+      "data": {
+        "a": [
+          {
+            "x": 99
+          },
+          {
+            "z": 42,
+            "foo": "bar"
+          }
+        ]
+      },
+      "result": "bar"
+    },
+    {
+      "name": "array of objects, with a nil",
+      "template": "{% assign b = a | find: 'z', 42 %}{{ b.foo }}",
+      "data": {
+        "a": [
+          {
+            "x": 99
+          },
+          null,
+          {
+            "z": 42,
+            "foo": "bar"
+          }
+        ]
+      },
+      "result": "bar"
+    }
+  ]
+}

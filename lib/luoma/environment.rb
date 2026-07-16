@@ -269,7 +269,7 @@ module Luoma
     #: (untyped, RenderContext) -> bool
     def truthy?(obj, context)
       obj = obj.to_primitive(:boolean, context) if obj.is_a?(Drop)
-      nothing?(obj) || !!obj
+      !nothing?(obj) && !!obj
     end
 
     #: (untyped, RenderContext) -> String
@@ -292,7 +292,7 @@ module Luoma
       elsif obj.respond_to?(:to_a)
         obj.to_a
       else
-        []
+        [obj]
       end
     end
 

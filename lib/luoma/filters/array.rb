@@ -107,7 +107,7 @@ module Luoma
       elsif value == :nothing
         key = context.to_string(key)
         left.each do |item|
-          return item if context.truthy?(context.fetch(item, key))
+          return item if context.truthy?(context.fetch(item, key)) || item == key
         end
       else
         key = context.to_string(key)
@@ -138,7 +138,7 @@ module Luoma
       elsif value == :nothing
         key = context.to_string(key)
         left.each_with_index do |item, index|
-          return index if context.truthy?(context.fetch(item, key))
+          return index if context.truthy?(context.fetch(item, key)) || item == key
         end
       else
         key = context.to_string(key)

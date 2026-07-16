@@ -170,11 +170,11 @@
     },
     {
       "name": "loop over a non-iterable object",
-      "template": "{% for i in x %}{{ i }} {% endfor %}",
+      "template": "{% for i in x %}{{ i }}{% endfor %}",
       "data": {
         "x": true
       },
-      "result": ""
+      "result": "true"
     },
     {
       "name": "optional index binding",
