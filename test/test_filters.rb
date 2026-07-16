@@ -94,6 +94,14 @@ class TestFilters < Minitest::Spec
     end
   end
 
+  describe "reject filter" do
+    load_test_cases("test/reject_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
   describe "reverse filter" do
     load_test_cases("test/reverse_filter.json").each do |test_case|
       it test_case["name"] do
@@ -104,6 +112,14 @@ class TestFilters < Minitest::Spec
 
   describe "slice filter" do
     load_test_cases("test/slice_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
+  describe "where filter" do
+    load_test_cases("test/where_filter.json").each do |test_case|
       it test_case["name"] do
         assert_test_case(test_case)
       end

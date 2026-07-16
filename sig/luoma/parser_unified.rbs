@@ -135,8 +135,8 @@ module Luoma
     #  (t_token, Expression) -> FilteredExpression
     def parse_filter: (t_token token, Expression left) -> FilteredExpression
                     
-    #  () -> Lambda
-    def parse_lambda: () -> Lambda
+    #  (precedence: Integer) -> Lambda
+    def parse_lambda: (precedence: Integer) -> Lambda
 
     #  (Expression) -> Expression
     def parse_infix: (Expression left) -> Expression

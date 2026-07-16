@@ -205,16 +205,16 @@ module Luoma
       if key.is_a?(ExpressionDrop)
         left.each_with_index.reject do |item, index|
           context.truthy?(key.expr.call_with_index(item, index))
-        end
-      elsif context.nothing?(value)
-        key = context.to_string(key)
+        end.map(&:first)
+      elsif value == :nothing
+        key_ = context.to_string(key)
         left.reject do |item|
-          context.truthy?(context.fetch(item, key))
+          context.truthy?(context.fetch(item, key_)) || item == key
         end
       else
         key = context.to_string(key)
         left.reject do |item|
-          context.fetch(item, key) == value
+          context.fetch(item, key) == value || item == value
         end
       end
     end
@@ -225,16 +225,16 @@ module Luoma
       if key.is_a?(ExpressionDrop)
         left.each_with_index.filter do |item, index|
           context.truthy?(key.expr.call_with_index(item, index))
-        end
-      elsif context.nothing?(value)
-        key = context.to_string(key)
+        end.map(&:first)
+      elsif value == :nothing
+        key_ = context.to_string(key)
         left.filter do |item|
-          context.truthy?(context.fetch(item, key))
+          context.truthy?(context.fetch(item, key_)) || item == key
         end
       else
         key = context.to_string(key)
         left.filter do |item|
-          context.fetch(item, key) == value
+          context.fetch(item, key) == value || item == value
         end
       end
     end

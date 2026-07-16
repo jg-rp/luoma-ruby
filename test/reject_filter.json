@@ -1,0 +1,200 @@
+{
+  "tests": [
+    {
+      "name": "array of strings, match",
+      "template": "{{ a | reject: 'b' }}",
+      "data": {
+        "a": ["x", "y", "b"]
+      },
+      "result": "[\"x\",\"y\"]"
+    },
+    {
+      "name": "array of strings, no match",
+      "template": "{{ a | reject: 'b' }}",
+      "data": {
+        "a": ["x", "y", "z"]
+      },
+      "result": "[\"x\",\"y\",\"z\"]"
+    },
+    {
+      "name": "array containing null, default value",
+      "template": "{{ a | reject: 'b' }}",
+      "data": {
+        "a": ["x", "y", "bb", null]
+      },
+      "result": "[\"x\",\"y\",\"bb\",null]"
+    },
+    {
+      "name": "array containing an int, default value",
+      "template": "{{ a | reject: 'b' }}",
+      "data": {
+        "a": ["x", "y", "b", 1]
+      },
+      "result": "[\"x\",\"y\",1]"
+    },
+    {
+      "name": "array of objects, default value",
+      "template": "{{ a | reject: 'title' }}",
+      "data": {
+        "a": [
+          {
+            "title": "foo"
+          },
+          {
+            "title": false
+          },
+          {
+            "title": null
+          },
+          {
+            "heading": "baz"
+          }
+        ]
+      },
+      "result": "[{\"title\":false},{\"title\":null},{\"heading\":\"baz\"}]"
+    },
+    {
+      "name": "array of objects, explicit null",
+      "template": "{{ a | reject: 'title', nil }}",
+      "data": {
+        "a": [
+          {
+            "title": "foo"
+          },
+          {
+            "title": false
+          },
+          {
+            "title": null
+          },
+          {
+            "heading": "baz"
+          }
+        ]
+      },
+      "result": "[{\"title\":\"foo\"},{\"title\":false},{\"heading\":\"baz\"}]"
+    },
+    {
+      "name": "array of objects, explicit false",
+      "template": "{{ a | reject: 'title', false }}",
+      "data": {
+        "a": [
+          {
+            "title": false
+          },
+          {
+            "title": "bar"
+          },
+          {
+            "title": null
+          },
+          {
+            "heading": "baz"
+          }
+        ]
+      },
+      "result": "[{\"title\":\"bar\"},{\"title\":null},{\"heading\":\"baz\"}]"
+    },
+    {
+      "name": "array of objects, explicit true",
+      "template": "{{ a | reject: 'title', true }}",
+      "data": {
+        "a": [
+          {
+            "title": true
+          },
+          {
+            "title": "bar"
+          },
+          {
+            "title": null
+          }
+        ]
+      },
+      "result": "[{\"title\":\"bar\"},{\"title\":null}]"
+    },
+    {
+      "name": "array of objects, string value",
+      "template": "{% assign b = a | reject: 'title', 'bar' %}{% for obj in b %}{% for itm in obj %}({{ itm[0] }},{{ itm[1] }}), {% endfor %}{% endfor %}",
+      "data": {
+        "a": [
+          {
+            "title": "foo"
+          },
+          {
+            "title": "bar"
+          },
+          {
+            "title": null
+          },
+          {
+            "heading": "baz"
+          }
+        ]
+      },
+      "result": "(title,foo), (title,), (heading,baz), "
+    },
+    {
+      "name": "missing argument",
+      "template": "{{ a | reject }}",
+      "data": {
+        "a": ["x", "y", "cat"]
+      },
+      "invalid": true,
+      "tags": ["strict filters"]
+    },
+    {
+      "name": "too many arguments",
+      "template": "{{ a | reject: 'x', 'y', 'z' }}",
+      "invalid": true,
+      "tags": ["strict filters"]
+    },
+    {
+      "name": "input is undefined",
+      "template": "{{ nosuchthing | reject: 'c' }}",
+      "result": "[]"
+    },
+    {
+      "name": "first argument is undefined",
+      "template": "{{ a | reject: nosuchthing }}",
+      "data": {
+        "a": ["x", "y", "cat"]
+      },
+      "result": "[\"x\",\"y\",\"cat\"]"
+    },
+    {
+      "name": "second argument is undefined",
+      "template": "{{ a | reject: 'title', nosuchthing }}",
+      "data": {
+        "a": [
+          {
+            "title": "foo"
+          },
+          {
+            "title": "bar"
+          },
+          {
+            "title": null
+          }
+        ]
+      },
+      "result": "[{\"title\":\"foo\"},{\"title\":\"bar\"},{\"title\":null}]"
+    },
+    {
+      "name": "string",
+      "template": "{{ s | reject: 'o' }}",
+      "data": {
+        "s": "foobar"
+      },
+      "result": "[\"f\",\"b\",\"a\",\"r\"]"
+    },
+    {
+      "name": "array of strings, lambda",
+      "template": "{{ a | reject: ((i, j) -> j % 2 == 1) }}",
+      "data": {
+        "a": ["x", "y", "b"]
+      },
+      "result": "[\"x\",\"b\"]"
+    }
+  ]
+}

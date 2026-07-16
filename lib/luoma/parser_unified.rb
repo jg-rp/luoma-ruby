@@ -323,7 +323,7 @@ module Luoma
              when :token_single_quote, :token_double_quote
                parse_string_literal
              when :token_ident
-               peek.first == :token_arrow ? parse_lambda : parse_path
+               peek.first == :token_arrow ? parse_lambda(precedence: precedence) : parse_path
              when :token_lbracket
                parse_array_or_path
              when :token_lbrace
@@ -784,7 +784,7 @@ module Luoma
           elsif peek_kind == :token_arrow
             # A positional argument that is an arrow function with a single
             # parameter.
-            args << parse_lambda
+            args << parse_lambda(precedence: Precedence::FILTER_ARG)
           else
             # A positional argument that is a variable or path
             args << parse_expression(precedence: Precedence::FILTER_ARG)
@@ -814,10 +814,10 @@ module Luoma
 
     # Parse a lambda expression with a single parameter not enclosed in parentheses.
     #: () -> Lambda
-    def parse_lambda
+    def parse_lambda(precedence:)
       param = parse_ident
       eat(:token_arrow)
-      Lambda.new(param.token, [param], parse_expression(precedence: Precedence::FILTER_ARG))
+      Lambda.new(param.token, [param], parse_expression(precedence: precedence))
     end
 
     #: (Expression) -> Expression

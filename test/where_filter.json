@@ -1,0 +1,199 @@
+{
+  "tests": [
+    {
+      "name": "array of objects",
+      "template": "{{ a | where: 'title' }}",
+      "data": {
+        "a": [
+          {
+            "title": "foo"
+          },
+          {
+            "title": "bar"
+          },
+          {
+            "title": null
+          }
+        ]
+      },
+      "result": "[{\"title\":\"foo\"},{\"title\":\"bar\"}]"
+    },
+    {
+      "name": "array of objects with equality test",
+      "template": "{{ a | where: 'title', 'bar' }}",
+      "data": {
+        "a": [
+          {
+            "title": "foo"
+          },
+          {
+            "title": "bar"
+          },
+          {
+            "title": null
+          }
+        ]
+      },
+      "result": "[{\"title\":\"bar\"}]"
+    },
+    {
+      "name": "array of objects with a missing key",
+      "template": "{{ a | where: 'title', 'bar' }}",
+      "data": {
+        "a": [
+          {
+            "heading": "foo"
+          },
+          {
+            "title": "bar"
+          },
+          {
+            "title": null
+          }
+        ]
+      },
+      "result": "[{\"title\":\"bar\"}]"
+    },
+    {
+      "name": "left value is not an array",
+      "template": "{{ a | where: 'title' }}",
+      "data": {
+        "a": 123
+      },
+      "result": "[]"
+    },
+    {
+      "name": "missing argument",
+      "template": "{{ a | where }}",
+      "data": {
+        "a": [
+          {
+            "title": "foo"
+          },
+          {
+            "title": "bar"
+          },
+          {
+            "title": null
+          }
+        ]
+      },
+      "invalid": true,
+      "tags": ["strict filters"]
+    },
+    {
+      "name": "too many arguments",
+      "template": "{{ a | where: 'title', 'foo', 'bar' }}",
+      "data": {
+        "a": [
+          {
+            "title": "foo"
+          },
+          {
+            "title": "bar"
+          },
+          {
+            "title": null
+          }
+        ]
+      },
+      "invalid": true,
+      "tags": ["strict filters"]
+    },
+    {
+      "name": "left value is undefined",
+      "template": "{{ nosuchthing | where: 'title' }}",
+      "result": "[]"
+    },
+    {
+      "name": "first argument is undefined",
+      "template": "{{ a | where: nosuchthing }}",
+      "data": {
+        "a": [
+          {
+            "title": "foo"
+          },
+          {
+            "title": "bar"
+          },
+          {
+            "title": null
+          }
+        ]
+      },
+      "result": "[]"
+    },
+    {
+      "name": "second argument is undefined",
+      "template": "{{ a | where: 'title', nosuchthing }}",
+      "data": {
+        "a": [
+          {
+            "title": "foo"
+          },
+          {
+            "title": "bar"
+          },
+          {
+            "title": null
+          }
+        ]
+      },
+      "result": "[]"
+    },
+    {
+      "name": "both arguments are undefined",
+      "template": "{{ a | where: nosuchthing, nothing }}",
+      "data": {
+        "a": [
+          {
+            "title": "foo"
+          },
+          {
+            "title": "bar"
+          },
+          {
+            "title": null
+          }
+        ]
+      },
+      "result": "[]"
+    },
+    {
+      "name": "value is false",
+      "template": "{{ a | where: 'b', false }}",
+      "data": {
+        "a": [
+          {
+            "b": false
+          },
+          {
+            "b": "bar"
+          },
+          {
+            "b": null
+          }
+        ]
+      },
+      "result": "[{\"b\":false}]"
+    },
+    {
+      "name": "lambda",
+      "template": "{{ a | where: x -> x.b.string? }}",
+      "data": {
+        "a": [
+          {
+            "b": false
+          },
+          {
+            "b": "bar"
+          },
+          {
+            "b": null
+          }
+        ]
+      },
+      "result": "[{\"b\":\"bar\"}]"
+    }
+  ]
+}
