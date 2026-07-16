@@ -69,6 +69,16 @@ module Luoma
       @env.truthy?(obj, @render_context)
     end
 
+    #: (untyped, untyped) -> bool
+    def eq?(obj, other)
+      @env.eq?(obj, other, @render_context, @token)
+    end
+
+    #: (untyped, untyped) -> bool
+    def lt?(obj, other)
+      @env.lt?(obj, other, @render_context, @token)
+    end
+
     #: (untyped) -> bool
     def nothing?(obj)
       @env.nothing?(obj)

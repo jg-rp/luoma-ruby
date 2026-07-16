@@ -47,6 +47,12 @@ module Luoma
                 
     #  (untyped) -> bool
     def truthy?: (untyped obj) -> untyped
+                
+    #  (untyped, untyped) -> bool
+    def eq?: (untyped obj, untyped other) -> untyped
+                
+    #  (untyped, untyped) -> bool
+    def lt?: (untyped obj, untyped other) -> untyped
                
     #  (untyped) -> bool
     def empty?: (untyped obj) -> bool

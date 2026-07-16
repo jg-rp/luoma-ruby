@@ -24,15 +24,15 @@ module Luoma
 
       case key
       when :nothing
-        left.any? { |item| context.truthy?(item) }
+        left.any? { |i| context.truthy?(i) }
       when ExpressionDrop
-        key.expr.broadcast_with_index(left).any? { |item| context.truthy?(item) }
+        key.expr.broadcast_with_index(left).any? { |i| context.truthy?(i) }
       else
         key = context.to_string(key)
         if value == :nothing
-          left.map { |item| item[key] }.any? { |item| context.truthy?(item) }
+          left.map { |i| context.fetch(i, key) }.any? { |j| context.truthy?(j) }
         else
-          left.map { |item| item[key] }.any?(value)
+          left.map { |i| context.fetch(i, key) }.any? { |j| context.eq?(j, value) }
         end
       end
     end
@@ -43,15 +43,15 @@ module Luoma
 
       case key
       when :nothing
-        left.all? { |item| context.truthy?(item) }
+        left.all? { |i| context.truthy?(i) }
       when ExpressionDrop
-        key.expr.broadcast_with_index(left).all? { |item| context.truthy?(item) }
+        key.expr.broadcast_with_index(left).all? { |i| context.truthy?(i) }
       else
         key = context.to_string(key)
         if value == :nothing
-          left.map { |item| item[key] }.all? { |item| context.truthy?(item) }
+          left.map { |i| context.fetch(i, key) }.all? { |j| context.truthy?(j) }
         else
-          left.map { |item| item[key] }.all?(value)
+          left.map { |i| context.fetch(i, key) }.all? { |j| context.eq?(j, value) }
         end
       end
     end
@@ -105,14 +105,14 @@ module Luoma
           return i if context.truthy?(r)
         end
       elsif value == :nothing
-        key = context.to_string(key)
+        key_ = context.to_string(key)
         left.each do |item|
-          return item if context.truthy?(context.fetch(item, key)) || item == key
+          return item if context.truthy?(context.fetch(item, key_)) || context.eq?(item, key)
         end
       else
         key = context.to_string(key)
         left.each do |item|
-          return item if context.fetch(item, key) == value || item == value
+          return item if context.eq?(context.fetch(item, key), value) || context.eq?(item, value)
         end
       end
 
@@ -138,12 +138,12 @@ module Luoma
       elsif value == :nothing
         key_ = context.to_string(key)
         left.each_with_index do |item, index|
-          return index if context.truthy?(context.fetch(item, key_)) || item == key
+          return index if context.truthy?(context.fetch(item, key_)) || context.eq?(item, key)
         end
       else
         key = context.to_string(key)
         left.each_with_index do |item, index|
-          return index if context.fetch(item, key) == value || item == value
+          return index if context.eq?(context.fetch(item, key), value) || context.eq?(item, value)
         end
       end
 
@@ -209,12 +209,12 @@ module Luoma
       elsif value == :nothing
         key_ = context.to_string(key)
         left.reject do |item|
-          context.truthy?(context.fetch(item, key_)) || item == key
+          context.truthy?(context.fetch(item, key_)) || context.eq?(item, key)
         end
       else
         key = context.to_string(key)
         left.reject do |item|
-          context.fetch(item, key) == value || item == value
+          context.eq?(context.fetch(item, key), value) || context.eq?(item, value)
         end
       end
     end
@@ -229,12 +229,12 @@ module Luoma
       elsif value == :nothing
         key_ = context.to_string(key)
         left.filter do |item|
-          context.truthy?(context.fetch(item, key_)) || item == key
+          context.truthy?(context.fetch(item, key_)) || context.eq?(item, key)
         end
       else
         key = context.to_string(key)
         left.filter do |item|
-          context.fetch(item, key) == value || item == value
+          context.eq?(context.fetch(item, key), value) || context.eq?(item, value)
         end
       end
     end
@@ -243,6 +243,9 @@ module Luoma
     # Coerce _left_ to an array if it isn't an array already.
     def self.uniq(context, left, key = :nothing)
       left = context.to_a(left)
+
+      # TODO: context.eq? not ==
+      # TODO: use a set?
 
       if key == :nothing
         left.uniq
