@@ -112,7 +112,7 @@ module Luoma
       else
         key = context.to_string(key)
         left.each do |item|
-          return item if context.fetch(item, key) == value
+          return item if context.fetch(item, key) == value || item == value
         end
       end
 
@@ -136,14 +136,14 @@ module Luoma
           return index if context.truthy?(item)
         end
       elsif value == :nothing
-        key = context.to_string(key)
+        key_ = context.to_string(key)
         left.each_with_index do |item, index|
-          return index if context.truthy?(context.fetch(item, key)) || item == key
+          return index if context.truthy?(context.fetch(item, key_)) || item == key
         end
       else
         key = context.to_string(key)
         left.each_with_index do |item, index|
-          return index if context.fetch(item, key) == value
+          return index if context.fetch(item, key) == value || item == value
         end
       end
 
@@ -160,6 +160,8 @@ module Luoma
     #
     # This is similar to `any`, but requires a `key`.
     def self.has(context, left, key, value = :nothing)
+      # TODO: Handle hashes separately
+      # TODO: Handle drops as maps?
       left = context.to_enumerable(left)
 
       if key.is_a?(ExpressionDrop)

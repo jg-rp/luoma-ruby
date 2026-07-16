@@ -1,0 +1,239 @@
+{
+  "tests": [
+    {
+      "name": "array of strings",
+      "template": "{{ a | has: 'z' }}",
+      "data": {
+        "a": ["x", "y", "z"]
+      },
+      "result": "true"
+    },
+    {
+      "name": "array of strings, substring match",
+      "template": "{{ a | has: 'z' }}",
+      "data": {
+        "a": ["x", "y", "zoo"]
+      },
+      "result": "false"
+    },
+    {
+      "name": "array of strings, no match",
+      "template": "{{ a | has: ':(' }}",
+      "data": {
+        "a": ["x", "y", "z"]
+      },
+      "result": "false"
+    },
+    {
+      "name": "array of ints",
+      "template": "{{ a | has: 2 }}",
+      "data": {
+        "a": [1, 2, 3]
+      },
+      "result": "true"
+    },
+    {
+      "name": "array of ints, string argument",
+      "template": "{{ a | has: '2' }}",
+      "data": {
+        "a": [1, 2, 3]
+      },
+      "result": "false"
+    },
+    {
+      "name": "mixed arraY",
+      "template": "{{ a | has: 'z' }}",
+      "data": {
+        "a": ["x", null, "z", false, true]
+      },
+      "result": "true"
+    },
+    {
+      "name": "string, match",
+      "template": "{{ a | has: 'z' }}",
+      "data": {
+        "a": "zoo"
+      },
+      "result": "true"
+    },
+    {
+      "name": "string, no match",
+      "template": "{{ a | has: 'z' }}",
+      "data": {
+        "a": "foo"
+      },
+      "result": "false"
+    },
+    {
+      "name": "object, match",
+      "template": "{{ a | has: 'z' }}",
+      "data": {
+        "a": {
+          "z": 42
+        }
+      },
+      "result": "true"
+    },
+    {
+      "name": "object, no match",
+      "template": "{{ a | has: 'z' }}",
+      "data": {
+        "a": {
+          "x": 42
+        }
+      },
+      "result": "false"
+    },
+    {
+      "name": "object, int value, match",
+      "template": "{{ a | has: 'z', 42 }}",
+      "data": {
+        "a": {
+          "z": 42
+        }
+      },
+      "result": "true"
+    },
+    {
+      "name": "object input, int value, no match",
+      "template": "{{ a | has: 'z', 99 }}",
+      "data": {
+        "a": {
+          "z": 42
+        }
+      },
+      "result": "false"
+    },
+    {
+      "name": "object input, string value, no type coercion",
+      "template": "{{ a | has: 'z', '42' }}",
+      "data": {
+        "a": {
+          "z": 42
+        }
+      },
+      "result": "false"
+    },
+    {
+      "name": "object input, explicit nil, no match",
+      "template": "{{ a | has: 'z', nil }}",
+      "data": {
+        "a": {
+          "z": 42
+        }
+      },
+      "result": "true"
+    },
+    {
+      "name": "object input, explicit nil, match",
+      "template": "{{ a | has: 'z', nil }}",
+      "data": {
+        "a": {
+          "z": null
+        }
+      },
+      "result": "true"
+    },
+    {
+      "name": "object input, false value, match",
+      "template": "{{ a | has: 'z', false }}",
+      "data": {
+        "a": {
+          "z": false
+        }
+      },
+      "result": "true"
+    },
+    {
+      "name": "array of objects, int value, match",
+      "template": "{{ a | has: 'z', 42 }}",
+      "data": {
+        "a": [
+          {
+            "x": 99
+          },
+          {
+            "z": 42
+          }
+        ]
+      },
+      "result": "true"
+    },
+    {
+      "name": "array of objects, int value, no match",
+      "template": "{{ a | has: 'z', 7 }}",
+      "data": {
+        "a": [
+          {
+            "x": 99
+          },
+          {
+            "z": 42
+          }
+        ]
+      },
+      "result": "false"
+    },
+    {
+      "name": "array of objects, with a nil",
+      "template": "{{ a | has: 'z', 42 }}",
+      "data": {
+        "a": [
+          {
+            "x": 99
+          },
+          null,
+          {
+            "z": 42
+          }
+        ]
+      },
+      "result": "true"
+    },
+    {
+      "name": "array of objects, nil",
+      "template": "{{ a | has: nil }}",
+      "data": {
+        "a": [
+          {
+            "x": 99
+          },
+          {
+            "z": 42
+          }
+        ]
+      },
+      "result": "false"
+    },
+    {
+      "name": "array of objects, int",
+      "template": "{{ a | has: 42 }}",
+      "data": {
+        "a": [
+          {
+            "x": 99
+          },
+          {
+            "z": 42
+          }
+        ]
+      },
+      "result": "false"
+    },
+    {
+      "name": "array of objects, false",
+      "template": "{{ a | has: false }}",
+      "data": {
+        "a": [
+          {
+            "x": 99
+          },
+          {
+            "z": 42
+          }
+        ]
+      },
+      "result": "false"
+    }
+  ]
+}

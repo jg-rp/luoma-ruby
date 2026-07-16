@@ -2,15 +2,15 @@
   "tests": [
     {
       "name": "array of strings",
-      "template": "{{ a | find: 'z' }}",
+      "template": "{{ a | find_index: 'z' }}",
       "data": {
         "a": ["x", "y", "z"]
       },
-      "result": "z"
+      "result": "2"
     },
     {
       "name": "array of strings, substring match",
-      "template": "{{ a | find: 'oo' }}",
+      "template": "{{ a | find_index: 'oo' }}",
       "data": {
         "a": ["x", "y", "zoo"]
       },
@@ -18,7 +18,7 @@
     },
     {
       "name": "array of strings, no match",
-      "template": "{{ a | find: 'foo' }}",
+      "template": "{{ a | find_index: 'foo' }}",
       "data": {
         "a": ["x", "y", "zoo"]
       },
@@ -26,39 +26,39 @@
     },
     {
       "name": "mixed array, default value",
-      "template": "{{ a | find: 'z' }}",
+      "template": "{{ a | find_index: 'z' }}",
       "data": {
         "a": ["x", null, "z", false, true]
       },
-      "result": "z"
+      "result": "2"
     },
     {
       "name": "string input, character match",
-      "template": "{{ a | find: 'z' }}",
+      "template": "{{ a | find_index: 'z' }}",
       "data": {
         "a": "zoo"
       },
-      "result": "z"
+      "result": "0"
     },
     {
       "name": "string input, string value, match",
-      "template": "{{ a | find: 'z', 'z' }}",
+      "template": "{{ a | find_index: 'z', 'z' }}",
       "data": {
         "a": "zoo"
       },
-      "result": "z"
+      "result": "0"
     },
     {
       "name": "string input, string value, no match",
-      "template": "{{ a | find: 'z', 'y' }}",
+      "template": "{{ a | find_index: 'z', 'y' }}",
       "data": {
         "a": "zoo"
       },
       "result": ""
     },
     {
-      "name": "object",
-      "template": "{% assign b = a | find: 'z' %}{{ b.z }}",
+      "name": "object input, default value, match",
+      "template": "{{ a | find_index: 'z' }}",
       "data": {
         "a": {
           "z": 42
@@ -67,8 +67,52 @@
       "result": ""
     },
     {
+      "name": "object input, default value, no match",
+      "template": "{{ a | find_index: 'foo' }}",
+      "data": {
+        "a": {
+          "z": 42
+        }
+      },
+      "result": ""
+    },
+    {
+      "name": "object input, int value, match",
+      "template": "{{ a | find_index: 'z', 42 }}",
+      "data": {
+        "a": {
+          "z": 42
+        }
+      },
+      "result": ""
+    },
+    {
+      "name": "object input, explicit nil, match",
+      "template": "{{ a | find_index: 'z', nil }}",
+      "data": {
+        "a": {
+          "z": null
+        }
+      },
+      "result": ""
+    },
+    {
+      "name": "array of objects, explicit nil, match",
+      "template": "{{ a | find_index: 'z', nil }}",
+      "data": {
+        "a": [
+          "foo",
+          "bar",
+          {
+            "z": null
+          }
+        ]
+      },
+      "result": "2"
+    },
+    {
       "name": "array of objects, int value, match",
-      "template": "{% assign b = a | find: 'z', 42 %}{{ b.foo }}",
+      "template": "{{ a | find_index: 'z', 42 }}",
       "data": {
         "a": [
           {
@@ -80,11 +124,11 @@
           }
         ]
       },
-      "result": "bar"
+      "result": "1"
     },
     {
       "name": "array of objects, with a nil",
-      "template": "{% assign b = a | find: 'z', 42 %}{{ b.foo }}",
+      "template": "{% assign b = a | find_index: 'z', 42 %}{{ a[b].foo }}",
       "data": {
         "a": [
           {
@@ -101,7 +145,7 @@
     },
     {
       "name": "array of objects, lambda",
-      "template": "{% assign b = a | find: o => (o.z == 42) %}{{ b.foo }}",
+      "template": "{{ a | find_index: obj => (obj.z == 42) }}",
       "data": {
         "a": [
           {
@@ -113,7 +157,7 @@
           }
         ]
       },
-      "result": "bar"
+      "result": "1"
     }
   ]
 }

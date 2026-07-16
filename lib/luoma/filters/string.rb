@@ -180,24 +180,6 @@ module Luoma
       decoded
     end
 
-    def self.base64_encode(context, left)
-      Base64.strict_encode64(context.to_string(left)).force_encoding(Encoding::UTF_8)
-    end
-
-    def self.base64_decode(context, left)
-      decoded = Base64.strict_decode64(context.to_string(left)).force_encoding(Encoding::UTF_8)
-      decoded if decoded.valid_encoding?
-    end
-
-    def self.base64_url_safe_encode(context, left)
-      Base64.urlsafe_encode64(context.to_string(left)).force_encoding(Encoding::UTF_8)
-    end
-
-    def self.base64_url_safe_decode(context, left)
-      decoded = Base64.urlsafe_decode64(context.to_string(left)).force_encoding(Encoding::UTF_8)
-      decoded if decoded.valid_encoding?
-    end
-
     def self.squish(context, left)
       context.to_string(left).strip.gsub(/\s+/, " ") unless left.nil?
     end
