@@ -11,7 +11,7 @@ module Luoma
       left_ = left.is_a?(Drop) ? left.to_primitive(:boolean, context.render_context) : left
       return left_ if allow_false && left_ == false
 
-      !context.truthy?(left_) || context.empty?(left_) ? default : left_
+      !context.truthy?(left_) || Luoma::Predicates.empty?(context.render_context, left_) ? default : left_
     end
   end
 end

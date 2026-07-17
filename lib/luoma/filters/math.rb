@@ -25,14 +25,19 @@ module Luoma
     # Return the result of dividing `left` by `right`.
     # If both `left` and `right` are integers, integer division is performed.
     def self.divided_by(context, left, right)
-      context.to_numeric(left) / context.to_numeric(right)
-    rescue ZeroDivisionError => e
-      raise context.type_error(e.message)
+      lhs = context.to_numeric(left, default: :nothing)
+      rhs = context.to_numeric(right, default: :nothing)
+      return :nothing if lhs == :nothing || rhs == :nothing || rhs.zero? # steep:ignore
+
+      result = lhs.to_d / rhs # steep:ignore
+      result.frac.zero? && lhs.is_a?(::Integer) && rhs.is_a?(::Integer) ? result.to_i : result
     end
 
     # Return the result of multiplying `left` by `right`.
     def self.times(context, left, right)
-      context.to_numeric(left) * context.to_numeric(right)
+      lhs = context.to_numeric(left, default: :nothing)
+      rhs = context.to_numeric(right, default: :nothing)
+      lhs == :nothing || rhs == :nothing ? :nothing : lhs * rhs # steep:ignore
     end
 
     # Return `left` rounded down to the next whole number.
@@ -42,21 +47,26 @@ module Luoma
 
     # Return `right` subtracted from `left`.
     def self.minus(context, left, right)
-      context.to_numeric(left) - context.to_numeric(right)
+      lhs = context.to_numeric(left, default: :nothing)
+      rhs = context.to_numeric(right, default: :nothing)
+      lhs == :nothing || rhs == :nothing ? :nothing : lhs - rhs # steep:ignore
     end
 
     # Return the remainder of dividing `left` by `right`.
     def self.modulo(context, left, right)
-      context.to_numeric(left) % context.to_numeric(right)
-    rescue ZeroDivisionError => e
-      raise context.type_error(e.message)
+      lhs = context.to_numeric(left, default: :nothing)
+      rhs = context.to_numeric(right, default: :nothing)
+      return :nothing if lhs == :nothing || rhs == :nothing || rhs.zero? # steep:ignore
+
+      result = lhs.to_d % rhs # steep:ignore
+      result.frac.zero? && lhs.is_a?(::Integer) && rhs.is_a?(::Integer) ? result.to_i : result
     end
 
     # Return `right` added to `left`.
     def self.plus(context, left, right)
-      left_ = context.to_numeric(left, default: :nothing)
-      right_ = context.to_numeric(right, default: :nothing)
-      left_ == :nothing || right_ == :nothing ? :nothing : left_ + right_ # steep:ignore
+      lhs = context.to_numeric(left, default: :nothing)
+      rhs = context.to_numeric(right, default: :nothing)
+      lhs == :nothing || rhs == :nothing ? :nothing : lhs + rhs # steep:ignore
     end
 
     # Return `left` rounded to _ndigits_ decimal digits.

@@ -6,6 +6,14 @@ require "test_helper"
 class TestFilters < Minitest::Spec
   make_my_diffs_pretty!
 
+  describe "abs filter" do
+    load_test_cases("test/abs_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
   describe "all filter" do
     load_test_cases("test/all_filter.json").each do |test_case|
       it test_case["name"] do
@@ -22,6 +30,22 @@ class TestFilters < Minitest::Spec
     end
   end
 
+  describe "at_least filter" do
+    load_test_cases("test/at_least_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
+  describe "at_most filter" do
+    load_test_cases("test/at_most_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
   describe "compact filter" do
     load_test_cases("test/compact_filter.json").each do |test_case|
       it test_case["name"] do
@@ -32,6 +56,22 @@ class TestFilters < Minitest::Spec
 
   describe "concat filter" do
     load_test_cases("test/concat_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
+  describe "date filter" do
+    load_test_cases("test/date_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
+  describe "default filter" do
+    load_test_cases("test/default_filter.json").each do |test_case|
       it test_case["name"] do
         assert_test_case(test_case)
       end
