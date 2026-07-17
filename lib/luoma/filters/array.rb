@@ -245,27 +245,30 @@ module Luoma
       left = context.to_a(left)
 
       # Like Array#uniq but using our own comparator, context#eq?.
-      # @type var uniq_: ^(Array[untyped]) ?{ (untyped) -> untyped } -> Array[untyped]
+      # @type var uniq_: ^(Array[untyped]) ?{ (untyped, Integer) -> untyped } -> Array[untyped]
       uniq_ = lambda do |array, &key|
         decorated = [] #: Array[untyped]
+        result = [] #: Array[untyped]
 
-        array.each_with_object([]) do |item, result|
-          value = key ? key.call(item) : item
+        array.each_with_index do |item, index|
+          value = key ? key.call(item, index) : item
 
           unless decorated.any? { |existing| context.eq?(existing, value) }
             decorated << value
             result << item
           end
         end
+
+        result
       end
 
       if key == :nothing
         uniq_.call(left)
       elsif key.is_a?(ExpressionDrop)
-        uniq_.call(key.expr.broadcast_with_index(left).zip(left)) { |r, _item| r }.map(&:last)
+        uniq_.call(left) { |item, index| key.expr.call_with_index(item, index) }
       else
         key = context.to_string(key)
-        uniq_.call(left) { |item| context.fetch(item, key) }
+        uniq_.call(left) { |item, _index| context.fetch(item, key) }
       end
     end
 
@@ -287,6 +290,72 @@ module Luoma
     # Coerce _left_ and _right_ to arrays if they aren't arrays already.
     def self.zip(context, left, right)
       context.to_a(left).zip(context.to_a(right))
+    end
+
+    # Return the minimum numeric value found in _left_.
+    # Coerce _left_ to an array if it's not an array already.
+    def self.min(context, left, key = :nothing)
+      left = context.to_enumerable(left)
+
+      # @type var min_: ^(Enumerable[untyped]) ?{ (untyped, Integer) -> untyped } -> untyped
+      min_ = lambda do |enum, &key|
+        best_item = nil #:untyped
+        best_value = nil #: Numeric?
+
+        enum.each_with_index do |item, index|
+          value = context.to_numeric(key ? key.call(item, index) : item, default: nil)
+          next if value.nil?
+
+          if best_value.nil? || context.lt?(value, best_value)
+            best_item = item
+            best_value = value
+          end
+        end
+
+        best_item
+      end
+
+      if key == :nothing
+        min_.call(left)
+      elsif key.is_a?(ExpressionDrop)
+        min_.call(left) { |item, index| key.expr.call_with_index(item, index) }
+      else
+        key = context.to_string(key)
+        min_.call(left) { |item, _index| context.fetch(item, key, default: nil) }
+      end
+    end
+
+    # Return the maximum numeric value found in _left_.
+    # Coerce _left_ to an array if it's not an array already.
+    def self.max(context, left, key = :nothing)
+      left = context.to_enumerable(left)
+
+      # @type var max_: ^(Enumerable[untyped]) ?{ (Integer, untyped) -> untyped } -> untyped
+      max_ = lambda do |enum, &key|
+        best_item = nil # untyped
+        best_value = nil #: Numeric?
+
+        enum.each_with_index do |item, index|
+          value = context.to_numeric(key ? key.call(item, index) : item, default: nil)
+          next if value.nil?
+
+          if best_value.nil? || context.lt?(best_value, value)
+            best_item = item
+            best_value = value
+          end
+        end
+
+        best_item
+      end
+
+      if key == :nothing
+        max_.call(left)
+      elsif key.is_a?(ExpressionDrop)
+        max_.call(left) { |item, index| key.expr.call_with_index(item, index) }
+      else
+        key = context.to_string(key)
+        max_.call(left) { |item, _index| context.fetch(item, key, default: nil) }
+      end
     end
   end
 end

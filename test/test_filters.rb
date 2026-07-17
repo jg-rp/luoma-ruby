@@ -94,6 +94,22 @@ class TestFilters < Minitest::Spec
     end
   end
 
+  describe "max filter" do
+    load_test_cases("test/max_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
+  describe "min filter" do
+    load_test_cases("test/min_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
   describe "reject filter" do
     load_test_cases("test/reject_filter.json").each do |test_case|
       it test_case["name"] do

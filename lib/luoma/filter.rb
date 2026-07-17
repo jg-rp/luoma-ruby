@@ -49,7 +49,7 @@ module Luoma
       @env.to_string(obj, @render_context)
     end
 
-    #: (untyped) -> Numeric
+    #: [X] (untyped, ?default: X) -> (Numeric | X)
     def to_numeric(obj, default: :nothing)
       @env.to_numeric(obj, @render_context, default: default)
     end

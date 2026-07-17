@@ -1,0 +1,29 @@
+{
+  "tests": [
+    {
+      "name": "array of ints",
+      "template": "{{ [1, 10, 9] | min }}",
+      "result": "1"
+    },
+    {
+      "name": "array of numeric strings",
+      "template": "{{ ['1', '10', '-9'] | min }}",
+      "result": "-9"
+    },
+    {
+      "name": "mixed array of strings",
+      "template": "{{ ['1', 'foo', '10', '-9'] | min }}",
+      "result": "-9"
+    },
+    {
+      "name": "array of objects, string key",
+      "template": "{{ [{'a': 100}, {'a': -100}] | min: 'a' }}",
+      "result": "{\"a\":-100}"
+    },
+    {
+      "name": "array of objects, lambda key",
+      "template": "{{ [{'a': 100}, {'a': -100}] | min: o -> o.a }}",
+      "result": "{\"a\":-100}"
+    }
+  ]
+}

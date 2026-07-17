@@ -60,5 +60,13 @@ module Luoma
     # Combine _left_ with _right_, producing an array or pairs.
     # Coerce _left_ and _right_ to arrays if they aren't arrays already.
     def self.zip: (FilterContext context, untyped left, untyped right) -> untyped
+                
+    # Return the minimum numeric value found in _left_.
+    # Coerce _left_ to an array if it's not an array already.
+    def self.min: (FilterContext context, untyped left, ?untyped key) -> untyped
+
+    # Return the maximum numeric value found in _left_.
+    # Coerce _left_ to an array if it's not an array already.
+    def self.max: (FilterContext context, untyped left, ?untyped key) -> untyped
   end
 end

@@ -171,6 +171,8 @@ module Luoma
       register_filter("last", Luoma::Filters.method(:last))
       register_filter("lstrip", Luoma::Filters.method(:lstrip))
       register_filter("map", Luoma::Filters.method(:map))
+      register_filter("max", Luoma::Filters.method(:max))
+      register_filter("min", Luoma::Filters.method(:min))
       register_filter("minus", Luoma::Filters.method(:minus))
       register_filter("modulo", Luoma::Filters.method(:modulo))
       register_filter("newline_to_br", Luoma::Filters.method(:newline_to_br))
