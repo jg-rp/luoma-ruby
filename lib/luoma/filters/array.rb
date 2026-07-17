@@ -244,16 +244,28 @@ module Luoma
     def self.uniq(context, left, key = :nothing)
       left = context.to_a(left)
 
-      # TODO: context.eq? not ==
-      # TODO: use a set?
+      # Like Array#uniq but using our own comparator, context#eq?.
+      # @type var uniq_: ^(Array[untyped]) ?{ (untyped) -> untyped } -> Array[untyped]
+      uniq_ = lambda do |array, &key|
+        decorated = [] #: Array[untyped]
+
+        array.each_with_object([]) do |item, result|
+          value = key ? key.call(item) : item
+
+          unless decorated.any? { |existing| context.eq?(existing, value) }
+            decorated << value
+            result << item
+          end
+        end
+      end
 
       if key == :nothing
-        left.uniq
+        uniq_.call(left)
       elsif key.is_a?(ExpressionDrop)
-        key.expr.broadcast_with_index(left).zip(left).uniq { |r, _item| r }.map(&:last)
+        uniq_.call(key.expr.broadcast_with_index(left).zip(left)) { |r, _item| r }.map(&:last)
       else
         key = context.to_string(key)
-        left.uniq { |item| context.fetch(item, key) }
+        uniq_.call(left) { |item| context.fetch(item, key) }
       end
     end
 
