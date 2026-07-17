@@ -18,6 +18,7 @@ TODO:
 - Strings are iterated and sliced like an array of characters.
 - `{% render %}` and `{% include %}` don't accept binding or looping arguments. Use a `{% for %}` loop instead.
 - There's no `empty` or `blank` objects. Use `thing.empty?` and `thing.blank?` instead.
+- Filters that expect an array input do not implicitly flatten nested arrays. Use the `flatten` filter if needed.
 
 - First-class blocks with `{% define %} ... {% enddefine%}`
 - First-class expressions with `{% assign x = <lambda expr> %}`

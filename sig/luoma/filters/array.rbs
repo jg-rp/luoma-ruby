@@ -55,6 +55,10 @@ module Luoma
     def self.uniq: (FilterContext context, untyped left, ?untyped? key) -> untyped
                  
     # Return the sum of all numeric values in the input array.
-    def self.sum: (untyped context, untyped left, ?untyped? key) -> untyped
+    def self.sum: (FilterContext context, untyped left, ?untyped? key) -> untyped
+
+    # Combine _left_ with _right_, producing an array or pairs.
+    # Coerce _left_ and _right_ to arrays if they aren't arrays already.
+    def self.zip: (FilterContext context, untyped left, untyped right) -> untyped
   end
 end

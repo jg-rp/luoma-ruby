@@ -274,13 +274,19 @@ module Luoma
       left = context.to_enumerable(left)
 
       if key == :nothing
-        left.sum { |v| context.to_numeric(v) }
+        left.sum { |v| context.to_numeric(v, default: 0) }
       elsif key.is_a?(ExpressionDrop)
-        key.expr.broadcast_with_index(left).sum { |v| context.to_numeric(v) }
+        key.expr.broadcast_with_index(left).sum { |v| context.to_numeric(v, default: 0) }
       else
         key = context.to_string(key)
-        left.sum { |v| context.to_numeric(context.fetch(v, key)) }
+        left.sum { |v| context.to_numeric(context.fetch(v, key, default: 0)) }
       end
+    end
+
+    # Combine _left_ with _right_, producing an array or pairs.
+    # Coerce _left_ and _right_ to arrays if they aren't arrays already.
+    def self.zip(context, left, right)
+      context.to_a(left).zip(context.to_a(right))
     end
   end
 end

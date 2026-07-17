@@ -118,6 +118,14 @@ class TestFilters < Minitest::Spec
     end
   end
 
+  describe "sum filter" do
+    load_test_cases("test/sum_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
   describe "uniq filter" do
     load_test_cases("test/uniq_filter.json").each do |test_case|
       it test_case["name"] do
@@ -128,6 +136,14 @@ class TestFilters < Minitest::Spec
 
   describe "where filter" do
     load_test_cases("test/where_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
+  describe "zip filter" do
+    load_test_cases("test/zip_filter.json").each do |test_case|
       it test_case["name"] do
         assert_test_case(test_case)
       end

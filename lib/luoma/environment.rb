@@ -205,6 +205,7 @@ module Luoma
       register_filter("url_encode", Luoma::Filters.method(:url_encode))
       register_filter("where", Luoma::Filters.method(:where))
       register_filter("filter", Luoma::Filters.method(:where))
+      register_filter("zip", Luoma::Filters.method(:zip))
 
       register_predicate("array", Luoma::Predicates.method(:array?))
       register_predicate("blank", Luoma::Predicates.method(:blank?))
