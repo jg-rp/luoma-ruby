@@ -343,7 +343,8 @@ module Luoma
       when false
         0
       when Drop
-        obj.to_primitive(:numeric, context)
+        n = obj.to_primitive(:numeric, context)
+        n == :nothing ? default : n
       else
         default
       end

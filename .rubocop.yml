@@ -18,6 +18,9 @@ Style/MultipleComparison:
 Style/StringLiteralsInInterpolation:
   EnforcedStyle: double_quotes
 
+Style/MinMaxComparison:
+  Enabled: false
+
 Layout/LeadingCommentSpace:
   Enabled: false
 

@@ -46,6 +46,14 @@ class TestFilters < Minitest::Spec
     end
   end
 
+  describe "ceil filter" do
+    load_test_cases("test/ceil_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
   describe "compact filter" do
     load_test_cases("test/compact_filter.json").each do |test_case|
       it test_case["name"] do
@@ -72,6 +80,14 @@ class TestFilters < Minitest::Spec
 
   describe "default filter" do
     load_test_cases("test/default_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
+  describe "divided_by filter" do
+    load_test_cases("test/divided_by_filter.json").each do |test_case|
       it test_case["name"] do
         assert_test_case(test_case)
       end

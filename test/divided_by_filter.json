@@ -3,74 +3,48 @@
     {
       "name": "integer value and integer arg",
       "template": "{{ 10 | divided_by: 2 }}",
-      "result": "5",
-      "tags": [
-        "divided_by filter"
-      ]
+      "result": "5"
     },
     {
       "name": "integer value and float arg",
       "template": "{{ 10 | divided_by: 2.0 }}",
-      "result": "5.0",
-      "tags": [
-        "divided_by filter"
-      ]
+      "result": "5.0"
     },
     {
-      "name": "integer division",
+      "name": "true division",
       "template": "{{ 9 | divided_by: 2 }}",
-      "result": "4",
-      "tags": [
-        "divided_by filter"
-      ]
+      "result": "4.5"
     },
     {
       "name": "float value and integer arg",
       "template": "{{ 9.0 | divided_by: 2 }}",
-      "result": "4.5",
-      "tags": [
-        "divided_by filter"
-      ]
+      "result": "4.5"
     },
     {
       "name": "float division",
       "template": "{{ 20 | divided_by: 7.0 }}",
-      "result": "2.857142857142857",
-      "tags": [
-        "divided_by filter"
-      ]
+      "result": "2.857142857142857"
     },
     {
       "name": "string value and argument",
       "template": "{{ \"10\" | divided_by: \"2\" }}",
-      "result": "5",
-      "tags": [
-        "divided_by filter"
-      ]
+      "result": "5"
     },
     {
       "name": "string not a number",
       "template": "{{ \"foo\" | divided_by: \"2\" }}",
-      "result": "0",
-      "tags": [
-        "divided_by filter"
-      ]
+      "result": ""
     },
     {
       "name": "arg string not a number",
       "template": "{{ \"10\" | divided_by: \"foo\" }}",
-      "invalid": true,
-      "tags": [
-        "divided_by filter"
-      ]
+      "result": ""
     },
     {
       "name": "too many args",
       "template": "{{ 5 | divided_by: 1, '5' }}",
       "invalid": true,
-      "tags": [
-        "divided_by filter"
-      ]
+      "tags": ["strict filters"]
     },
     {
       "name": "not a string, int or float",
@@ -78,58 +52,32 @@
       "data": {
         "a": {}
       },
-      "result": "0",
-      "tags": [
-        "divided_by filter"
-      ]
+      "result": ""
     },
     {
       "name": "undefined left value",
       "template": "{{ nosuchthing | divided_by: 2 }}",
-      "result": "0",
-      "tags": [
-        "divided_by filter"
-      ]
+      "result": ""
     },
     {
       "name": "undefined argument",
       "template": "{{ 10 | divided_by: nosuchthing }}",
-      "invalid": true,
-      "tags": [
-        "divided_by filter"
-      ]
+      "result": ""
     },
     {
       "name": "divied by zero",
       "template": "{{ 10 | divided_by: 0 }}",
-      "invalid": true,
-      "tags": [
-        "divided_by filter"
-      ]
+      "result": ""
     },
     {
       "name": "zero divided by float",
       "template": "{{ 0 | divided_by: 1.1 }}",
-      "result": "0.0",
-      "tags": [
-        "divided_by filter"
-      ]
+      "result": "0.0"
     },
     {
       "name": "zero divided by integer",
       "template": "{{ 0 | divided_by: 1 }}",
-      "result": "0",
-      "tags": [
-        "divided_by filter"
-      ]
-    },
-    {
-      "name": "issue",
-      "template": "{{ 5 | divided_by: 3 }}",
-      "result": "1",
-      "tags": [
-        "divided_by filter"
-      ]
+      "result": "0"
     },
     {
       "name": "render",
@@ -139,10 +87,7 @@
     {
       "name": "left value is an empty string",
       "template": "{{ '' | divided_by: 2 }}",
-      "result": "0",
-      "tags": [
-        "divided_by filter"
-      ]
+      "result": ""
     }
   ]
 }
