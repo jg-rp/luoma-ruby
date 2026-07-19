@@ -1,0 +1,16 @@
+# .rdoc_options
+title: Luoma Ruby
+main_page: README.md
+markup: markdown
+exclude:
+  - bin/
+  - dev.rb
+  - Gemfile
+  - Gemfile.lock
+  - performance/
+  - Rakefile
+  - sig/
+  - Steepfile
+  - test/
+  - tmp/
+  - patch_rdoc_html.rb

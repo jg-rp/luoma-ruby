@@ -20,4 +20,13 @@ Steep::RakeTask.new do |t|
   t.watch.verbose
 end
 
+desc "Generate RDoc documentation and post-process inline RBS comments"
+task :docs do
+  puts "Clearing ./doc..."
+  rm_rf "./doc"
+  puts "Generating RDoc..."
+  sh "bundle exec rdoc"
+  sh "bundle exec ruby patch_rdoc_html.rb"
+end
+
 task default: %i[test rubocop steep]
