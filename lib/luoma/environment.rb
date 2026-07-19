@@ -370,11 +370,13 @@ module Luoma
       when String
         obj
       when Hash, Array
+        # TODO: Drop#serialize and a recursive serializer
         JSON.generate(obj)
       when BigDecimal
         # obj.to_s("F") gives higher precision
         obj.to_f.to_s
       when Drop
+        # TODO: Drop#serialize
         obj.to_primitive(:string, context)
       when Symbol
         ""
