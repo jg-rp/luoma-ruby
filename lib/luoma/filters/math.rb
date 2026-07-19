@@ -76,7 +76,7 @@ module Luoma
     def self.round(context, left, ndigits = 0)
       left_ = context.to_numeric(left)
       return left_ if context.nothing?(left_)
-      return left.round_ if ndigits == 0 # rubocop:disable Style/NumericPredicate
+      return left_.round if ndigits == 0 # rubocop:disable Style/NumericPredicate
 
       left_.round(context.to_i(ndigits, default: 0))
     end

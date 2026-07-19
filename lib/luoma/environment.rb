@@ -370,13 +370,11 @@ module Luoma
       when String
         obj
       when Hash, Array
-        # TODO: Drop#serialize and a recursive serializer
-        JSON.generate(obj)
+        JSON.generate(to_data(obj, context))
       when BigDecimal
         # obj.to_s("F") gives higher precision
         obj.to_f.to_s
       when Drop
-        # TODO: Drop#serialize
         obj.to_primitive(:string, context)
       when Symbol
         ""
@@ -435,6 +433,22 @@ module Luoma
       namespace_.merge!(@globals) if @globals # steep:ignore
       namespace_.merge!(namespace) if namespace
       namespace_
+    end
+
+    #: (untyped, RenderContext) -> untyped
+    def to_data(obj, context)
+      case obj
+      when nil, true, false, Numeric, String
+        obj
+      when Array
+        obj.map { |v| to_data(v, context) }
+      when Hash
+        obj.transform_values { |v| to_data(v, context) }
+      when Drop
+        obj.to_primitive(:data, context)
+      when Symbol
+        ""
+      end
     end
   end
 end

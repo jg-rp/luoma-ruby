@@ -3,58 +3,38 @@
     {
       "name": "integer value and integer arg",
       "template": "{{ 10 | modulo: 2 }}",
-      "result": "0",
-      "tags": [
-        "modulo filter"
-      ]
+      "result": "0"
     },
     {
       "name": "integer value and float arg",
       "template": "{{ 10 | modulo: 2.0 }}",
-      "result": "0.0",
-      "tags": [
-        "modulo filter"
-      ]
+      "result": "0.0"
     },
     {
       "name": "float value and float arg",
       "template": "{{ 10.1 | modulo: 7.0 }}",
-      "result": "3.1",
-      "tags": [
-        "modulo filter"
-      ]
+      "result": "3.1"
     },
     {
       "name": "string value and argument",
       "template": "{{ \"10\" | modulo: \"2.0\" }}",
-      "result": "0.0",
-      "tags": [
-        "modulo filter"
-      ]
+      "result": "0.0"
     },
     {
       "name": "string not a number",
       "template": "{{ \"foo\" | modulo: \"2.0\" }}",
-      "result": "0.0",
-      "tags": [
-        "modulo filter"
-      ]
+      "result": ""
     },
     {
       "name": "arg string not a number",
       "template": "{{ \"10\" | modulo: \"foo\" }}",
-      "invalid": true,
-      "tags": [
-        "modulo filter"
-      ]
+      "result": ""
     },
     {
       "name": "too many args",
       "template": "{{ 5 | modulo: 1, '5' }}",
       "invalid": true,
-      "tags": [
-        "modulo filter"
-      ]
+      "tags": ["strict filters"]
     },
     {
       "name": "not a string, int or float",
@@ -62,26 +42,32 @@
       "data": {
         "a": {}
       },
-      "result": "0",
-      "tags": [
-        "modulo filter"
-      ]
+      "result": ""
     },
     {
       "name": "undefined left value",
       "template": "{{ nosuchthing | modulo: 2 }}",
-      "result": "0",
-      "tags": [
-        "modulo filter"
-      ]
+      "result": ""
     },
     {
       "name": "undefined argument",
       "template": "{{ 5 | modulo: nosuchthing }}",
-      "invalid": true,
-      "tags": [
-        "modulo filter"
-      ]
+      "result": ""
+    },
+    {
+      "name": "non-numeric left, coalesce",
+      "template": "{{ \"foo\" | modulo: 2.0 orElse 99 }}",
+      "result": "99"
+    },
+    {
+      "name": "non-numeric left, coalesce, explicit parens",
+      "template": "{{ (\"foo\" | modulo: 2.0) orElse 99 }}",
+      "result": "99"
+    },
+    {
+      "name": "non-numeric argument, coalesce",
+      "template": "{{ 10 | modulo: 'foo' orElse 99 }}",
+      "result": "99"
     }
   ]
 }

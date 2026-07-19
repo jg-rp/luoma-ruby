@@ -207,5 +207,8 @@ module Luoma
 
     #  (t_namespace?) -> t_namespace?
     def make_globals: (t_namespace? namespace) -> t_namespace?
+                    
+    #  (untyped, RenderContext) -> untyped
+    def to_data: (untyped obj, RenderContext context) -> untyped
   end
 end

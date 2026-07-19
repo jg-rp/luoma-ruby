@@ -3,74 +3,48 @@
     {
       "name": "positive integer",
       "template": "{{ 5 | floor }}",
-      "result": "5",
-      "tags": [
-        "floor filter"
-      ]
+      "result": "5"
     },
     {
       "name": "negative integer",
       "template": "{{ -5 | floor }}",
-      "result": "-5",
-      "tags": [
-        "floor filter"
-      ]
+      "result": "-5"
     },
     {
       "name": "positive float",
       "template": "{{ 5.4 | floor }}",
-      "result": "5",
-      "tags": [
-        "floor filter"
-      ]
+      "result": "5"
     },
     {
       "name": "negative float",
       "template": "{{ -5.4 | floor }}",
-      "result": "-6",
-      "tags": [
-        "floor filter"
-      ]
+      "result": "-6"
     },
     {
       "name": "zero",
       "template": "{{ 0 | floor }}",
-      "result": "0",
-      "tags": [
-        "floor filter"
-      ]
+      "result": "0"
     },
     {
       "name": "positive string float",
       "template": "{{ \"5.1\" | floor }}",
-      "result": "5",
-      "tags": [
-        "floor filter"
-      ]
+      "result": "5"
     },
     {
       "name": "negative string float",
       "template": "{{ \"-5.1\" | floor }}",
-      "result": "-6",
-      "tags": [
-        "floor filter"
-      ]
+      "result": "-6"
     },
     {
       "name": "unexpected argument",
       "template": "{{ -3.1 | floor: 1 }}",
       "invalid": true,
-      "tags": [
-        "floor filter"
-      ]
+      "tags": ["strict filters"]
     },
     {
       "name": "string not a number",
       "template": "{{ \"hello\" | floor }}",
-      "result": "0",
-      "tags": [
-        "floor filter"
-      ]
+      "result": ""
     },
     {
       "name": "not a string, int or float",
@@ -78,18 +52,12 @@
       "data": {
         "a": {}
       },
-      "result": "0",
-      "tags": [
-        "floor filter"
-      ]
+      "result": ""
     },
     {
       "name": "undefined left value",
       "template": "{{ nosuchthing | floor }}",
-      "result": "0",
-      "tags": [
-        "floor filter"
-      ]
+      "result": ""
     }
   ]
 }

@@ -126,6 +126,14 @@ class TestFilters < Minitest::Spec
     end
   end
 
+  describe "floor filter" do
+    load_test_cases("test/floor_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
   describe "join filter" do
     load_test_cases("test/join_filter.json").each do |test_case|
       it test_case["name"] do
@@ -166,6 +174,30 @@ class TestFilters < Minitest::Spec
     end
   end
 
+  describe "minus filter" do
+    load_test_cases("test/minus_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
+  describe "modulo filter" do
+    load_test_cases("test/modulo_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
+  describe "plus filter" do
+    load_test_cases("test/plus_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
   describe "reject filter" do
     load_test_cases("test/reject_filter.json").each do |test_case|
       it test_case["name"] do
@@ -176,6 +208,22 @@ class TestFilters < Minitest::Spec
 
   describe "reverse filter" do
     load_test_cases("test/reverse_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
+  describe "round filter" do
+    load_test_cases("test/round_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
+  describe "size filter" do
+    load_test_cases("test/size_filter.json").each do |test_case|
       it test_case["name"] do
         assert_test_case(test_case)
       end
