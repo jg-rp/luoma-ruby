@@ -75,6 +75,7 @@ module Luoma
     end
 
     # Parse and render template `source` with variables from `data`.
+    #
     #: (String, ?t_namespace?) -> String
     def render(source, data = nil)
       parse(source).render(data)
@@ -101,30 +102,35 @@ module Luoma
     end
 
     # Remove a filter from the filter register.
+    #
     #: (String) -> untyped
     def delete_filter(name)
       @filters.delete(name)
     end
 
     # Add or replace a tag.
+    #
     #: (String, _Tag) -> void
     def register_tag(name, tag)
       @tags[name] = tag
     end
 
     # Remove a tag from the tag register.
+    #
     #: (String) -> (_Tag | nil)
     def delete_tag(name)
       @tags.delete(name)
     end
 
     # Add or replace a predicate function.
+    #
     #: (String, ^(untyped) -> bool) -> void
     def register_predicate(name, callable)
       @predicates[name] = callable
     end
 
     # Remove a predicate from the predicate register.
+    #
     #: (String) -> (^(untyped) -> bool | nil)
     def delete_predicate(name)
       @predicates.delete(name)
@@ -310,6 +316,7 @@ module Luoma
 
     # Try to coerce `obj` to an integer using `#to_i` with a fallback to
     # `Integer(obj.to_s)` if `obj` does not respond to `to_i`.
+    #
     #: [X] (untyped, RenderContext, ?default: X) -> (Integer | X)
     def to_i(obj, context, default: :nothing)
       return obj if obj.is_a?(Integer)
