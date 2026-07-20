@@ -59,6 +59,13 @@ module Luoma
 
     # TODO: static analysis methods
 
+    # Statically analyze this template and report variable, tag and filter usage.
+    #
+    #: (?include_partials: bool) -> Luoma::StaticAnalysis::Result
+    def analyze(include_partials: false)
+      Luoma::StaticAnalysis.analyze(self, include_partials: include_partials)
+    end
+
     protected
 
     # Return a new namespace including data from `namespace` and other

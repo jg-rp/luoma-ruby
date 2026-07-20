@@ -54,5 +54,10 @@ module Luoma
 
     #  (t_namespace?) -> t_namespace?
     def make_globals: (t_namespace? namespace) -> t_namespace?
+                    
+    # Statically analyze this template and report variable, tag and filter usage.
+    #
+    #  (?include_partials: bool) -> Luoma::StaticAnalysis::Result
+    def analyze: (?include_partials: bool) -> Luoma::StaticAnalysis::Result
   end
 end

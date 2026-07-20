@@ -952,11 +952,23 @@ module Luoma
       @name = name
       @args = args
       @kwargs = kwargs
-      @span = args.empty? ? token : Luoma.span(token, args.last.span)
+
+      @span = if args.empty? && kwargs.empty?
+                token
+              elsif kwargs.empty?
+                Luoma.span(token, args.last.span)
+              elsif args.empty?
+                Luoma.span(token, kwargs.last.span)
+              else
+                Luoma.span(
+                  token,
+                  kwargs.last.token[1] > args.last.token[1] ? kwargs.last.span : args.last.span
+                )
+              end
     end
 
     def children
-      @args
+      @kwargs.empty? ? @args : [*@args, *@kwargs.map(&:expression)]
     end
 
     def to_s

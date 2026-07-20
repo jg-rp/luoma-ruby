@@ -174,16 +174,16 @@ module Luoma
             start_line, start_column, end_line, end_column = sv.location.span
 
             a << {
-              "segments" => sv.segments,
-              "path" => sv.to_s,
-              "start_index" => sv.location.token[1],
-              "end_index" => sv.location.token[2],
-              "start_line" => start_line,
-              "start_column" => start_column,
-              "end_line" => end_line,
-              "end_column" => end_column,
-              "value" => sv.location.value,
-              "template_name" => sv.location.template.name
+              segments: sv.segments,
+              path: sv.to_s,
+              start_index: sv.location.token[1],
+              end_index: sv.location.token[2],
+              start_line: start_line,
+              start_column: start_column,
+              end_line: end_line,
+              end_column: end_column,
+              value: sv.location.value,
+              template_name: sv.location.template.name
             }
           end
 
@@ -204,6 +204,16 @@ module Luoma
         @locals = locals
         @filters = filters
         @tags = tags
+      end
+
+      def to_h
+        {
+          variables: @variables,
+          globals: @globals,
+          locals: @locals,
+          filters: @filters,
+          tags: @tags
+        }
       end
     end
 
@@ -250,7 +260,7 @@ module Luoma
             )
           end
 
-          next unless just_globals
+          next if just_globals
 
           # Update filters from expr
           extract_filters(expr, template, static_context).each do |name, span|
@@ -302,9 +312,9 @@ module Luoma
       end
 
       Result.new(
-        variables.data,
-        globals.data,
-        locals.data,
+        variables.to_h,
+        globals.to_h,
+        locals.to_h,
         to_locations(filters),
         to_locations(tags)
       )
@@ -382,14 +392,14 @@ module Luoma
         v.each do |l|
           span = l.span
           a << {
-            "start_index" => l.token.start,
-            "end_index" => l.token.end,
-            "start_line" => span.first.first,
-            "start_column" => span.first.last,
-            "end_line" => span.last.first,
-            "end_column" => span.last.last,
-            "value" => l.value,
-            "template_name" => l.template.name
+            start_index: l.token[1],
+            end_index: l.token[2],
+            start_line: span.first.first,
+            start_column: span.first.last,
+            end_line: span.last.first,
+            end_column: span.last.last,
+            value: l.value,
+            template_name: l.template.name
           }
         end
 
