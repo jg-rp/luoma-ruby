@@ -87,7 +87,7 @@ module Luoma
       template = static_context.env.get_template(
         name,
         context: static_context,
-        tag: "include"
+        tag: "import"
       )
 
       scope = @args.map(&:name)

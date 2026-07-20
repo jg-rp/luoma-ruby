@@ -1,0 +1,139 @@
+module Luoma
+  # Template static analysis.
+  module StaticAnalysis
+    # The location of a variable, tag or filter.
+    class Location
+      @template: Luoma::Template
+
+      @token: Luoma::t_token
+
+      attr_reader template: Luoma::Template
+
+      attr_reader token: Luoma::t_token
+
+      #  (Template, t_token) -> void
+      def initialize: (Luoma::Template template, Luoma::t_token token) -> void
+
+      # Return the line and column number of the given index.
+      #
+      #  (Integer) -> [Integer, Integer]
+      def line_col: (Numeric index) -> [Numeric, Numeric]
+
+      def ==: (untyped other) -> bool
+
+      alias eql? ==
+
+      def hash: () -> untyped
+
+      # Return the line and column number for the start and end index spanning
+      # this location.
+      #
+      #  () -> [[Integer, Integer],[Integer, Integer]]
+      def span: () -> [[Numeric, Numeric],[Numeric, Numeric]]
+
+      # Return the substring spanning this location.
+      #
+      #  () -> String
+      def value: () -> String
+    end
+
+    # A variable as a sequence of segments and its location.
+    class StaticVariable
+      @segments: untyped
+
+      @location: Location
+
+      attr_reader segments: untyped
+
+      attr_reader location: Location
+
+      RE_PROPERTY: ::Regexp
+
+      def initialize: (untyped segments, Location location) -> void
+
+      def to_s: () -> String
+
+      def ==: (untyped other) -> bool
+
+      alias eql? ==
+
+      def hash: () -> untyped
+
+      #  () -> String
+      def root: () -> String
+
+      def segments_to_s: (untyped segments) -> String
+    end
+
+    # Helper to manage variable scope during static analysis.
+    class StaticScope
+      @stack: Array[Set[String]]
+
+      #  (Set[String]) -> void
+      def initialize: (Set[String] globals) -> void
+
+      def include?: (String key) -> bool
+
+      def push: (Set[String] scope) -> self
+
+      def pop: () -> untyped
+
+      def add: (String name) -> void
+    end
+
+    # Helper to group variables by their root segment during static analysis.
+    class VariableMap
+      @data: Hash[String, Array[StaticVariable]]
+
+      attr_reader data: Hash[String, Array[StaticVariable]]
+
+      def initialize: () -> void
+
+      def []: (StaticVariable var) -> Array[StaticVariable]?
+
+      def add: (StaticVariable var) -> void
+
+      #  () -> Hash[String, Array[_Var]]
+      def to_h: () -> untyped
+    end
+
+    # The result of analyzing a template.
+    class Result
+      @variables: untyped
+
+      @globals: untyped
+
+      @locals: untyped
+
+      @filters: untyped
+
+      @tags: untyped
+
+      attr_reader variables: untyped
+
+      attr_reader globals: untyped
+
+      attr_reader locals: untyped
+
+      attr_reader filters: untyped
+
+      attr_reader tags: untyped
+
+      def initialize: (untyped variables, untyped globals, untyped locals, untyped filters, untyped tags) -> void
+    end
+
+    def self.analyze: (Luoma::Template template, include_partials: bool) -> Result
+
+    #  (Luoma::_Traversable, Luoma::Template, Luoma::RenderContext) -> Array[[String, Location]]
+    def self.extract_filters: (Luoma::_Traversable expression, Luoma::Template template, Luoma::RenderContext static_context) -> Array[[String, Location]]
+
+    # (Luoma:_Traversable, Luoma::Template, StaticScope, VariableMap, VariableMap, RenderContext) -> void
+    def self.analyze_variables: (Luoma::_Traversable expression, Luoma::Template template, StaticScope scope, VariableMap globals, VariableMap variables, Luoma::RenderContext static_context) -> untyped
+
+    #  (Luoma::Variable, Luoma::Template) -> Array[untyped]
+    def self.segments: (Luoma::Variable var, Luoma::Template template) -> Array[untyped]
+
+    #  (Hash[String, Array[Location]]) -> Hash[String, Array[untyped]]
+    def self.to_locations: (untyped map) -> untyped
+  end
+end

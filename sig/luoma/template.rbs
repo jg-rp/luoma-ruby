@@ -16,6 +16,8 @@ module Luoma
 
     @up_to_date: untyped
 
+    @lines: Array[String]?
+
     attr_reader env: Environment
 
     attr_reader source: String
@@ -47,6 +49,8 @@ module Luoma
 
     #  (t_namespace) -> Template
     def with_globals: (t_namespace namespace) -> Template
+                    
+    def lines: () -> Array[String]
 
     #  (t_namespace?) -> t_namespace?
     def make_globals: (t_namespace? namespace) -> t_namespace?

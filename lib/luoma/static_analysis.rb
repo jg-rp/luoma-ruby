@@ -4,56 +4,77 @@ module Luoma
   # Template static analysis.
   module StaticAnalysis
     # The location of a variable, tag or filter.
-    class Span
-      attr_reader :template_name, :index
+    class Location
+      attr_reader :template, :token
 
-      def initialize(template_name, index)
-        @template_name = template_name
-        @index = index
+      #: (Template, t_token) -> void
+      def initialize(template, token)
+        @template = template
+        @token = token
       end
 
-      # @param source [String] Template source text.
-      # @return [[Integer, Integer]] The line and column number of this span in _source_.
-      def line_col(source)
-        lines = source.lines
+      # Return the line and column number of the given index.
+      #
+      #: (Integer) -> [Integer, Integer]
+      def line_col(index)
+        lines = @template.lines
         cumulative_length = 0
         target_line_index = -1
 
         lines.each_with_index do |line, i|
           cumulative_length += line.length
-          next unless @index < cumulative_length
 
-          target_line_index = i
-          line_number = target_line_index + 1
-          column_number = @index - (cumulative_length - lines[target_line_index].length)
-          return [line_number, column_number]
+          if index < cumulative_length
+            target_line_index = i
+            break
+          end
         end
 
-        raise "index is out of bounds for span"
+        raise LuomaError.new("index out of bounds") if target_line_index == -1
+
+        line_number = target_line_index + 1
+        line = lines[target_line_index]
+        column_number = index - (cumulative_length - line.length)
+        [line_number, column_number]
       end
 
       def ==(other)
         self.class == other.class &&
-          @template_name == other.template_name &&
-          @index == other.index
+          @template.name == other.template.name &&
+          @token == other.token
       end
 
       alias eql? ==
 
       def hash
-        [@template_name, @index].hash
+        [@template.name, @token].hash
+      end
+
+      # Return the line and column number for the start and end index spanning
+      # this location.
+      #
+      #: () -> [[Integer, Integer],[Integer, Integer]]
+      def span
+        [line_col(@token[1]), line_col(@token[2])]
+      end
+
+      # Return the substring spanning this location.
+      #
+      #: () -> String
+      def value
+        Luoma.get_token_value(@token, @template.source)
       end
     end
 
     # A variable as a sequence of segments and its location.
-    class Variable
-      attr_reader :segments, :span
+    class StaticVariable
+      attr_reader :segments, :location
 
       RE_PROPERTY = /\A[\u0080-\uFFFFa-zA-Z_][\u0080-\uFFFFa-zA-Z0-9_-]*\Z/
 
-      def initialize(segments, span)
+      def initialize(segments, location)
         @segments = segments
-        @span = span
+        @location = location
       end
 
       def to_s
@@ -62,14 +83,19 @@ module Luoma
 
       def ==(other)
         self.class == other.class &&
-          @segments == other.segments &&
-          @span == other.span
+          @segments == other.segments
       end
 
       alias eql? ==
 
       def hash
         @segments.hash
+      end
+
+      #: () -> String
+      def root
+        segment = @segments.first || ""
+        segment.is_a?(Array) ? segments_to_s(segment) : segment.to_s
       end
 
       protected
@@ -96,8 +122,9 @@ module Luoma
 
     # Helper to manage variable scope during static analysis.
     class StaticScope
+      #: (Set[String]) -> void
       def initialize(globals)
-        @stack = [globals]
+        @stack = [globals] #: Array[Set[String]]
       end
 
       def include?(key)
@@ -127,13 +154,43 @@ module Luoma
       end
 
       def [](var)
-        key = var.segments.first.to_s
+        key = var.root
         @data[key] = [] unless @data.include?(key)
         @data[key]
       end
 
       def add(var)
         send(:[], var) << var
+      end
+
+      #: () -> Hash[String, Array[_Var]]
+      def to_h
+        result = {} #: Hash[String, Array[untyped]]
+
+        @data.each do |k, v|
+          a = [] #: Array[untyped]
+
+          v.each do |sv|
+            start_line, start_column, end_line, end_column = sv.location.span
+
+            a << {
+              "segments" => sv.segments,
+              "path" => sv.to_s,
+              "start_index" => sv.location.token[1],
+              "end_index" => sv.location.token[2],
+              "start_line" => start_line,
+              "start_column" => start_column,
+              "end_line" => end_line,
+              "end_column" => end_column,
+              "value" => sv.location.value,
+              "template_name" => sv.location.template.name
+            }
+          end
+
+          result[k] = a
+        end
+
+        result
       end
     end
 
@@ -155,147 +212,191 @@ module Luoma
       globals = VariableMap.new
       locals = VariableMap.new
 
-      # @type var filters: Hash[String, Array[Span]]
+      # @type var filters: Hash[String, Array[Location]]
       filters = Hash.new { |hash, key| hash[key] = [] }
-      # @type var tags: Hash[String, Array[Span]]
+      # @type var tags: Hash[String, Array[Location]]
       tags = Hash.new { |hash, key| hash[key] = [] }
 
       # @type var template_scope: Set[String]
       template_scope = Set[]
       root_scope = StaticScope.new(template_scope)
-      static_context = Liquid2::RenderContext.new(template)
+      static_context = Luoma::RenderContext.new(template)
 
       # Names of partial templates that have already been analyzed.
-      # @type var seen: Set[String]
-      seen = Set[]
+      # Keys are hashes of partial template name and its arguments. If we've
+      # visited a template before but with different arguments, later visits
+      # only record global variables so as not to double count locals, filters
+      # and tags.
+      seen = Hash.new { |hash, key| hash[key] = Set[] } #: Hash[String,Set[untyped]]
 
-      # @type var visit: ^(Node, String, StaticScope) -> void
-      visit = lambda do |node, template_name, scope|
-        seen.add(template_name) unless template_name.empty?
+      # @type var visit: ^(Luoma::Markup, Luoma::Template, StaticScope, bool) -> void
+      visit = lambda do |node, template, scope, just_globals|
+        seen[template.name].add(nil) if !template.name.empty? && !just_globals
 
         # Update tags
-        tags[node.name] << Span.new(template_name, node.token.last) if node.is_a?(Liquid2::Tag)
+        # Markup with empty `tag_name` is silenced.
+        tags[node.tag_name] << Location.new(template, node.token) if !just_globals && !node.tag_name.empty?
 
         # Update variables from node.expressions
         node.expressions.each do |expr|
-          if expr.is_a?(Liquid2::Expression)
-            analyze_variables(expr, template_name, scope, globals,
-                              variables)
+          if expr.is_a?(Luoma::Expression)
+            analyze_variables(
+              expr,
+              template,
+              scope,
+              globals,
+              just_globals ? VariableMap.new : variables,
+              static_context
+            )
           end
 
+          next unless just_globals
+
           # Update filters from expr
-          extract_filters(expr, template_name).each do |name, span|
+          extract_filters(expr, template, static_context).each do |name, span|
             filters[name] << span
           end
         end
 
         # Update template scope from node.template_scope
-        node.template_scope.each do |ident|
-          scope.add(ident.name)
-          locals.add(Variable.new([ident.name], Span.new(template_name, ident.token.last)))
+        node.template_scope.each do |name|
+          scope.add(name.value)
+          locals.add(StaticVariable.new([name.value], Location.new(template, name.token)))
         end
 
-        if (partial = node.partial_scope)
-          partial_name = static_context.evaluate(partial.name).to_s
+        # Set block scope before descending into child nodes.
+        scope.push(node.block_scope.to_set(&:value))
 
-          unless seen.include?(partial_name)
-            partial_scope = if partial.scope == :isolated
-                              StaticScope.new(Set.new(partial.in_scope.map(&:name)))
+        node.children(static_context).each do |child|
+          visit.call(child, template, scope, just_globals)
+        end
+
+        scope.pop
+
+        # Descend into partial templates?
+        partial = include_partials && node.partial(static_context)
+        if partial.is_a?(Luoma::Partial)
+          name = partial.template.name
+          just_globals_ = seen.include?(name)
+
+          unless seen[name].include?(partial.key)
+            seen[name].add(partial.key)
+
+            partial_scope = if partial.scope_kind == :isolated
+                              StaticScope.new(partial.in_scope.to_set(&:value))
                             else
-                              root_scope.push(Set.new(partial.in_scope.map(&:name)))
+                              root_scope.push(partial.in_scope.to_set(&:value))
                             end
 
-            node.children(static_context, include_partials: include_partials).each do |child|
-              seen.add(partial_name)
-              visit.call(child, partial_name, partial_scope) if child.is_a?(Liquid2::Node)
+            partial.template.nodes.each do |p_node|
+              visit.call(p_node, partial.template, partial_scope, just_globals_) if p_node.is_a?(Luoma::Markup)
             end
 
-            partial_scope.pop
+            partial_scope.pop if partial.scope_kind == :isolated
           end
-        else
-          scope.push(Set.new(node.block_scope.map(&:name)))
-          node.children(static_context, include_partials: include_partials).each do |child|
-            visit.call(child, template_name, scope) if child.is_a?(Liquid2::Node)
-          end
-          scope.pop
         end
       end
 
-      template.ast.each do |node|
-        visit.call(node, template.name, root_scope) if node.is_a?(Liquid2::Node)
+      template.nodes.each do |node|
+        visit.call(node, template, root_scope, false) if node.is_a?(Luoma::Markup)
       end
 
-      Result.new(variables.data, globals.data, locals.data, filters, tags)
+      Result.new(
+        variables.data,
+        globals.data,
+        locals.data,
+        to_locations(filters),
+        to_locations(tags)
+      )
     end
 
-    def self.extract_filters(expression, template_name)
-      filters = [] # : Array[[String, Span]]
+    #: (Luoma::_Traversable, Luoma::Template, Luoma::RenderContext) -> Array[[String, Location]]
+    def self.extract_filters(expression, template, static_context)
+      filters = [] # : Array[[String, Location]]
 
-      if expression.is_a?(Liquid2::FilteredExpression) && !expression.filters.nil?
-        expression.filters.each do |filter|
-          filters << [filter.name, Span.new(template_name, filter.token.last)]
-        end
-      elsif expression.is_a?(Liquid2::TernaryExpression)
-        expression.filters.each do |filter|
-          filters << [filter.name, Span.new(template_name, filter.token.last)]
-        end
-
-        expression.tail_filters.each do |filter|
-          filters << [filter.name, Span.new(template_name, filter.token.last)]
-        end
+      if expression.is_a?(Luoma::Filter) # steep:ignore
+        filters << [expression.name.to_s, Location.new(template, expression.span)]
       end
 
-      if expression.is_a?(Liquid2::Expression)
-        expression.children.each do |expr|
-          filters.concat(extract_filters(expr, template_name))
-        end
+      expression.children.each do |expr|
+        filters.concat(extract_filters(expr, template, static_context))
       end
 
       filters
     end
 
-    def self.analyze_variables(expression, template_name, scope, globals, variables)
-      if expression.is_a?(Path)
-        var = Variable.new(segments(expression, template_name),
-                           Span.new(template_name, expression.token.last))
-        variables.add(var)
+    # (Luoma:_Traversable, Luoma::Template, StaticScope, VariableMap, VariableMap, RenderContext) -> void
+    def self.analyze_variables(expression, template, scope, globals, variables, static_context)
+      if expression.is_a?(Luoma::Variable) # steep:ignore
+        var = StaticVariable.new(
+          segments(expression, template),
+          Location.new(template, expression.span)
+        )
 
-        root = var.segments.first.to_s
-        globals.add(var) unless scope.include?(root)
+        variables.add(var)
+        globals.add(var) unless scope.include?(expression.root.to_s)
       end
 
-      if (child_scope = expression.scope)
-        scope.push(Set.new(child_scope.map(&:name)))
-        expression.children.each do |expr|
-          if expr.is_a?(Expression)
-            analyze_variables(expr, template_name, scope, globals,
-                              variables)
-          end
-        end
-        scope.pop
-      else
-        expression.children.each do |expr|
-          if expr.is_a?(Expression)
-            analyze_variables(expr, template_name, scope, globals,
-                              variables)
-          end
-        end
+      # TODO: Handle lambda scoping
+
+      expression.children.each do |expr|
+        analyze_variables(
+          expr,
+          template,
+          scope,
+          globals,
+          variables,
+          static_context
+        )
       end
     end
 
-    def self.segments(path, template_name)
-      # @type var segments_: Array[untyped]
-      segments_ = [path.head.is_a?(Path) ? segments(path.head, template_name) : path.head]
+    #: (Luoma::Variable, Luoma::Template) -> Array[untyped]
+    def self.segments(var, template)
+      segments_ = [] #: Array[untyped]
 
-      path.segments.each do |segment|
-        segments_ << if segment.is_a?(Path)
-                       segments(segment, template_name)
+      segments_ << if var.root.is_a?(Luoma::Variable)
+                     segments(var.root, template)
+                   else
+                     var.root.value
+                   end
+
+      var.segments.each do |s|
+        segments_ << if s.is_a?(Luoma::Variable)
+                       segments(s, template)
                      else
-                       segment
+                       s.value
                      end
       end
 
       segments_
+    end
+
+    #: (Hash[String, Array[Location]]) -> Hash[String, Array[untyped]]
+    def self.to_locations(map)
+      result = {} #: Hash[String, Array[untyped]]
+
+      map.each do |k, v|
+        a = [] #: Array[untyped]
+
+        v.each do |l|
+          span = l.span
+          a << {
+            "start_index" => l.token.start,
+            "end_index" => l.token.end,
+            "start_line" => span.first.first,
+            "start_column" => span.first.last,
+            "end_line" => span.last.first,
+            "end_column" => span.last.last,
+            "value" => l.value,
+            "template_name" => l.template.name
+          }
+        end
+
+        result[k] = a
+      end
+
+      result
     end
   end
 end

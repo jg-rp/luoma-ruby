@@ -320,6 +320,8 @@ module Luoma
   class Predicate < Expression
     @value: String
 
+    attr_reader value: String
+
     #   (t_token, String) -> void
     def initialize: (t_token token, String value) -> void
   end

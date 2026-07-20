@@ -19,6 +19,7 @@ module Luoma
       @name = name || ""
       @overlay = overlay
       @up_to_date = up_to_date
+      @lines = nil
     end
 
     # Render this template with template variables from `data`.
@@ -47,6 +48,13 @@ module Luoma
         overlay: @overlay,
         up_to_date: @up_to_date
       )
+    end
+
+    # Return this template's source code split into lines.
+    #
+    #: () -> Array[String]
+    def lines
+      @lines ||= @source.lines(chomp: false)
     end
 
     # TODO: static analysis methods

@@ -848,6 +848,8 @@ module Luoma
   end
 
   class Predicate < Expression
+    attr_reader :value
+
     #:  (t_token, String) -> void
     def initialize(token, value)
       super(token)
