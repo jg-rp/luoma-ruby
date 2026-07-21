@@ -108,7 +108,7 @@ module Luoma
           when Array
             "[#{segments_to_s(segment)}]"
           when String
-            if segment.match?(RE_PROPERTY)
+            if segment.match?(RE_PROPERTY) || segment.end_with?("?")
               ".#{segment}"
             else
               "[#{segment.inspect}]"
@@ -338,10 +338,19 @@ module Luoma
     # (Luoma:_Traversable, Luoma::Template, StaticScope, VariableMap, VariableMap, RenderContext) -> void
     def self.analyze_variables(expression, template, scope, globals, variables, static_context)
       if expression.is_a?(Luoma::Variable) # steep:ignore
-        var = StaticVariable.new(
-          segments(expression, template),
-          Location.new(template, expression.span)
-        )
+        token = if expression.segments.last.is_a?(Luoma::Predicate)
+                  # Don't include a the trailing predicate.
+                  if expression.segments.length > 1
+                    Luoma.span(expression.root.span,
+                               expression.segments[-2].span)
+                  else
+                    expression.root.span
+                  end
+                else
+                  expression.span
+                end
+
+        var = StaticVariable.new(segments(expression, template), Location.new(template, token))
 
         variables.add(var)
         globals.add(var) unless scope.include?(expression.root.to_s)
@@ -374,6 +383,8 @@ module Luoma
       var.segments.each do |s|
         segments_ << if s.is_a?(Luoma::Variable)
                        segments(s, template)
+                     elsif s.is_a?(Luoma::Predicate)
+                       next
                      else
                        s.value
                      end

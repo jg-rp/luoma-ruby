@@ -120,6 +120,8 @@ module Luoma
       attr_reader tags: untyped
 
       def initialize: (untyped variables, untyped globals, untyped locals, untyped filters, untyped tags) -> void
+                    
+      def to_h: () -> Hash[Symbol, untyped]
     end
 
     def self.analyze: (Luoma::Template template, include_partials: bool) -> Result

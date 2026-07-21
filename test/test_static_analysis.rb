@@ -204,4 +204,122 @@ class TestStaticAnalysis < Minitest::Test
     assert_locations(analysis.filters, filters)
     assert_locations(analysis.tags, tags)
   end
+
+  def test_assign_predicate
+    source = "{% assign x = y.defined? %}"
+    analysis = Luoma.parse(source).analyze
+
+    locals = {
+      "x" => [[["x"], "x"]]
+    }
+    globals = {
+      "y" => [[["y"], "y"]]
+    }
+    variables = globals
+    filters = {}
+    tags = {
+      "assign" => ["assign"]
+    }
+
+    assert_vars(analysis.locals, locals)
+    assert_vars(analysis.globals, globals)
+    assert_vars(analysis.variables, variables)
+    assert_locations(analysis.filters, filters)
+    assert_locations(analysis.tags, tags)
+  end
+
+  def test_capture
+    source = "{% capture x %}{% if y %}z{% endif %}{% endcapture %}"
+    analysis = Luoma.parse(source).analyze
+
+    locals = {
+      "x" => [[["x"], "x"]]
+    }
+    globals = {
+      "y" => [[["y"], "y"]]
+    }
+    variables = globals
+    filters = {}
+    tags = {
+      "capture" => ["capture"],
+      "if" => ["if"]
+    }
+
+    assert_vars(analysis.locals, locals)
+    assert_vars(analysis.globals, globals)
+    assert_vars(analysis.variables, variables)
+    assert_locations(analysis.filters, filters)
+    assert_locations(analysis.tags, tags)
+  end
+
+  def test_case
+    source = [
+      "{% case x %}",
+      "{% when y %}",
+      "  {{ a }}",
+      "{% when z %}",
+      "  {{ b }}",
+      "{% else %}",
+      "  {{ c }}",
+      "{% endcase %}"
+    ].join("\n")
+
+    analysis = Luoma.parse(source).analyze
+
+    locals = {}
+    globals = {
+      "x" => [[["x"], "x"]],
+      "y" => [[["y"], "y"]],
+      "a" => [[["a"], "a"]],
+      "z" => [[["z"], "z"]],
+      "b" => [[["b"], "b"]],
+      "c" => [[["c"], "c"]]
+    }
+    variables = globals
+    filters = {}
+    tags = {
+      "case" => ["case"],
+      "when" => %w[when when],
+      "else" => ["else"]
+    }
+
+    assert_vars(analysis.locals, locals)
+    assert_vars(analysis.globals, globals)
+    assert_vars(analysis.variables, variables)
+    assert_locations(analysis.filters, filters)
+    assert_locations(analysis.tags, tags)
+  end
+
+  def test_case_predicates
+    source = [
+      "{% case x %}",
+      "{% when string? %}",
+      "  {{ a }}",
+      "{% else %}",
+      "  {{ b }}",
+      "{% endcase %}"
+    ].join("\n")
+
+    analysis = Luoma.parse(source).analyze
+
+    locals = {}
+    globals = {
+      "x" => [[["x"], "x"]],
+      "a" => [[["a"], "a"]],
+      "b" => [[["b"], "b"]]
+    }
+    variables = globals
+    filters = {}
+    tags = {
+      "case" => ["case"],
+      "when" => %w[when],
+      "else" => ["else"]
+    }
+
+    assert_vars(analysis.locals, locals)
+    assert_vars(analysis.globals, globals)
+    assert_vars(analysis.variables, variables)
+    assert_locations(analysis.filters, filters)
+    assert_locations(analysis.tags, tags)
+  end
 end
