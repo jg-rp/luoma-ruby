@@ -73,14 +73,14 @@ module Luoma
       left = context.to_enumerable(left)
 
       if key.nil? || context.nothing?(key)
-        left.sort { |a, b| numeric_compare(a, b) }
+        left.sort { |a, b| numeric_compare(a, b, context) }
       elsif key.is_a?(ExpressionDrop)
         key.expr.broadcast_with_index(left).zip(left).sort do |a, b|
-          numeric_compare(a.first, b.first)
+          numeric_compare(a.first, b.first, context)
         end.map(&:last)
       else
         key = context.to_string(key)
-        left.sort { |a, b| numeric_compare(context.fetch(a, key), context.fetch(b, key)) }
+        left.sort { |a, b| numeric_compare(context.fetch(a, key), context.fetch(b, key), context) }
       end
     end
 
@@ -94,19 +94,19 @@ module Luoma
       end
     end
 
-    def self.numeric_compare(left, right)
-      res = ints(left) <=> ints(right)
+    def self.numeric_compare(left, right, context)
+      res = ints(left, context) <=> ints(right, context)
       res || -1
     end
 
-    def self.ints(obj)
+    def self.ints(obj, context)
       if obj.is_a?(Integer) || obj.is_a?(Float) || obj.is_a?(BigDecimal)
         [obj]
       else
-        numeric = obj.to_s.scan(/(?<=\.)0+|-?\d+/)
-        return INFINITY_ARRAY if numeric.empty?
+        numeric = context.to_string(obj).scan(/(?<=\.)0+|-?\d+/)
+        return INFINITY_ARRAY if numeric.nil? || numeric.empty?
 
-        numeric.map(&:to_i)
+        numeric.map(&:to_i) # steep:ignore
       end
     end
   end

@@ -246,6 +246,22 @@ class TestFilters < Minitest::Spec
     end
   end
 
+  describe "sort_natural filter" do
+    load_test_cases("test/sort_natural_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
+  describe "sort_numeric filter" do
+    load_test_cases("test/sort_numeric_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
   describe "sum filter" do
     load_test_cases("test/sum_filter.json").each do |test_case|
       it test_case["name"] do

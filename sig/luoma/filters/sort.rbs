@@ -10,8 +10,8 @@ module Luoma
 
     def self.nil_safe_casecmp: (untyped left, untyped right) -> (untyped | 0 | 1 | -1)
 
-    def self.numeric_compare: (untyped left, untyped right) -> untyped
+    def self.numeric_compare: (untyped left, untyped right, FilterContext context) -> untyped
 
-    def self.ints: (untyped obj) -> (::Array[untyped] | untyped)
+    def self.ints: (untyped obj, FilterContext context) -> (::Array[untyped] | untyped)
   end
 end
