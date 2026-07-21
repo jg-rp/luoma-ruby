@@ -238,6 +238,14 @@ class TestFilters < Minitest::Spec
     end
   end
 
+  describe "sort filter" do
+    load_test_cases("test/sort_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
   describe "sum filter" do
     load_test_cases("test/sum_filter.json").each do |test_case|
       it test_case["name"] do

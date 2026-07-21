@@ -4,23 +4,13 @@
       "name": "array of strings",
       "template": "{{ a | sort | join: '#' }}",
       "data": {
-        "a": [
-          "b",
-          "a",
-          "C",
-          "B",
-          "A"
-        ]
+        "a": ["b", "a", "C", "B", "A"]
       },
-      "result": "A#B#C#a#b",
-      "tags": [
-        "join filter",
-        "sort filter"
-      ]
+      "result": "A#B#C#a#b"
     },
     {
       "name": "array of objects",
-      "template": "{% assign x = a | sort: 'title' %}{% for obj in x %}{% for i in obj %}({{ i[0] }},{{ i[1] }}){% endfor %}{% endfor %}",
+      "template": "{{ a | sort: 'title' }}",
       "data": {
         "a": [
           {
@@ -34,16 +24,11 @@
           }
         ]
       },
-      "result": "(title,Baz)(title,bar)(title,foo)",
-      "tags": [
-        "assign tag",
-        "for tag",
-        "sort filter"
-      ]
+      "result": "[{\"title\":\"Baz\"},{\"title\":\"bar\"},{\"title\":\"foo\"}]"
     },
     {
       "name": "array of objects with missing key",
-      "template": "{% assign x = a | sort: 'title' %}{% for obj in x %}{% for i in obj %}({{ i[0] }},{{ i[1] }}){% endfor %}{% endfor %}",
+      "template": "{{ a | sort: 'title' }}",
       "data": {
         "a": [
           {
@@ -57,12 +42,7 @@
           }
         ]
       },
-      "result": "(title,bar)(title,foo)(heading,Baz)",
-      "tags": [
-        "assign tag",
-        "for tag",
-        "sort filter"
-      ]
+      "result": "{\"title\":\"bar\",\"title\":\"foo\",\"heading\":\"Baz\"}"
     },
     {
       "name": "empty array",
@@ -70,26 +50,16 @@
       "data": {
         "a": []
       },
-      "result": "",
-      "tags": [
-        "join filter",
-        "sort filter"
-      ]
+      "result": ""
     },
     {
       "name": "too many arguments",
       "template": "{{ a | sort: 'title', 'foo' | join: '#' }}",
       "data": {
-        "a": [
-          "b",
-          "a"
-        ]
+        "a": ["b", "a"]
       },
       "invalid": true,
-      "tags": [
-        "join filter",
-        "sort filter"
-      ]
+      "tags": ["strict filters"]
     },
     {
       "name": "left value is not an array",
@@ -97,77 +67,41 @@
       "data": {
         "a": 123
       },
-      "result": "123",
-      "tags": [
-        "join filter",
-        "sort filter"
-      ]
+      "result": "123"
     },
     {
       "name": "left value is undefined",
       "template": "{{ nosuchthing | sort | join: '#' }}",
-      "result": "",
-      "tags": [
-        "join filter",
-        "sort filter"
-      ]
+      "result": ""
     },
     {
       "name": "argument is undefined",
       "template": "{{ a | sort: nosuchthing | join: '#' }}",
       "data": {
-        "a": [
-          "b",
-          "a"
-        ]
+        "a": ["b", "a"]
       },
-      "result": "a#b",
-      "tags": [
-        "join filter",
-        "sort filter"
-      ]
+      "result": "a#b"
     },
     {
       "name": "sort a string",
       "template": "{{ 'BzAa4' | sort | join: '#' }}",
-      "result": "BzAa4",
-      "tags": [
-        "join filter",
-        "sort filter"
-      ]
+      "result": "4#A#B#a#z"
     },
     {
       "name": "array of integers",
       "template": "{{ a | sort | join: '#' }}",
       "data": {
-        "a": [
-          1,
-          1000,
-          3,
-          30
-        ]
+        "a": [1, 1000, 3, 30]
       },
-      "result": "1#3#30#1000",
-      "tags": [
-        "join filter",
-        "sort filter"
-      ]
+      "result": "1#3#30#1000"
     },
     {
       "name": "incompatible types",
       "template": "{{ a | sort }}",
       "data": {
-        "a": [
-          [],
-          {},
-          1,
-          "4"
-        ]
+        "a": [[], {}, 1, "4"]
       },
-      "invalid": true,
-      "tags": [
-        "sort filter"
-      ]
+      "invalid": true
     }
   ]
 }

@@ -4,18 +4,47 @@ module Luoma
   module Filters
     INFINITY_ARRAY = [Float::INFINITY].freeze # : [Float]
 
-    def self.sort(context, left, key = nil)
-      left = context.to_enumerable(left)
+    # Return a sorted array of items in _left_. If _left_ contains incomparable
+    # items, return _left_ as an array with its original ordering.
+    #
+    # Coerce _left_ to an array if it's not one already.
+    def self.sort(context, left, key = :nil)
+      left = context.to_a(left)
 
-      if context.nothing?(key)
-        left.sort { |a, b| nil_safe_compare(context, a, b) }
+      # @type var sort_: ^(Array[untyped]) ?{ (untyped, Integer) -> untyped } -> Array[untyped]
+      sort_ = lambda do |array, &key|
+        # TODO: nil safe key?
+        decorated = array.each_with_index.map do |item, index|
+          [item, key ? key.call(item, index) : item]
+        end
+
+        begin
+          decorated.sort! do |(_, a), (_, b)|
+            cmp = context.cmp?(a, b)
+            raise IncomparableValues if cmp.nil?
+
+            cmp
+          end
+        rescue IncomparableValues
+          raise LuomaError.new("Cannot sort incomparable values") if context.render_context.env.strict_filters
+
+          return array
+        end
+
+        decorated.map!(&:first)
+      end
+
+      if key.nil?
+        sort_.call(left)
+      elsif key.is_a?(ExpressionDrop)
+        sort_.call(left) { |item, index| key.expr.call_with_index(item, index) }
       else
         key = context.to_string(key)
-        left.sort { |a, b| nil_safe_compare(context, context.fetch(a, key), context.fetch(b, key)) }
+        sort_.call(left) { |item, _index| context.fetch(item, key) }
       end
     end
 
-    def self.sort_natural(context, left, key = nil)
+    def self.sort_natural(context, left, key = :nothing)
       left = context.to_enumerable(left)
 
       if context.nothing?(key)
@@ -26,7 +55,7 @@ module Luoma
       end
     end
 
-    def self.sort_numeric(context, left, key = nil)
+    def self.sort_numeric(context, left, key = :nothing)
       left = context.to_enumerable(left)
 
       if context.nothing?(key)
@@ -47,7 +76,7 @@ module Luoma
       elsif right.nil?
         -1
       else
-        raise context.argument_error("can't sort incomparable type")
+        0
       end
     end
 
