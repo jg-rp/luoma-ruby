@@ -58,4 +58,7 @@ module Luoma
 
   class UndefinedVariableError < DetailedLuomaError
   end
+
+  class IncomparableValuesError < LuomaError
+  end
 end

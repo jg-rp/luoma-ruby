@@ -8,8 +8,6 @@ module Luoma
 
     def self.sort_numeric: (FilterContext context, untyped left, ?untyped? key) -> untyped
 
-    def self.nil_safe_compare: (FilterContext context, untyped left, untyped right) -> untyped
-
     def self.nil_safe_casecmp: (untyped left, untyped right) -> (untyped | 0 | 1 | -1)
 
     def self.numeric_compare: (untyped left, untyped right) -> untyped

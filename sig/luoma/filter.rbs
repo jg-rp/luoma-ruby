@@ -53,6 +53,9 @@ module Luoma
                 
     #  (untyped, untyped) -> bool
     def lt?: (untyped obj, untyped other) -> untyped
+           
+    #  (untyped, untyped) -> (-1 | 1 | 0 | nil)
+    def cmp: (untyped left, untyped right) -> (-1 | 1 | 0 | nil)
                
     #  (untyped) -> bool
     def empty?: (untyped obj) -> bool

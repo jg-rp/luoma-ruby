@@ -4,7 +4,12 @@ TODO:
 
 ## TODO:
 
-- 
+- replace :nothing with a singleton Nothing drop
+- test `sort`, `sort_natural` and `sort_numeric`
+- test string filters
+- test static analysis
+- lambda static analysis
+- docs
 
 ## Notes
 

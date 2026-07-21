@@ -79,6 +79,11 @@ module Luoma
       @env.lt?(obj, other, @render_context, @token)
     end
 
+    #: (untyped, untyped) -> (-1 | 1 | 0 | nil)
+    def cmp(left, right)
+      @env.cmp(left, right, @render_context, @token)
+    end
+
     #: (untyped) -> bool
     def nothing?(obj)
       @env.nothing?(obj)

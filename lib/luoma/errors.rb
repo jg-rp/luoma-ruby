@@ -70,4 +70,5 @@ module Luoma
   class TemplateSyntaxError < DetailedLuomaError; end
   class TemplateTypeError < DetailedLuomaError; end
   class UndefinedVariableError < DetailedLuomaError; end
+  class IncomparableValuesError < LuomaError; end
 end

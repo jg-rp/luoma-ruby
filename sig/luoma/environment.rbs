@@ -168,8 +168,11 @@ module Luoma
     #  (untyped, untyped, RenderContext, t_token) -> bool
     def eq?: (untyped left, untyped right, RenderContext context, t_token token) -> bool
 
-    #  (untyped, untyped, RenderContext, t_token) -> bool
-    def lt?: (untyped left, untyped right, RenderContext context, t_token token) -> bool
+    #  (untyped, untyped, RenderContext, t_token) -> bool?
+    def lt?: (untyped left, untyped right, RenderContext context, t_token token) -> bool?
+
+    #  (untyped, untyped, RenderContext, t_token) -> (-1 | 1 | 0 | nil)
+    def cmp: (untyped left, untyped right, RenderContext context, t_token token) -> (-1 | 1 | 0 | nil)
 
     #  (untyped) -> bool
     def nothing?: (untyped obj) -> bool

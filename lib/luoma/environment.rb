@@ -248,21 +248,28 @@ module Luoma
       left == right
     end
 
-    #: (untyped, untyped, RenderContext, t_token) -> bool
+    #: (untyped, untyped, RenderContext, t_token) -> bool?
     def lt?(left, right, context, token)
-      # TODO: Fixme
       # TODO: Don't accepts token
       return left.lt?(right, context) if left.is_a?(Drop)
       return right.gt?(left, context) if right.is_a?(Drop)
 
       left < right
-    rescue ArgumentError => e
-      raise TemplateTypeError.new(
-        e.message,
-        token,
-        context.template.source,
-        context.template.name
-      )
+    rescue ArgumentError, NoMethodError, TypeError
+      nil
+    end
+
+    #: (untyped, untyped, RenderContext, t_token) -> (-1 | 1 | 0 | nil)
+    def cmp(left, right, context, token)
+      return -1 if lt?(left, right, context, token)
+      return  1 if lt?(right, left, context, token)
+      return  0 if eq?(left, right, context, token)
+
+      if left.nil? || nothing?(left)
+        1
+      elsif right.nil? || nothing?(right)
+        -1
+      end
     end
 
     #: (untyped) -> bool

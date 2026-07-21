@@ -198,7 +198,7 @@ module Luoma
         return :nothing
       end
 
-      filter_context = FilterContext.new(@token, context)
+      filter_context = FilterContext.new(@span, context)
       left = @left.evaluate(context)
 
       return func.call(filter_context, left) if @filter.args.empty? && @filter.kwargs.empty?

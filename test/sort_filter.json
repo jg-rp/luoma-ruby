@@ -42,7 +42,7 @@
           }
         ]
       },
-      "result": "{\"title\":\"bar\",\"title\":\"foo\",\"heading\":\"Baz\"}"
+      "result": "[{\"title\":\"bar\"},{\"title\":\"foo\"},{\"heading\":\"Baz\"}]"
     },
     {
       "name": "empty array",
@@ -101,7 +101,8 @@
       "data": {
         "a": [[], {}, 1, "4"]
       },
-      "invalid": true
+      "invalid": true,
+      "tags": ["strict filters"]
     }
   ]
 }
