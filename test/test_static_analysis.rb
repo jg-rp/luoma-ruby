@@ -399,6 +399,47 @@ class TestStaticAnalysis < Minitest::Test
     assert_locations(analysis.tags, tags)
   end
 
+  def test_for_with_index_and_array_binding
+    source = [
+      "{% for x, i, a in (1..y) %}",
+      "  {{ x }}",
+      "  {{ i }}",
+      "  {{ a }}",
+      "{% break %}",
+      "{% else %}",
+      "  {{ z }}",
+      "{% continue %}",
+      "{% endfor %}"
+    ].join("\n")
+
+    analysis = Luoma.parse(source).analyze
+
+    locals = {}
+    globals = {
+      "y" => [[["y"], "y"]],
+      "z" => [[["z"], "z"]]
+    }
+    variables = {
+      "y" => [[["y"], "y"]],
+      "x" => [[["x"], "x"]],
+      "i" => [[["i"], "i"]],
+      "a" => [[["a"], "a"]],
+      "z" => [[["z"], "z"]]
+    }
+    filters = {}
+    tags = {
+      "for" => ["for"],
+      "break" => ["break"],
+      "continue" => ["continue"]
+    }
+
+    assert_vars(analysis.locals, locals)
+    assert_vars(analysis.globals, globals)
+    assert_vars(analysis.variables, variables)
+    assert_locations(analysis.filters, filters)
+    assert_locations(analysis.tags, tags)
+  end
+
   def test_if
     source = [
       "{% if x or z %}",
@@ -930,5 +971,5 @@ class TestStaticAnalysis < Minitest::Test
     assert_locations(analysis.tags, tags)
   end
 
-  # TODO: define
+  # TODO: define tag
 end

@@ -2,8 +2,6 @@ module Luoma
   class UnifiedLexer < BaseLexer
     RE_FLOAT: ::Regexp
 
-    RE_HASHES: ::Regexp
-
     RE_INT: ::Regexp
 
     RE_MARKUP_START: ::Regexp

@@ -9,7 +9,6 @@ module Luoma
   # https://jg-rp.github.io/template-expression-spec/
   class UnifiedLexer < BaseLexer
     RE_FLOAT = /((?:\d+\.\d+(?:[eE][+-]?\d+)?)|(\d+[eE]-\d+))/
-    RE_HASHES = /#+/
     RE_INT = /\d+(?:[eE]\+?\d+)?/
     RE_MARKUP_START = /\{[%{#]/
     RE_OUTPUT_END = /\}\}/
@@ -166,8 +165,8 @@ module Luoma
     #: () -> void
     def accept_comment
       start_of_delim = @start
-      hash_count = 1
-      hash_count = (@source.byteslice(@start, @scanner.pos - 1) || raise).size if @scanner.scan(RE_HASHES)
+      @scanner.pos += 1 while @scanner.peek_byte == 35 # steep:ignore
+      hash_count = (@source.byteslice((@start + 1)...@scanner.pos) || raise).size
       re = RE_HASH_COUNT[hash_count]
 
       emit(:token_comment_start)

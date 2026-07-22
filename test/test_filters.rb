@@ -30,6 +30,14 @@ class TestFilters < Minitest::Spec
     end
   end
 
+  describe "append filter" do
+    load_test_cases("test/append_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
   describe "at_least filter" do
     load_test_cases("test/at_least_filter.json").each do |test_case|
       it test_case["name"] do
@@ -40,6 +48,14 @@ class TestFilters < Minitest::Spec
 
   describe "at_most filter" do
     load_test_cases("test/at_most_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
+  describe "capitalize filter" do
+    load_test_cases("test/capitalize_filter.json").each do |test_case|
       it test_case["name"] do
         assert_test_case(test_case)
       end
@@ -88,6 +104,14 @@ class TestFilters < Minitest::Spec
 
   describe "divided_by filter" do
     load_test_cases("test/divided_by_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
+  describe "downcase filter" do
+    load_test_cases("test/downcase_filter.json").each do |test_case|
       it test_case["name"] do
         assert_test_case(test_case)
       end
@@ -280,6 +304,14 @@ class TestFilters < Minitest::Spec
 
   describe "uniq filter" do
     load_test_cases("test/uniq_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
+  describe "upcase filter" do
+    load_test_cases("test/upcase_filter.json").each do |test_case|
       it test_case["name"] do
         assert_test_case(test_case)
       end

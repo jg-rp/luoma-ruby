@@ -59,5 +59,57 @@ module Luoma
     #
     #  (?include_partials: bool) -> Luoma::StaticAnalysis::Result
     def analyze: (?include_partials: bool) -> Luoma::StaticAnalysis::Result
+               
+    # Return an array of variable names used in this template, without path segments.
+    #
+    #  (?include_partials: bool) -> Array[String]
+    def variables: (?include_partials: bool) -> Array[String]
+
+    # Return an array of variables used in this template, including path segments.
+    #
+    #  (?include_partials: bool) -> Array[String]
+    def variable_paths: (?include_partials: bool) -> Array[String]
+
+    # Return an array of variables used in this template, each as an array of segments.
+    #
+    #  (?include_partials: bool) -> Array[Segments]
+    def variable_segments: (?include_partials: bool) -> Array[untyped]
+
+    # Return an array of global variables used in this template, without path segments.
+    #
+    #  (?include_partials: bool) -> Array[String]
+    def global_variables: (?include_partials: bool) -> Array[String]
+
+    # Return an array of global variables used in this template, including path segments.
+    #
+    #  (?include_partials: bool) -> Array[String]
+    def global_variable_paths: (?include_partials: bool) -> Array[String]
+
+    # Return an array of global variables used in this template, each as an array of segments.
+    #
+    #  (?include_partials: bool) -> Array[Segments]
+    def global_variable_segments: (?include_partials: bool) -> Array[untyped]
+
+    # Return the names of all filters used in this template.
+    #
+    #  (?include_partials: bool) -> Array[String]
+    def filter_names: (?include_partials: bool) -> Array[String]
+
+    # Return the names of all tags used in this template.
+    #
+    #  (?include_partials: bool) -> Array[String]
+    def tag_names: (?include_partials: bool) -> Array[String]
+
+    # Return an array of comment nodes found in this template.
+    #
+    # Comment nodes have `token` and `text` attributes. Use `template.comments.map(&:text)`
+    # to get an array of comment strings. Each comment string includes leading and trailing
+    # whitespace.
+    #
+    # Note that this method does not try to load included or render templates when looking.
+    # for comment nodes.
+    #
+    #  () -> Array[Comment]
+    def comments: () -> Array[Comment]
   end
 end

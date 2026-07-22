@@ -62,8 +62,92 @@ module Luoma
     # Statically analyze this template and report variable, tag and filter usage.
     #
     #: (?include_partials: bool) -> Luoma::StaticAnalysis::Result
-    def analyze(include_partials: true)
+    def analyze(include_partials: false)
       Luoma::StaticAnalysis.analyze(self, include_partials: include_partials)
+    end
+
+    # Return an array of variable names used in this template, without path segments.
+    #
+    #: (?include_partials: bool) -> Array[String]
+    def variables(include_partials: false)
+      analyze(include_partials: include_partials).variables.keys
+    end
+
+    # Return an array of variables used in this template, including path segments.
+    #
+    #: (?include_partials: bool) -> Array[String]
+    def variable_paths(include_partials: false)
+      analyze(include_partials: include_partials).variables.values.flatten.map { |v| v[:path] }.uniq
+    end
+
+    # Return an array of variables used in this template, each as an array of segments.
+    #
+    #: (?include_partials: bool) -> Array[Segments]
+    def variable_segments(include_partials: false)
+      analyze(include_partials: include_partials).variables.values.flatten.map { |v| v[:segments] }.uniq
+    end
+
+    # Return an array of global variables used in this template, without path segments.
+    #
+    #: (?include_partials: bool) -> Array[String]
+    def global_variables(include_partials: false)
+      analyze(include_partials: include_partials).globals.keys
+    end
+
+    # Return an array of global variables used in this template, including path segments.
+    #
+    #: (?include_partials: bool) -> Array[String]
+    def global_variable_paths(include_partials: false)
+      analyze(include_partials: include_partials).globals.values.flatten.map { |v| v[:path] }.uniq
+    end
+
+    # Return an array of global variables used in this template, each as an array of segments.
+    #
+    #: (?include_partials: bool) -> Array[Segments]
+    def global_variable_segments(include_partials: false)
+      analyze(include_partials: include_partials).globals.values.flatten.map { |v| v[:segments] }.uniq
+    end
+
+    # Return the names of all filters used in this template.
+    #
+    #: (?include_partials: bool) -> Array[String]
+    def filter_names(include_partials: false)
+      analyze(include_partials: include_partials).filters.keys
+    end
+
+    # Return the names of all tags used in this template.
+    #
+    #: (?include_partials: bool) -> Array[String]
+    def tag_names(include_partials: false)
+      analyze(include_partials: include_partials).tags.keys
+    end
+
+    # Return an array of comment nodes found in this template.
+    #
+    # Comment nodes have `token` and `text` attributes. Use `template.comments.map(&:text)`
+    # to get an array of comment strings. Each comment string includes leading and trailing
+    # whitespace.
+    #
+    # Note that this method does not try to load included or render templates when looking.
+    # for comment nodes.
+    #
+    #: () -> Array[Comment]
+    def comments
+      context = RenderContext.new(self)
+      nodes = [] # : Array[Comment]
+
+      # @type var visit: ^(Markup) -> void
+      visit = lambda do |node|
+        nodes << node if node.is_a?(Comment)
+
+        node.children(context).each do |child|
+          visit.call(child)
+        end
+      end
+
+      @nodes.each { |node| visit.call(node) unless node.is_a?(String) }
+
+      nodes
     end
 
     protected

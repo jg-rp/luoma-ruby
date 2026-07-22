@@ -5,9 +5,9 @@ TODO:
 ## TODO:
 
 - replace :nothing with a singleton Nothing drop
-- test string filters
-- test static analysis
-- lambda static analysis
+- finish testing string filters
+- `{% define %}` tag static analysis. We need to analyze the block when it is rendered, keyed on the current static scope state.
+- Store and report the "call site" of defined blocks and partial templates.
 - docs
 
 ## Notes
