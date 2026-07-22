@@ -322,4 +322,117 @@ class TestStaticAnalysis < Minitest::Test
     assert_locations(analysis.filters, filters)
     assert_locations(analysis.tags, tags)
   end
+
+  def test_for
+    source = [
+      "{% for x in (1..y) %}",
+      "  {{ x }}",
+      "{% break %}",
+      "{% else %}",
+      "  {{ z }}",
+      "{% continue %}",
+      "{% endfor %}"
+    ].join("\n")
+
+    analysis = Luoma.parse(source).analyze
+
+    locals = {}
+    globals = {
+      "y" => [[["y"], "y"]],
+      "z" => [[["z"], "z"]]
+    }
+    variables = {
+      "y" => [[["y"], "y"]],
+      "x" => [[["x"], "x"]],
+      "z" => [[["z"], "z"]]
+    }
+    filters = {}
+    tags = {
+      "for" => ["for"],
+      "break" => ["break"],
+      "continue" => ["continue"]
+    }
+
+    assert_vars(analysis.locals, locals)
+    assert_vars(analysis.globals, globals)
+    assert_vars(analysis.variables, variables)
+    assert_locations(analysis.filters, filters)
+    assert_locations(analysis.tags, tags)
+  end
+
+  def test_for_with_index_binding
+    source = [
+      "{% for x, i in (1..y) %}",
+      "  {{ x }}",
+      "  {{ i }}",
+      "{% break %}",
+      "{% else %}",
+      "  {{ z }}",
+      "{% continue %}",
+      "{% endfor %}"
+    ].join("\n")
+
+    analysis = Luoma.parse(source).analyze
+
+    locals = {}
+    globals = {
+      "y" => [[["y"], "y"]],
+      "z" => [[["z"], "z"]]
+    }
+    variables = {
+      "y" => [[["y"], "y"]],
+      "x" => [[["x"], "x"]],
+      "i" => [[["i"], "i"]],
+      "z" => [[["z"], "z"]]
+    }
+    filters = {}
+    tags = {
+      "for" => ["for"],
+      "break" => ["break"],
+      "continue" => ["continue"]
+    }
+
+    assert_vars(analysis.locals, locals)
+    assert_vars(analysis.globals, globals)
+    assert_vars(analysis.variables, variables)
+    assert_locations(analysis.filters, filters)
+    assert_locations(analysis.tags, tags)
+  end
+
+  def test_if
+    source = [
+      "{% if x or z %}",
+      "  {{ a }}",
+      "{% elsif y %}",
+      "  {{ b }}",
+      "{% else %}",
+      "  {{ c }}",
+      "{% endif %}"
+    ].join("\n")
+
+    analysis = Luoma.parse(source).analyze
+
+    locals = {}
+    globals = {
+      "x" => [[["x"], "x"]],
+      "z" => [[["z"], "z"]],
+      "a" => [[["a"], "a"]],
+      "y" => [[["y"], "y"]],
+      "b" => [[["b"], "b"]],
+      "c" => [[["c"], "c"]]
+    }
+    variables = globals
+    filters = {}
+    tags = {
+      "if" => ["if"],
+      "elsif" => ["elsif"],
+      "else" => ["else"]
+    }
+
+    assert_vars(analysis.locals, locals)
+    assert_vars(analysis.globals, globals)
+    assert_vars(analysis.variables, variables)
+    assert_locations(analysis.filters, filters)
+    assert_locations(analysis.tags, tags)
+  end
 end

@@ -102,7 +102,7 @@ module Luoma
 
     #: () -> Array[Name]
     def block_scope
-      [@identifier]
+      @params
     end
   end
 end
