@@ -2,6 +2,8 @@
 
 module Luoma
   class AssignTag < Markup
+    attr_reader :bindings
+
     #: (t_token, String, Parser) -> Markup
     def self.parse(token, tag_name, parser)
       bindings = [] #: Array[Item]
