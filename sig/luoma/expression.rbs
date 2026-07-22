@@ -25,6 +25,9 @@ module Luoma
     #  () -> Array[_Traversable]
     def children: () -> Array[_Traversable]
                 
+    #  () -> Array[Name]
+    def scope: () -> Array[Name]
+                
     def to_s: () -> String
   end
 

@@ -636,9 +636,9 @@ module Luoma
           # A lambda expression with a single parameter surrounded by parens.
           parse_partial_lambda(expr, precedence: precedence)
         else
-          eat(:token_rparen, message: "unbalanced brackets")
+          closing_token = eat(:token_rparen, message: "unbalanced brackets")
           segments = PATH_PUNCTUATION.include?(kind) ? parse_path_segments : [] #: Array[t_path_segment]
-          GroupExpression.new(token, expr, segments)
+          GroupExpression.new(token, expr, segments).with(closing_token)
         end
       end
     end

@@ -22,6 +22,11 @@ module Luoma
       raise "not implemented"
     end
 
+    #: () -> Array[Name]
+    def scope
+      []
+    end
+
     #: () -> String
     def to_s
       raise "not implemented"
@@ -611,6 +616,10 @@ module Luoma
 
     def children
       [@expr]
+    end
+
+    def scope
+      @params
     end
 
     #: () -> String

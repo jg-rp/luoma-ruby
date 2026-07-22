@@ -356,7 +356,9 @@ module Luoma
         globals.add(var) unless scope.include?(expression.root.to_s)
       end
 
-      # TODO: Handle lambda scoping
+      # For lambda expressions.
+      child_scope = expression.is_a?(Luoma::Expression) ? expression.scope : [] # steep:ignore
+      scope.push(child_scope.to_set(&:value))
 
       expression.children.each do |expr|
         analyze_variables(
@@ -368,6 +370,8 @@ module Luoma
           static_context
         )
       end
+
+      scope.pop
     end
 
     #: (Luoma::Variable, Luoma::Template) -> Array[untyped]

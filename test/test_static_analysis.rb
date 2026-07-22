@@ -435,4 +435,500 @@ class TestStaticAnalysis < Minitest::Test
     assert_locations(analysis.filters, filters)
     assert_locations(analysis.tags, tags)
   end
+
+  def test_include
+    loader = Luoma::HashLoader.new({ "a" => "{{ x }}" })
+    env = Luoma::Environment.new(loader: loader)
+    source = "{% include 'a' %}"
+    analysis = env.parse(source).analyze(include_partials: true)
+
+    locals = {}
+    globals = {
+      "x" => [[["x"], "x"]]
+    }
+    variables = globals
+    filters = {}
+    tags = {
+      "include" => ["include"]
+    }
+
+    assert_vars(analysis.locals, locals)
+    assert_vars(analysis.globals, globals)
+    assert_vars(analysis.variables, variables)
+    assert_locations(analysis.filters, filters)
+    assert_locations(analysis.tags, tags)
+  end
+
+  def test_include_assign
+    loader = Luoma::HashLoader.new({ "a" => "{{ x }}{% assign y = 42 %}" })
+    env = Luoma::Environment.new(loader: loader)
+    source = "{% include 'a' %}{{ y }}"
+    analysis = env.parse(source).analyze(include_partials: true)
+
+    locals = {
+      "y" => [[["y"], "y"]]
+    }
+    globals = {
+      "x" => [[["x"], "x"]]
+    }
+    variables = {
+      "x" => [[["x"], "x"]],
+      "y" => [[["y"], "y"]]
+    }
+    filters = {}
+    tags = {
+      "include" => ["include"],
+      "assign" => ["assign"]
+    }
+
+    assert_vars(analysis.locals, locals)
+    assert_vars(analysis.globals, globals)
+    assert_vars(analysis.variables, variables)
+    assert_locations(analysis.filters, filters)
+    assert_locations(analysis.tags, tags)
+  end
+
+  def test_include_twice
+    loader = Luoma::HashLoader.new({ "a" => "{{ x }}" })
+    env = Luoma::Environment.new(loader: loader)
+    source = "{% include 'a' %}{% include 'a' %}"
+    analysis = env.parse(source).analyze(include_partials: true)
+
+    locals = {}
+    globals = {
+      "x" => [[["x"], "x"]]
+    }
+    variables = globals
+    filters = {}
+    tags = {
+      "include" => %w[include include]
+    }
+
+    assert_vars(analysis.locals, locals)
+    assert_vars(analysis.globals, globals)
+    assert_vars(analysis.variables, variables)
+    assert_locations(analysis.filters, filters)
+    assert_locations(analysis.tags, tags)
+  end
+
+  def test_include_recursive
+    loader = Luoma::HashLoader.new({ "a" => "{{ x }}{% include 'a' %}" })
+    env = Luoma::Environment.new(loader: loader)
+    source = "{% include 'a' %}"
+    analysis = env.parse(source).analyze(include_partials: true)
+
+    locals = {}
+    globals = {
+      "x" => [[["x"], "x"]]
+    }
+    variables = globals
+    filters = {}
+    tags = {
+      "include" => %w[include include]
+    }
+
+    assert_vars(analysis.locals, locals)
+    assert_vars(analysis.globals, globals)
+    assert_vars(analysis.variables, variables)
+    assert_locations(analysis.filters, filters)
+    assert_locations(analysis.tags, tags)
+  end
+
+  def test_include_with_arguments
+    loader = Luoma::HashLoader.new({ "a" => "{{ x | append: y }}" })
+    env = Luoma::Environment.new(loader: loader)
+    source = "{% include 'a', x:y, z:42 %}{{ x }}"
+    analysis = env.parse(source).analyze(include_partials: true)
+
+    locals = {}
+    globals = {
+      "y" => [
+        [["y"], "y"],
+        [["y"], "y"]
+      ]
+
+    }
+    variables = {
+      "y" => [
+        [["y"], "y"],
+        [["y"], "y"]
+      ],
+      "x" => [
+        [["x"], "x"],
+        [["x"], "x"]
+      ]
+    }
+    filters = {
+      "append" => ["append: y"]
+    }
+    tags = {
+      "include" => %w[include]
+    }
+
+    assert_vars(analysis.locals, locals)
+    assert_vars(analysis.globals, globals)
+    assert_vars(analysis.variables, variables)
+    assert_locations(analysis.filters, filters)
+    assert_locations(analysis.tags, tags)
+  end
+
+  def test_include_with_dynamic_name
+    loader = Luoma::HashLoader.new({ "a" => "{{ x | append: y }}" })
+    env = Luoma::Environment.new(loader: loader)
+    source = "{% include b %}"
+
+    assert_raises Luoma::TemplateNotFoundError do
+      env.parse(source).analyze(include_partials: true)
+    end
+  end
+
+  def test_include_template_not_found
+    loader = Luoma::HashLoader.new({ "a" => "{{ x | append: y }}" })
+    env = Luoma::Environment.new(loader: loader)
+    source = "{% include 'nosuchthing' %}"
+
+    assert_raises Luoma::TemplateNotFoundError do
+      env.parse(source).analyze(include_partials: true)
+    end
+  end
+
+  def test_render_assign
+    loader = Luoma::HashLoader.new({ "a" => "{{ x }}{% assign y = 42 %}" })
+    env = Luoma::Environment.new(loader: loader)
+    source = "{% render 'a' %}{{ y }}"
+    analysis = env.parse(source).analyze(include_partials: true)
+
+    locals = {
+      "y" => [[["y"], "y"]]
+    }
+    globals = {
+      "x" => [[["x"], "x"]],
+      "y" => [[["y"], "y"]]
+    }
+    variables = globals
+    filters = {}
+    tags = {
+      "render" => %w[render],
+      "assign" => %w[assign]
+    }
+
+    assert_vars(analysis.locals, locals)
+    assert_vars(analysis.globals, globals)
+    assert_vars(analysis.variables, variables)
+    assert_locations(analysis.filters, filters)
+    assert_locations(analysis.tags, tags)
+  end
+
+  def test_render_twice
+    loader = Luoma::HashLoader.new({ "a" => "{{ x }}" })
+    env = Luoma::Environment.new(loader: loader)
+    source = "{% render 'a' %}{% render 'a' %}"
+    analysis = env.parse(source).analyze(include_partials: true)
+
+    locals = {}
+    globals = {
+      "x" => [[["x"], "x"]]
+    }
+    variables = globals
+    filters = {}
+    tags = {
+      "render" => %w[render render]
+    }
+
+    assert_vars(analysis.locals, locals)
+    assert_vars(analysis.globals, globals)
+    assert_vars(analysis.variables, variables)
+    assert_locations(analysis.filters, filters)
+    assert_locations(analysis.tags, tags)
+  end
+
+  def test_render_recursive
+    loader = Luoma::HashLoader.new({ "a" => "{{ x }}{% render 'a' %}" })
+    env = Luoma::Environment.new(loader: loader)
+    source = "{% render 'a' %}"
+    analysis = env.parse(source).analyze(include_partials: true)
+
+    locals = {}
+    globals = {
+      "x" => [[["x"], "x"]]
+    }
+    variables = globals
+    filters = {}
+    tags = {
+      "render" => %w[render render]
+    }
+
+    assert_vars(analysis.locals, locals)
+    assert_vars(analysis.globals, globals)
+    assert_vars(analysis.variables, variables)
+    assert_locations(analysis.filters, filters)
+    assert_locations(analysis.tags, tags)
+  end
+
+  def test_render_with_arguments
+    loader = Luoma::HashLoader.new({ "a" => "{{ x | append: y }}" })
+    env = Luoma::Environment.new(loader: loader)
+    source = "{% render 'a', x:y, z:42 %}{{ x }}"
+    analysis = env.parse(source).analyze(include_partials: true)
+
+    locals = {}
+    globals = {
+      "y" => [
+        [["y"], "y"],
+        [["y"], "y"]
+      ],
+      "x" => [
+        [["x"], "x"]
+      ]
+    }
+    variables = {
+      "y" => [
+        [["y"], "y"],
+        [["y"], "y"]
+      ],
+      "x" => [
+        [["x"], "x"],
+        [["x"], "x"]
+      ]
+    }
+    filters = {
+      "append" => ["append: y"]
+    }
+    tags = {
+      "render" => %w[render]
+    }
+
+    assert_vars(analysis.locals, locals)
+    assert_vars(analysis.globals, globals)
+    assert_vars(analysis.variables, variables)
+    assert_locations(analysis.filters, filters)
+    assert_locations(analysis.tags, tags)
+  end
+
+  def test_render_template_not_found
+    loader = Luoma::HashLoader.new({ "a" => "{{ x | append: y }}" })
+    env = Luoma::Environment.new(loader: loader)
+    source = "{% render 'nosuchthing' %}"
+
+    assert_raises Luoma::TemplateNotFoundError do
+      env.parse(source).analyze(include_partials: true)
+    end
+  end
+
+  def test_import
+    loader = Luoma::HashLoader.new({ "a" => "{{ x }}" })
+    env = Luoma::Environment.new(loader: loader)
+    source = "{% import 'a' %}"
+    analysis = env.parse(source).analyze(include_partials: true)
+
+    locals = {}
+    globals = {
+      "x" => [[["x"], "x"]]
+    }
+    variables = globals
+    filters = {}
+    tags = {
+      "import" => ["import"]
+    }
+
+    assert_vars(analysis.locals, locals)
+    assert_vars(analysis.globals, globals)
+    assert_vars(analysis.variables, variables)
+    assert_locations(analysis.filters, filters)
+    assert_locations(analysis.tags, tags)
+  end
+
+  def test_import_assign
+    loader = Luoma::HashLoader.new({ "a" => "{{ x }}{% assign y = 42 %}" })
+    env = Luoma::Environment.new(loader: loader)
+    source = "{% import 'a' %}{{ y }}"
+    analysis = env.parse(source).analyze(include_partials: true)
+
+    locals = {
+      "y" => [[["y"], "y"]]
+    }
+    globals = {
+      "x" => [[["x"], "x"]]
+    }
+    variables = {
+      "x" => [[["x"], "x"]],
+      "y" => [[["y"], "y"]]
+    }
+    filters = {}
+    tags = {
+      "import" => ["import"],
+      "assign" => ["assign"]
+    }
+
+    assert_vars(analysis.locals, locals)
+    assert_vars(analysis.globals, globals)
+    assert_vars(analysis.variables, variables)
+    assert_locations(analysis.filters, filters)
+    assert_locations(analysis.tags, tags)
+  end
+
+  def test_import_twice
+    loader = Luoma::HashLoader.new({ "a" => "{{ x }}" })
+    env = Luoma::Environment.new(loader: loader)
+    source = "{% import 'a' %}{% import 'a' %}"
+    analysis = env.parse(source).analyze(include_partials: true)
+
+    locals = {}
+    globals = {
+      "x" => [[["x"], "x"]]
+    }
+    variables = globals
+    filters = {}
+    tags = {
+      "import" => %w[import import]
+    }
+
+    assert_vars(analysis.locals, locals)
+    assert_vars(analysis.globals, globals)
+    assert_vars(analysis.variables, variables)
+    assert_locations(analysis.filters, filters)
+    assert_locations(analysis.tags, tags)
+  end
+
+  def test_import_recursive
+    loader = Luoma::HashLoader.new({ "a" => "{{ x }}{% import 'a' %}" })
+    env = Luoma::Environment.new(loader: loader)
+    source = "{% import 'a' %}"
+    analysis = env.parse(source).analyze(include_partials: true)
+
+    locals = {}
+    globals = {
+      "x" => [[["x"], "x"]]
+    }
+    variables = globals
+    filters = {}
+    tags = {
+      "import" => %w[import import]
+    }
+
+    assert_vars(analysis.locals, locals)
+    assert_vars(analysis.globals, globals)
+    assert_vars(analysis.variables, variables)
+    assert_locations(analysis.filters, filters)
+    assert_locations(analysis.tags, tags)
+  end
+
+  def test_import_with_arguments
+    loader = Luoma::HashLoader.new({ "a" => "{{ x | append: y }}" })
+    env = Luoma::Environment.new(loader: loader)
+    source = "{% import 'a', x:y, z:42 %}{{ x }}"
+    analysis = env.parse(source).analyze(include_partials: true)
+
+    locals = {}
+    globals = {
+      "y" => [
+        [["y"], "y"],
+        [["y"], "y"]
+      ]
+
+    }
+    variables = {
+      "y" => [
+        [["y"], "y"],
+        [["y"], "y"]
+      ],
+      "x" => [
+        [["x"], "x"],
+        [["x"], "x"]
+      ]
+    }
+    filters = {
+      "append" => ["append: y"]
+    }
+    tags = {
+      "import" => %w[import]
+    }
+
+    assert_vars(analysis.locals, locals)
+    assert_vars(analysis.globals, globals)
+    assert_vars(analysis.variables, variables)
+    assert_locations(analysis.filters, filters)
+    assert_locations(analysis.tags, tags)
+  end
+
+  def test_import_template_not_found
+    loader = Luoma::HashLoader.new({ "a" => "{{ x | append: y }}" })
+    env = Luoma::Environment.new(loader: loader)
+    source = "{% import 'nosuchthing' %}"
+
+    assert_raises Luoma::TemplateNotFoundError do
+      env.parse(source).analyze(include_partials: true)
+    end
+  end
+
+  def test_with
+    source = <<~LIQUID.chomp
+      {% with a: 1, b: 3.4 -%}
+      {{ a }} + {{ b }} = {{ a | plus: b }}
+      {%- endwith -%}
+      {{ a }}
+    LIQUID
+
+    analysis = Luoma.parse(source).analyze(include_partials: true)
+
+    locals = {}
+    globals = {
+      "a" => [[["a"], "a"]]
+    }
+    variables = {
+      "a" => [
+        [["a"], "a"],
+        [["a"], "a"],
+        [["a"], "a"]
+      ],
+      "b" => [
+        [["b"], "b"],
+        [["b"], "b"]
+      ]
+    }
+    filters = {
+      "plus" => ["plus: b"]
+    }
+    tags = {
+      "with" => %w[with]
+    }
+
+    assert_vars(analysis.locals, locals)
+    assert_vars(analysis.globals, globals)
+    assert_vars(analysis.variables, variables)
+    assert_locations(analysis.filters, filters)
+    assert_locations(analysis.tags, tags)
+  end
+
+  def test_lambda
+    source = "{% assign y = 42 %}{% assign x = a | where: (i, j) => (i.foo.bar == j) %}"
+    analysis = Luoma.parse(source).analyze(include_partials: true)
+
+    locals = {
+      "y" => [[["y"], "y"]],
+      "x" => [[["x"], "x"]]
+    }
+    globals = {
+      "a" => [[["a"], "a"]]
+    }
+    variables = {
+      "a" => [[["a"], "a"]],
+      "i" => [[%w[i foo bar], "i.foo.bar"]],
+      "j" => [[["j"], "j"]]
+    }
+    filters = {
+      "where" => ["where: (i, j) => (i.foo.bar == j)"]
+    }
+    tags = {
+      "assign" => %w[assign assign]
+    }
+
+    assert_vars(analysis.locals, locals)
+    assert_vars(analysis.globals, globals)
+    assert_vars(analysis.variables, variables)
+    assert_locations(analysis.filters, filters)
+    assert_locations(analysis.tags, tags)
+  end
+
+  # TODO: define
 end

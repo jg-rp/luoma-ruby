@@ -62,7 +62,7 @@ module Luoma
     # Statically analyze this template and report variable, tag and filter usage.
     #
     #: (?include_partials: bool) -> Luoma::StaticAnalysis::Result
-    def analyze(include_partials: false)
+    def analyze(include_partials: true)
       Luoma::StaticAnalysis.analyze(self, include_partials: include_partials)
     end
 
