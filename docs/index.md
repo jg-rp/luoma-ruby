@@ -1,173 +1,61 @@
----
-icon: lucide/rocket
----
-
 # Get started
 
-For full documentation visit [zensical.org](https://zensical.org/docs/).
+Luoma is a modern template engine with a well-defined, composable, implementation agnostic expression language.
 
-## Commands
+Luoma markup will be familiar to anyone who's used [Liquid](https://github.com/Shopify/liquid), [Jinja](https://jinja.palletsprojects.com/en/stable/) or [Django's template language](https://docs.djangoproject.com/en/6.0/topics/templates/#the-django-template-language), but with a strictly immutable data model, first-class blocks and expressions, and functional primitives for when data transformation is necessary.
 
-* [`zensical new`][new] - Create a new project
-* [`zensical serve`][serve] - Start local web server
-* [`zensical build`][build] - Build your site
+If you're a template author, start with [Luoma for template authors](./luoma_for_template_authors.md). The rest of this documentation covers how to install, configure and extend Luoma if you're an application developer.
 
-  [new]: https://zensical.org/docs/usage/new/
-  [serve]: https://zensical.org/docs/usage/preview/
-  [build]: https://zensical.org/docs/usage/build/
+## Install
 
-## Examples
+Add `'luoma'` to your Gemfile:
 
-### Admonitions
-
-> Go to [documentation](https://zensical.org/docs/authoring/admonitions/)
-
-!!! note
-
-    This is a **note** admonition. Use it to provide helpful information.
-
-!!! warning
-
-    This is a **warning** admonition. Be careful!
-
-### Details
-
-> Go to [documentation](https://zensical.org/docs/authoring/admonitions/#collapsible-blocks)
-
-??? info "Click to expand for more info"
-
-    This content is hidden until you click to expand it.
-    Great for FAQs or long explanations.
-
-## Code Blocks
-
-> Go to [documentation](https://zensical.org/docs/authoring/code-blocks/)
-
-``` python hl_lines="2" title="Code blocks"
-def greet(name):
-    print(f"Hello, {name}!") # (1)!
-
-greet("Python")
+```ruby
+gem 'luoma', '~> 0.1.0'
 ```
 
-1.  > Go to [documentation](https://zensical.org/docs/authoring/code-blocks/#code-annotations)
+Or:
 
-    Code annotations allow to attach notes to lines of code.
-
-Code can also be highlighted inline: `#!python print("Hello, Python!")`.
-
-## Content tabs
-
-> Go to [documentation](https://zensical.org/docs/authoring/content-tabs/)
-
-=== "Python"
-
-    ``` python
-    print("Hello from Python!")
-    ```
-
-=== "Rust"
-
-    ``` rs
-    println!("Hello from Rust!");
-    ```
-
-## Diagrams
-
-> Go to [documentation](https://zensical.org/docs/authoring/diagrams/)
-
-``` mermaid
-graph LR
-  A[Start] --> B{Error?};
-  B -->|Yes| C[Hmm...];
-  C --> D[Debug];
-  D --> B;
-  B ---->|No| E[Yay!];
+```sh
+gem install luoma
 ```
 
-## Footnotes
+Or:
 
-> Go to [documentation](https://zensical.org/docs/authoring/footnotes/)
+```sh
+bundle add luoma
+```
 
-Here's a sentence with a footnote.[^1]
+## Quick start
 
-Hover it, to see a tooltip.
+### Render
 
-[^1]: This is the footnote.
+Render a template by passing a string to `Luoma.render(source, data = nil)`. If _data_ is given it should be a hash mapping strings to objects. Hash values will be available as template variables bound to their associated keys.
 
+```ruby
+require "luoma"
 
-## Formatting
+puts luoma.render("Hello, {{ you }}!", "you" => "World")  # Hello, World!
+```
 
-> Go to [documentation](https://zensical.org/docs/authoring/formatting/)
+`Luoma.render` is a convenience method equivalent to `Luoma::DEFAULT_ENVIRONMENT.parse(source).render(data)`.
 
-- ==This was marked (highlight)==
-- ^^This was inserted (underline)^^
-- ~~This was deleted (strikethrough)~~
-- H~2~O
-- A^T^A
-- ++ctrl+alt+del++
+### Parse
 
-## Icons, Emojis
+Often you'll want to render the same template multiple times with different variables. We can parse source text without immediately rendering it using `Luoma.parse(source, globals: nil)`. `Luoma.parse` returns an instance of `Luoma::Template` with a `render(data)`method.
 
-> Go to [documentation](https://zensical.org/docs/authoring/icons-emojis/)
+```ruby
+require "luoma"
 
-* :sparkles: `:sparkles:`
-* :rocket: `:rocket:`
-* :tada: `:tada:`
-* :memo: `:memo:`
-* :eyes: `:eyes:`
+template = Luoma.parse("Hello, {{ you }}!")
+puts template.render("you" => "World") # Hello, World!
+puts template.render("you" => "Liquid") # Hello, Liquid!
+```
 
-## Maths
+If _globals_ is given, data from _globals_ is pined to the resulting template and merged into data from `Luoma::Template#render` every time the template is rendered, with `render` arguments taking priority over pinned data.
 
-> Go to [documentation](https://zensical.org/docs/authoring/math/)
+`Luoma.parse` is a convenience method equivalent to `Luoma::DEFAULT_ENVIRONMENT.parse(source)` or `Luoma::Environment.new.parse(source)`.
 
-$$
-\cos x=\sum_{k=0}^{\infty}\frac{(-1)^k}{(2k)!}x^{2k}
-$$
+### Configure
 
-!!! warning "Needs configuration"
-    Note that MathJax is included via a `script` tag on this page and is not
-    configured in the generated default configuration to avoid including it
-    in a pages that do not need it. See the documentation for details on how
-    to configure it on all your pages if they are more Maths-heavy than these
-    simple starter pages.
-
-<script id="MathJax-script" src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
-<script>
-  window.MathJax = {
-    tex: {
-      inlineMath: [["\\(", "\\)"]],
-      displayMath: [["\\[", "\\]"]],
-      processEscapes: true,
-      processEnvironments: true
-    },
-    options: {
-      ignoreHtmlClass: ".*|",
-      processHtmlClass: "arithmatex"
-    }
-  };
-
-  document$.subscribe(() => {
-    MathJax.startup.output.clearCache()
-    MathJax.typesetClear()
-    MathJax.texReset()
-    MathJax.typesetPromise()
-  })
-</script>
-
-## Task Lists
-
-> Go to [documentation](https://zensical.org/docs/authoring/lists/#using-task-lists)
-
-* [x] Install Zensical
-* [x] Configure `zensical.toml`
-* [x] Write amazing documentation
-* [ ] Deploy anywhere
-
-## Tooltips
-
-> Go to [documentation](https://zensical.org/docs/authoring/tooltips/)
-
-[Hover me][example]
-
-  [example]: https://example.com "I'm a tooltip!"
+TODO:
