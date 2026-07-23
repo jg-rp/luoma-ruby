@@ -983,7 +983,7 @@ module Luoma
     def to_s
       return @name.to_s if @args.empty? && @kwargs.empty?
 
-      args = @args.join(",")
+      args = @args.join(", ")
       args << ", " << @kwargs.join(",") unless @kwargs.empty?
       "#{@name}: #{args}"
     end
