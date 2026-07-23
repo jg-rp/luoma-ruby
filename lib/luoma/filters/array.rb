@@ -193,6 +193,17 @@ module Luoma
       end
     end
 
+    def self.flat_map(context, left, key)
+      left = context.to_enumerable(left)
+
+      if key.is_a?(ExpressionDrop)
+        key.expr.broadcast_with_index(left).flatten!(1)
+      else
+        key = context.to_string(key)
+        left.flat_map { |item| context.fetch(item, key) }
+      end
+    end
+
     # Return _left_ with all items in reverse order.
     # Coerce _left_ to an array if it isn't an array already.
     def self.reverse(context, left)

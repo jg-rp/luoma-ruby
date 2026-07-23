@@ -79,6 +79,8 @@ module Luoma
         :token_if,
         :token_else,
         :token_rparen,
+        :token_rbracket,
+        :token_rbrace,
         :token_pipe,
         :token_eoi,
         :token_interpolation_end,

@@ -41,6 +41,8 @@ module Luoma
     def self.last: (FilterContext context, untyped left) -> untyped
 
     def self.map: (FilterContext context, untyped left, untyped key) -> untyped
+                
+    def self.flat_map: (FilterContext context, untyped left, untyped key) -> untyped
 
     # Return _left_ with all items in reverse order.
     # Coerce _left_ to an array if it isn't an array already.
