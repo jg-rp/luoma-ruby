@@ -4,7 +4,7 @@ Luoma is a modern template engine with a well-defined, composable, implementatio
 
 Luoma markup will be familiar to anyone who's used [Liquid](https://github.com/Shopify/liquid), [Jinja](https://jinja.palletsprojects.com/en/stable/) or [Django's template language](https://docs.djangoproject.com/en/6.0/topics/templates/#the-django-template-language), but with a strictly immutable data model, first-class blocks and expressions, and functional primitives for when data transformation is necessary.
 
-If you're a template author, start with [Luoma for template authors](./luoma_for_template_authors.md). The rest of this documentation covers how to install, configure and extend Luoma if you're an application developer.
+If you're a template author, start with [Luoma for template authors](./luoma_for_template_authors.md). The rest of this documentation covers how to install, configure, use and extend Luoma if you're an application developer.
 
 ## Install
 
@@ -58,4 +58,16 @@ If _globals_ is given, data from _globals_ is pined to the resulting template an
 
 ### Configure
 
-TODO:
+Both `Luoma.parse` and `Luoma.render` are convenience functions that use the default Luoma environment. For all but the simplest of cases you'll want to configure your own instance of `Luoma::Environment`, then load and render templates from that.
+
+```ruby
+require "luoma"
+
+env = Luoma::Environment.new(
+  loader: Luoma::CachingFileSystemLoader.new("templates/")
+)
+
+template = env.get_template("index.liquid")
+another_template = env.parse("{% render 'index.liquid' %}")
+# ...
+```

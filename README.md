@@ -70,6 +70,9 @@ puts template.render("you" => "Liquid")  # Hello, Liquid!
 - `{% define %}` tag static analysis. We need to analyze the block when it is rendered, keyed on the current static scope state.
 - Store and report the "call site" of defined blocks and partial templates.
 - docs
+- test auto escape
+- Update string filters to handle safe strings
+- test resource limits
 
 ## Notes
 
