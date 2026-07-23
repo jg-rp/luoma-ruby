@@ -72,7 +72,6 @@ puts template.render("you" => "Liquid")  # Hello, Liquid!
 - docs
 - test auto escape
 - Update string filters to handle safe strings
-- test resource limits
 
 ## Notes
 

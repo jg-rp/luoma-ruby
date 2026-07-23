@@ -97,12 +97,6 @@ module Luoma
 
     #  (t_namespace, ?template: Template?) { () -> untyped } -> void
     def extends: (t_namespace namespace, ?template: Template?) { () -> untyped } -> void
-
-    #  (String) -> Integer
-    def decrement: (String name) -> Integer
-
-    #  (String) -> Integer
-    def increment: (String name) -> Integer
                  
     private
 

@@ -70,9 +70,7 @@ module Luoma
 
       # Registers supporting stateful tags. It's OK to use this map for storing
       # custom tag state.
-      @registers = {
-        cycles: Hash.new(0)
-      }
+      @registers = {}
     end
 
     #: (String) -> untyped
@@ -137,12 +135,14 @@ module Luoma
     # context is no longer needed.
     #: (t_namespace, bool?, Set[String]?, Template?) -> RenderContext
     def copy(namespace, block_scope: nil, disabled_tags: nil, template: nil)
+      raise_for_context_depth
+
       ctx = RenderContext.new(
         template || @template,
         globals: block_scope ? ChainHash.new(namespace, @scopes) : ChainHash.new(namespace, @globals),
         context_depth: @context_depth + 1,
         assign_score_carry: @assign_score_cumulative,
-        render_score_carry: @assign_score_cumulative
+        render_score_carry: @render_score_cumulative
       )
 
       @env.persistent_registers.each { |r| ctx.registers[r] = @registers[r] if @registers.include?(r) }
@@ -175,20 +175,6 @@ module Luoma
         @assign_score = assign_score_
         @render_score = render_score_
       end
-    end
-
-    #: (String) -> Integer
-    def decrement(name)
-      value = (@counters[name] || 0) - 1
-      @counters[name] = value
-      value
-    end
-
-    #: (String) -> Integer
-    def increment(name)
-      value = @counters[name] || 0
-      @counters[name] = value + 1
-      value
     end
 
     private
