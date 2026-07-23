@@ -13,4 +13,4 @@ exclude:
   - Steepfile
   - test/
   - tmp/
-  - patch_rdoc_html.rb
+  - docs/

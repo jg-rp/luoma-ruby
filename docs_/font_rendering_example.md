@@ -149,8 +149,8 @@ New:
   ],
 
   fonts = font_types
-    | flat_map: f -> [f, (f | bold), (f | italic), (f | bold_italic)],
-    | uniq:     f -> (f | font_id)
+    | flat_map: f -> [f, (f | bold), (f | italic), (f | bold_italic)]
+    | uniq:     font_id
     | map:      f -> (f | font_face: font_display: 'swap')
 %}
   {{ fonts | join: "\n" }}
