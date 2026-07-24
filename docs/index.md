@@ -49,7 +49,7 @@ require "luoma"
 
 template = Luoma.parse("Hello, {{ you }}!")
 puts template.render("you" => "World") # Hello, World!
-puts template.render("you" => "Liquid") # Hello, Liquid!
+puts template.render("you" => "Luoma") # Hello, Luoma!
 ```
 
 If _globals_ is given, data from _globals_ is pined to the resulting template and merged into data from `Luoma::Template#render` every time the template is rendered, with `render` arguments taking priority over pinned data.
@@ -67,7 +67,7 @@ env = Luoma::Environment.new(
   loader: Luoma::CachingFileSystemLoader.new("templates/")
 )
 
-template = env.get_template("index.liquid")
-another_template = env.parse("{% render 'index.liquid' %}")
+template = env.get_template("index.luoma")
+another_template = env.parse("{% render 'index.luoma' %}")
 # ...
 ```

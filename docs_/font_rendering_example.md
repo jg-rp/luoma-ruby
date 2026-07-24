@@ -137,7 +137,7 @@ New:
 ```
 
 ```
-{% import "font_utils" %}
+{%- import "font_utils" -%}
 
 {% with
   font_types = [
@@ -147,11 +147,11 @@ New:
     settings.type_accent_font
   ],
 
-  fonts = font_types
+  font_faces = font_types
     | flat_map : f -> [f, (f | bold), (f | italic), (f | bold_italic)]
     | uniq     : f -> '${f.family}-${f.weight}-${f.style}'
     | map      : f -> (f | font_face: font_display: 'swap')
 %}
-  {{ fonts | join: "\n" }}
+  {{- font_faces | join: "\n\n" -}}
 {% endwith %}
 ```
