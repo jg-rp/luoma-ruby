@@ -8,6 +8,7 @@ AllCops:
   NewCops: enable
   Exclude:
     - "test/golden_liquid/*"
+    - "dev.rb"
 
 Style/StringLiterals:
   EnforcedStyle: double_quotes

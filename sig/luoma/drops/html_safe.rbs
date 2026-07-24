@@ -1,12 +1,12 @@
 module Luoma
-  class HTMLSafeDrop < Drop
+  class HTMLSafe < Drop
     @s: String
 
-    #  (String | HTMLSafeDrop) -> HTMLSafeDrop
-    def self.escape: (String | HTMLSafeDrop value) -> HTMLSafeDrop
+    #  (String | HTMLSafe) -> HTMLSafe
+    def self.escape: (String | HTMLSafe value) -> HTMLSafe
 
-    #  (String | HTMLSafeDrop) -> HTMLSafeDrop
-    def self.from: (String | HTMLSafeDrop value) -> HTMLSafeDrop
+    #  (String | HTMLSafe) -> HTMLSafe
+    def self.from: (String | HTMLSafe value) -> HTMLSafe
 
     #  (String) -> void
     def initialize: (String s) -> void

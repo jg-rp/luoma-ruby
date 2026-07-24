@@ -6,7 +6,7 @@ module Luoma
   class Environment
     attr_reader :persistent_registers
 
-    attr_accessor :auto_escape, :auto_trim, :globals, :lexer, :loader, :parser, :strict_filters,
+    attr_accessor :auto_trim, :globals, :lexer, :loader, :parser, :strict_filters,
                   :suppress_blank_control_flow_blocks, :undefined, :filters, :tags, :max_assign_score_cumulative,
                   :max_assign_score, :max_context_depth, :max_render_score_cumulative, :max_render_score,
                   :max_render_size, :predicates
@@ -15,7 +15,6 @@ module Luoma
     RE_DECIMAL = /((?:-?\d+\.\d+(?:[eE][+-]?\d+)?)|(-?\d+[eE]-\d+))/
 
     def initialize(
-      auto_escape: nil,
       auto_trim: nil,
       globals: nil,
       lexer: UnifiedLexer,
@@ -31,7 +30,6 @@ module Luoma
       suppress_blank_control_flow_blocks: true,
       undefined: UndefinedDrop
     )
-      @auto_escape = auto_escape
       @auto_trim = auto_trim
       @globals = globals
       @lexer = lexer
@@ -292,8 +290,7 @@ module Luoma
         return s if s
       end
 
-      s = to_string(obj, context)
-      @auto_escape ? Luoma.escape(s) : s
+      to_string(obj, context)
     end
 
     #: (untyped, RenderContext) -> Array[untyped]
@@ -431,7 +428,7 @@ module Luoma
         value.sub!(/\A[\r\n]+/, "")
       end
 
-      case right
+      case right || @auto_trim
       when "-"
         value.rstrip!
       when "~"

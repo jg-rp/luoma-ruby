@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
 module Luoma
-  class HTMLSafeDrop < Drop
-    #: (String | HTMLSafeDrop) -> HTMLSafeDrop
+  class HTMLSafe < Drop
+    #: (String | HTMLSafe) -> HTMLSafe
     def self.escape(value)
-      value.is_a?(String) ? HTMLSafeDrop.new(Luoma.escape(value)) : value
+      value.is_a?(String) ? HTMLSafe.new(Luoma.escape(value)) : value
     end
 
-    #: (String | HTMLSafeDrop) -> HTMLSafeDrop
+    #: (String | HTMLSafe) -> HTMLSafe
     def self.from(value)
-      value.is_a?(String) ? HTMLSafeDrop.new(value) : value
+      value.is_a?(String) ? HTMLSafe.new(value) : value
     end
 
     #: (String) -> void

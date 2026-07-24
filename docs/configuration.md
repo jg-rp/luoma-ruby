@@ -10,7 +10,6 @@ The default Luoma environment and new instances of `Luoma::Environment` construc
 
 ```ruby
 env = Luoma::Environment.new(
-  auto_escape: nil,
   auto_trim: nil,
   globals: nil,
   lexer: Luoma::UnifiedLexer,
@@ -65,12 +64,57 @@ env = MyLuomaEnv.new
 
 ## Global variables
 
-TODO:
+Global template variables are those added by application developers, as opposed to local variables created by template authors with tags such as `{% assign %}` and `{% capture %}`. Globals can come from the following places, in order of highest to lowest priority.
 
-## HTML auto escape
+1. The _data_ argument to `Luoma.render`, `Luoma::Environment#render` or `Luoma::Template#render`.
+2. "overlay" or "matter" data provided by a template loader and bound to a `Luoma::Template` instance. This could be front matter parsed from the beginning of a template source file, or data from a database, for example.
+3. The `globals` argument to `Luoma.parse` or `Luoma::Environment#parse`. These variables are pinned to the resulting template.
+4. The `globals` argument when constructing a new `Luoma::Environment`. These variables are pinned to the environment and will be merged into other global data for every template rendered from the environment.
 
-TODO:
+You can change the global variable source priority by extending and overriding `Luoma::Environment#makeGlobals` and/or `Luoma::Template#makeGlobals`.
 
 ## Resource limits
+
+For deployments where template authors are untrusted, you can set limits on some resources to avoid malicious templates from consuming too much memory or too many CPU cycles. If any limit is exceeded, a `Luoma::ResourceLimitError` is raised.
+
+!!! note
+
+    The following "scores" are non-specific measures of usage modelled on Shopify/liquid resource limits.
+
+    These numbers are for illustration purposes. You'll need to do a bit of trial and error to find the limits that work best for you.
+
+```ruby
+require "luoma"
+
+env = Luoma::Environment.new(
+  # Maximum of 2000 "bytes" assigned with the assign/capture tags per template
+  # or partial template.
+  max_assign_score: 2000,
+
+  # Maximum of 10,000 "bytes" assigned with the assign/capture tags for the
+  # root template and all partial templates combined.
+  max_assign_score_cumulative: 10000,
+
+  # Maximum nesting of 30 `for` loops and/or `render` tags, for example.
+  max_context_depth: 30,
+
+  # Maximum of 1000 nodes (text and markup in the template syntax tree) rendered
+  # per template.
+  max_render_score: 1000,
+
+  # Maximum of 5000 nodes (text and markup in the template syntax tree) rendered
+  # for the root template and any rendered partial templates combined.
+  max_render_score_cumulative: 5000,
+
+  # Maximum of 15,000 bytes written to the output buffer.
+  max_render_size: 15000,
+)
+```
+
+## Auto trim
+
+TODO:
+
+## Strict filters
 
 TODO:

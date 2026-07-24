@@ -12,7 +12,7 @@ module Luoma
       when Array, Hash
         obj.empty?
       else
-        obj.respond_to?(:length) ? obj.length.zero? : false
+        obj.respond_to?(:length) ? obj.length.zero? : false # rubocop:disable Style/ZeroLengthPredicate
       end
     end
   end

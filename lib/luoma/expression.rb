@@ -176,7 +176,7 @@ module Luoma
     def evaluate_lambda(expr, context)
       if context.env.strict_filters && !@filter.kwargs.empty?
         raise FilterArgumentError.new(
-          "#{@filter.name.evaluate(context).inspect} accepts #{expr.params.length} positional arguments, found a keyword argument.",
+          "unexpected keyword arguments",
           @span,
           context.template.source,
           context.template.name
@@ -640,11 +640,9 @@ module Luoma
 
     #: (RenderContext) -> untyped
     def evaluate(context)
-      result = @segments.map do |s|
+      @segments.map do |s|
         s.is_a?(String) ? s : context.env.to_string(s.evaluate(context), context)
       end.join
-
-      context.env.auto_escape ? HTMLSafeDrop.from(result) : result
     end
 
     def children
