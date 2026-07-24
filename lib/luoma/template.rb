@@ -57,6 +57,12 @@ module Luoma
       @lines ||= @source.lines(chomp: false)
     end
 
+    # Return `false` if this template is stale and needs to be loaded again.
+    # `nil` is returned if an `up_to_date` proc is not available.
+    def up_to_date?
+      @up_to_date&.call
+    end
+
     # TODO: static analysis methods
 
     # Statically analyze this template and report variable, tag and filter usage.

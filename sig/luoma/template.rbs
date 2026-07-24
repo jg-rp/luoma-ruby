@@ -51,6 +51,8 @@ module Luoma
     def with_globals: (t_namespace namespace) -> Template
                     
     def lines: () -> Array[String]
+             
+    def up_to_date?: () -> bool
 
     #  (t_namespace?) -> t_namespace?
     def make_globals: (t_namespace? namespace) -> t_namespace?

@@ -22,7 +22,7 @@ module Luoma
       path = resolve_path(name)
       mtime = path.mtime
       up_to_date = -> { path.mtime == mtime }
-      TemplateSource.new(source: path.read, name: path.to_s, up_to_date: up_to_date)
+      TemplateSource.new(source: path.read, name: path.basename.to_s, up_to_date: up_to_date)
     end
 
     def resolve_path(template_name)
