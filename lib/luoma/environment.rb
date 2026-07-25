@@ -428,7 +428,7 @@ module Luoma
         value.sub!(/\A[\r\n]+/, "")
       end
 
-      case right || @auto_trim
+      case right
       when "-"
         value.rstrip!
       when "~"

@@ -35,12 +35,7 @@ module Luoma
 
     #: () -> void
     def carry_whitespace_control
-      if kind == :token_wc
-        @whitespace_control_carry = "-"
-        @pos += 1
-      else
-        @whitespace_control_carry = nil
-      end
+      @whitespace_control_carry = (Luoma.get_token_value(self.next, @source) if kind == :token_wc)
     end
 
     #: () -> t_token

@@ -422,10 +422,17 @@ module Luoma
       skip_whitespace_control
       expr = parse_expression
       carry_whitespace_control
-      eat(
-        :token_out_end,
-        message: "bad expression or missing markup delimiter"
-      )
+
+      unless kind == :token_out_end
+        raise TemplateSyntaxError.new(
+          "bad expression or missing markup delimiter",
+          expr.span,
+          @source,
+          @template_name
+        )
+      end
+
+      eat(:token_out_end)
       OutputStatement.new(token, expr)
     end
 
