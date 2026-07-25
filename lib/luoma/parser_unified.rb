@@ -438,6 +438,7 @@ module Luoma
 
     #: () -> Markup
     def parse_comment
+      skip_whitespace_control
       token = eat(:token_comment)
       carry_whitespace_control
       eat(:token_comment_end)
