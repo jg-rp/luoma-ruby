@@ -166,6 +166,14 @@ class TestFilters < Minitest::Spec
     end
   end
 
+  describe "json filter" do
+    load_test_cases("test/json_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
   describe "last filter" do
     load_test_cases("test/last_filter.json").each do |test_case|
       it test_case["name"] do

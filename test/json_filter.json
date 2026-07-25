@@ -1,0 +1,22 @@
+{
+  "tests": [
+    {
+      "name": "string",
+      "template": "{{ 'hello' | json }}",
+      "result": "\"hello\""
+    },
+    {
+      "name": "int",
+      "template": "{{ 42 | json }}",
+      "result": "42"
+    },
+    {
+      "name": "object",
+      "template": "{{ obj | json }}",
+      "data": {
+        "obj": { "bar": [1, 2, 3] }
+      },
+      "result": "{\"bar\":[1,2,3]}"
+    }
+  ]
+}

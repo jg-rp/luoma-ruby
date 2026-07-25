@@ -173,6 +173,7 @@ module Luoma
       register_filter("flat_map", Luoma::Filters.method(:flat_map))
       register_filter("floor", Luoma::Filters.method(:floor))
       register_filter("join", Luoma::Filters.method(:join))
+      register_filter("json", Luoma::Filters.method(:json))
       register_filter("last", Luoma::Filters.method(:last))
       register_filter("lstrip", Luoma::Filters.method(:lstrip))
       register_filter("map", Luoma::Filters.method(:map))
@@ -285,12 +286,23 @@ module Luoma
 
     #: (untyped, RenderContext) -> String
     def serialize(obj, context)
-      if obj.is_a?(Drop)
+      case obj
+      when Drop
         s = obj.render(context)
-        return s if s
+        s.nil? ? to_string(obj, context) : s
+      when Array
+        if obj.all?(String)
+          to_string(obj, context)
+        elsif obj.all? { |i| i.is_a?(String) || i.is_a?(BlockDrop) }
+          obj.map { |i| i.is_a?(String) ? i : i.render(context) }.join
+        elsif obj.all?(BlockDrop)
+          obj.map { |i| i.render(context) }.join("\n")
+        else # rubocop: disable Lint/DuplicateBranch
+          to_string(obj, context)
+        end
+      else
+        to_string(obj, context)
       end
-
-      to_string(obj, context)
     end
 
     #: (untyped, RenderContext) -> Array[untyped]
