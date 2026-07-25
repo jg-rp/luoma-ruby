@@ -1,0 +1,74 @@
+{
+  "tests": [
+    {
+      "name": "condition with literal consequence",
+      "template": "{% if product.title == 'foo' %}bar{% endif %}",
+      "data": {
+        "product": {
+          "title": "foo"
+        }
+      },
+      "result": "bar"
+    },
+    {
+      "name": "condition with literal consequence and literal alternative",
+      "template": "{% if product.title == 'hello' %}bar{% else %}baz{% endif %}",
+      "data": {
+        "product": {
+          "title": "foo"
+        }
+      },
+      "result": "baz"
+    },
+    {
+      "name": "condition with conditional alternative",
+      "template": "{% if product.title == 'hello' %}foo{% elsif product.title == 'foo' %}bar{% endif %}",
+      "data": {
+        "product": {
+          "title": "foo"
+        }
+      },
+      "result": "bar"
+    },
+    {
+      "name": "condition with conditional alternative and final alternative",
+      "template": "{% if product.title == 'hello' %}foo{% elsif product.title == 'goodbye' %}bar{% else %}baz{% endif %}",
+      "data": {
+        "product": {
+          "title": "foo"
+        }
+      },
+      "result": "baz"
+    },
+    {
+      "name": "blocks that contain only whitespace are not rendered",
+      "template": "{% if true %}  {% elsif false %} {% else %} {% endif %}",
+      "result": ""
+    },
+    {
+      "name": "conditional alternative with default",
+      "template": "{% if false %}foo{% elsif false %}bar{% else %}hello{% endif %}",
+      "result": "hello"
+    },
+    {
+      "name": "else tag expressions",
+      "template": "{% if false %}1{% else nonsense %}2{% endif %}",
+      "invalid": true
+    },
+    {
+      "name": "extra else blocks",
+      "template": "{% if false %}1{% else %}2{% else %}3{% endif %}",
+      "invalid": true
+    },
+    {
+      "name": "extra elsif blocks",
+      "template": "{% if false %}1{% else %}2{% elsif true %}3{% endif %}",
+      "invalid": true
+    },
+    {
+      "name": "elif works too",
+      "template": "{% if false %}1{% elif true %}2{% endif %}",
+      "result": "2"
+    }
+  ]
+}

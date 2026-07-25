@@ -18,7 +18,7 @@ module Luoma
       blocks << WhenBlock.parse("when", parser) while parser.tag?("when")
 
       if parser.tag?("else")
-        else_token = parser.eat_tag("else")
+        else_token = parser.eat_empty_tag("else")
         blocks << ElseBlock.new(
           else_token,
           "else",

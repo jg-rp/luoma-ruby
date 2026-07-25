@@ -2,8 +2,8 @@
 
 module Luoma
   class IfTag < Markup
-    END_IF_BLOCK = Set["else", "elsif", "endif"]
-    IF_BLOCKS = Set["else", "elsif"]
+    END_IF_BLOCK = Set["else", "elif", "elsif", "endif"]
+    ELSE_IF_TAGS = Set["elif", "elsif"]
 
     #: (t_token, String, Parser) -> Markup
     def self.parse(token, tag_name, parser)
@@ -17,21 +17,19 @@ module Luoma
       blocks << IfBlock.new(token, "if", expression, block)
 
       loop do
-        case parser.tags(IF_BLOCKS)
-        when "elsif"
-          blocks << IfBlock.parse("elsif", parser)
-        when "else"
-          # Any remaining `else` or `elsif` blocks are guaranteed to be
-          # ignored, but we keep them in the AST anyway.
-          name_token = parser.eat_tag("else")
-          blocks << ElseBlock.new(
-            name_token,
-            "else",
-            parser.parse_block(stop: END_IF_BLOCK)
-          )
-        else
-          break
-        end
+        inner_tag_name = parser.tags(ELSE_IF_TAGS)
+        break unless inner_tag_name
+
+        blocks << IfBlock.parse(inner_tag_name, parser)
+      end
+
+      if parser.tag?("else")
+        name_token = parser.eat_empty_tag("else")
+        blocks << ElseBlock.new(
+          name_token,
+          "else",
+          parser.parse_block(stop: END_IF_BLOCK)
+        )
       end
 
       parser.eat_empty_tag("endif")
@@ -67,7 +65,7 @@ module Luoma
   class IfBlock < Markup
     attr_reader :expression, :block
 
-    END_IF_BLOCK = Set["else", "elsif", "endif", "endunless"]
+    END_IF_BLOCK = Set["else", "elsif", "elif", "endif", "endunless"]
 
     #: (Parser) -> Markup
     def self.parse(tag_name, parser)

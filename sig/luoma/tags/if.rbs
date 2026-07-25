@@ -4,7 +4,7 @@ module Luoma
 
     END_IF_BLOCK: Set[String]
 
-    IF_BLOCKS: Set[String]
+    ELSE_IF_TAGS: Set[String]
 
     #  (t_token, String, Parser) -> Markup
     def self.parse: (t_token token, String tag_name, Parser parser) -> Markup

@@ -28,7 +28,10 @@ module Luoma
       end
 
       parser.carry_whitespace_control
-      parser.eat(:token_tag_end)
+      parser.eat(
+        :token_tag_end,
+        message: "bad expression or missing markup delimiter"
+      )
       new(token, tag_name, bindings)
     end
 

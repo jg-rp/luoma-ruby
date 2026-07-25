@@ -306,12 +306,31 @@ module Luoma
         when :token_single_escaped, :token_double_escaped
           segments << unescape(self.next)
         when :token_interpolation_start
-          @pos += 1
+          start_token = self.next
           segments << parse_expression
+
+          unless kind == :token_interpolation_end
+            raise TemplateSyntaxError.new(
+              "unclosed template string expression",
+              Luoma.span(start_token, current),
+              @source,
+              @template_name
+            )
+          end
+
           eat(:token_interpolation_end)
         else
           break
         end
+      end
+
+      unless kind == token.first
+        raise TemplateSyntaxError.new(
+          "unclosed string literal",
+          Luoma.span(token, @tokens[@pos - 1] || current),
+          @source,
+          @template_name
+        )
       end
 
       StringLiteral.new(token, segments, eat(token.first))
@@ -403,7 +422,10 @@ module Luoma
       skip_whitespace_control
       expr = parse_expression
       carry_whitespace_control
-      eat(:token_out_end)
+      eat(
+        :token_out_end,
+        message: "bad expression or missing markup delimiter"
+      )
       OutputStatement.new(token, expr)
     end
 

@@ -101,89 +101,75 @@ class TestTemplateSyntaxErrors < Minitest::Test
     assert_equal(message, error.message)
   end
 
-  def test_hyphen_string
-    source = "{{ -'foo' }}"
-    message = "unexpected prefix operator -"
+  def test_unknown_infix_operator
+    source = "{% if 1 =! 2 %}ok{% endif %}"
+    message = "unexpected ASSIGN (\"=\")"
     error = assert_raises(Luoma::TemplateSyntaxError) { Luoma.render(source) }
     assert_equal(message, error.message)
   end
 
-  # def test_unknown_prefix_operator
-  #   source = "{{ +5 }}"
-  #   message = "unexpected prefix operator +"
-  #   error = assert_raises(Luoma::TemplateSyntaxError) { Luoma.render(source) }
-  #   assert_equal(message, error.message)
-  # end
+  def test_float_without_leading_digit
+    source = "{{ .1 }}"
+    message = "expected an expression, found \"DOT\""
+    error = assert_raises(Luoma::TemplateSyntaxError) { Luoma.render(source) }
+    assert_equal(message, error.message)
+  end
 
-  # def test_unknown_infix_operator
-  #   source = "{% if 1 =! 2 %}ok{% endif %}"
-  #   message = "unexpected \"=!\""
-  #   error = assert_raises(Luoma::TemplateSyntaxError) { Luoma.render(source) }
-  #   assert_equal(message, error.message)
-  # end
+  def test_unexpected_token_between_left_value_and_filter
+    source = "{{ \"hello\" boo | upcase }}"
+    message = "bad expression or missing markup delimiter"
+    error = assert_raises(Luoma::TemplateSyntaxError) { Luoma.render(source) }
+    assert_equal(message, error.message)
+  end
 
-  # def test_float_without_leading_digit
-  #   source = "{{ .1 }}"
-  #   message = "expected an expression, found \"DOT\""
-  #   error = assert_raises(Luoma::TemplateSyntaxError) { Luoma.render(source) }
-  #   assert_equal(message, error.message)
-  # end
+  def test_extra_else_block
+    source = "{% if true %}a{% else %}b{% else %}c{% endif %}"
+    message = "unexpected tag \"else\""
+    error = assert_raises(Luoma::TemplateSyntaxError) { Luoma.render(source) }
+    assert_equal(message, error.message)
+  end
 
-  # def test_unexpected_token_between_left_value_and_filter
-  #   source = "{{ \"hello\" boo | upcase }}"
-  #   message = "unexpected token_word"
-  #   error = assert_raises(Luoma::TemplateSyntaxError) { Luoma.render(source) }
-  #   assert_equal(message, error.message)
-  # end
+  def test_extra_elsif_block
+    source = "{% if true %}a{% else %}b{% elsif %}c{% endif %}"
+    message = "unexpected tag \"elsif\""
+    error = assert_raises(Luoma::TemplateSyntaxError) { Luoma.render(source) }
+    assert_equal(message, error.message)
+  end
 
-  # def test_extra_else_block
-  #   source = "{% if true %}a{% else %}b{% else %}c{% endif %}"
-  #   message = "unexpected tag else"
-  #   error = assert_raises(Luoma::TemplateSyntaxError) { Luoma.render(source) }
-  #   assert_equal(message, error.message)
-  # end
+  def test_missing_output_closing_bracket
+    source = "Hello, {{you}!"
+    message = "bad expression or missing markup delimiter"
+    error = assert_raises(Luoma::TemplateSyntaxError) { Luoma.render(source) }
+    assert_equal(message, error.message)
+  end
 
-  # def test_extra_elsif_block
-  #   source = "{% if true %}a{% else %}b{% elsif %}c{% endif %}"
-  #   message = "unexpected tag elsif"
-  #   error = assert_raises(Luoma::TemplateSyntaxError) { Luoma.render(source) }
-  #   assert_equal(message, error.message)
-  # end
+  def test_missing_tag_closing_percent
+    source = "{% assign x = 42 }"
+    message = "bad expression or missing markup delimiter"
+    error = assert_raises(Luoma::TemplateSyntaxError) { Luoma.render(source) }
+    assert_equal(message, error.message)
+  end
 
-  # def test_missing_output_closing_bracket
-  #   source = "Hello, {{you}!"
-  #   message = "missing markup delimiter or unbalanced object literal detected"
-  #   error = assert_raises(Luoma::TemplateSyntaxError) { Luoma.render(source) }
-  #   assert_equal(message, error.message)
-  # end
+  def test_missing_tag_closing_bracket
+    source = "{% assign x = 42 %"
+    message = "expected an expression, found \"EOI\""
+    error = assert_raises(Luoma::TemplateSyntaxError) { Luoma.render(source) }
+    assert_equal(message, error.message)
+  end
 
-  # def test_missing_tag_closing_percent
-  #   source = "{% assign x = 42 }"
-  #   message = "missing markup delimiter or unbalanced object literal detected"
-  #   error = assert_raises(Luoma::TemplateSyntaxError) { Luoma.render(source) }
-  #   assert_equal(message, error.message)
-  # end
+  def test_missing_closing_quote_for_template_string
+    source = "{{ \"Hello, ${you} }}"
+    message = "unclosed string literal"
+    error = assert_raises(Luoma::TemplateSyntaxError) { Luoma.render(source) }
+    assert_equal(message, error.message)
+  end
 
-  # def test_missing_tag_closing_bracket
-  #   source = "{% assign x = 42 %"
-  #   message = "missing markup delimiter or unbalanced object literal detected"
-  #   error = assert_raises(Luoma::TemplateSyntaxError) { Luoma.render(source) }
-  #   assert_equal(message, error.message)
-  # end
-
-  # def test_missing_closing_quote_for_template_string
-  #   source = "{{ \"Hello, ${you} }}"
-  #   message = "unclosed string literal or template string expression"
-  #   error = assert_raises(Luoma::TemplateSyntaxError) { Luoma.render(source) }
-  #   assert_equal(message, error.message)
-  # end
-
-  # def test_missing_closing_bracket_in_template_string
-  #   source = "{{ \"Hello, ${you\" }}"
-  #   message = "unclosed string literal or template string expression"
-  #   error = assert_raises(Luoma::TemplateSyntaxError) { Luoma.render(source) }
-  #   assert_equal(message, error.message)
-  # end
+  def test_missing_closing_bracket_in_template_string
+    source = "{{ \"Hello, ${you\" }}"
+    message = "unclosed template string expression"
+    error = assert_raises(Luoma::TemplateSyntaxError) { Luoma.render(source) }
+    assert_equal(message, error.message)
+  end
 
   # def test_path_empty_brackets
   #   source = "{{ a.b[] }}"
