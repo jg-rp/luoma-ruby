@@ -272,7 +272,7 @@ module Luoma
 
     #: () -> String
     def to_s
-      "+#{@right}"
+      "-#{@right}"
     end
   end
 

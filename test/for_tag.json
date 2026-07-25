@@ -50,7 +50,7 @@
     },
     {
       "name": "break",
-      "template": "{% for tag in product.tags %}{% if tag == 'sports' %}{% break %}{% else %}{{ tag }} {% endif %}{% else %}no images{% endfor %}",
+      "template": "{% for tag in product.tags %}{% if tag == 'sports' %}{% break %}foo{% else %}{{ tag }} {% endif %}{% else %}no images{% endfor %}",
       "data": {
         "product": {
           "tags": ["sports", "garden"]
@@ -61,7 +61,7 @@
     },
     {
       "name": "continue",
-      "template": "{% for tag in product.tags %}{% if tag == 'sports' %}{% continue %}{% else %}{{ tag }} {% endif %}{% else %}no images{% endfor %}",
+      "template": "{% for tag in product.tags %}{% if tag == 'sports' %}{% continue %}foo{% else %}{{ tag }} {% endif %}{% else %}no images{% endfor %}",
       "data": {
         "product": {
           "tags": ["sports", "garden"]

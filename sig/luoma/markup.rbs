@@ -61,7 +61,7 @@ module Luoma
   end
 
   #  (t_block, RenderContext, String) -> void
-  def self.render_block: (t_block block, RenderContext context, String buffer) -> void
+  def self.render_block: (t_block block, RenderContext context, String buffer, ?root: bool) -> void
 
   #  (t_block) -> bool
   def self.blank_block?: (t_block block) -> bool

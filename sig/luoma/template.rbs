@@ -44,8 +44,8 @@ module Luoma
     #  (t_namespace?) -> String
     def render: (?t_namespace? data) -> String
 
-    #  (RenderContext, String) -> String
-    def render_with_context: (RenderContext context, String buffer) -> String
+    #  (RenderContext, String, ?isolated: bool) -> String
+    def render_with_context: (RenderContext context, String buffer, ?isolated: bool) -> String
 
     #  (t_namespace) -> Template
     def with_globals: (t_namespace namespace) -> Template

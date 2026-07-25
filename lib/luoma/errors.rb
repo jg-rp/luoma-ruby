@@ -26,7 +26,8 @@ module Luoma
                           end
 
       pad = " " * line.to_s.length
-      pointer = (" " * (col - 1)) + ("^" * (value&.length || 1))
+      pointer_size = value.empty? ? 1 : value.length
+      pointer = (" " * (col - 1)) + ("^" * pointer_size)
 
       <<~MESSAGE.strip
         #{self.class}: #{message}
@@ -54,7 +55,10 @@ module Luoma
         return [line_number, column_number, lines[target_line_index].rstrip]
       end
 
-      raise "index is out of bounds for span"
+      # Point to end of file
+      line_number = lines.length
+      column_number = lines.last.length + 1
+      [line_number, column_number, lines.last.rstrip]
     end
   end
 

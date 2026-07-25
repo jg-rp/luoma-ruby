@@ -32,9 +32,13 @@ module Luoma
 
     # Render this template to `buffer` with data from `context`.
     # Returns buffer.
-    #: (RenderContext, String) -> String
-    def render_with_context(context, buffer)
-      Luoma.render_block(@nodes, context, buffer)
+    #
+    # _isolated_ templates raise errors for orphaned `{% break %}` and
+    # `{% continue %}` tags.
+    #
+    #: (RenderContext, String, ?isolated: bool) -> String
+    def render_with_context(context, buffer, isolated: true)
+      Luoma.render_block(@nodes, context, buffer, root: isolated)
       buffer
     end
 

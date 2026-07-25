@@ -424,7 +424,7 @@ module Luoma
 
       unless tag
         raise TemplateSyntaxError.new(
-          "unexpected tag #{Luoma.get_token_value(token, @source)}",
+          "unexpected tag #{Luoma.get_token_value(token, @source).inspect}",
           token,
           @source,
           @template_name

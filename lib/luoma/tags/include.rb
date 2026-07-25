@@ -45,7 +45,7 @@ module Luoma
       scope = @args.to_h { |arg| [arg.name.value, arg.expression.evaluate(context)] }
 
       context.extends(scope, template: template) do
-        template.render_with_context(context, buffer)
+        template.render_with_context(context, buffer, isolated: false)
       end
     end
 

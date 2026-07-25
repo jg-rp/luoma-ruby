@@ -55,8 +55,8 @@ module Luoma
     end
   end
 
-  #: (t_block, RenderContext, String) -> void
-  def self.render_block(block, context, buffer)
+  #: (t_block, RenderContext, String, ?root: false) -> void
+  def self.render_block(block, context, buffer, root: false)
     if context.env.max_render_score || context.env.max_render_score_cumulative
       context.render_score += block.length
       context.render_score_cumulative += block.length
@@ -80,17 +80,24 @@ module Luoma
             context.template.name
           )
         end
-        node.render(context, buffer)
-      end
 
-      unless context.interrupts.empty?
-        context.interrupts.pop if context.interrupts.last == :stop_render
-        break # steep:ignore
+        node.render(context, buffer)
+
+        if root && !context.interrupts.empty?
+          raise TemplateSyntaxError.new(
+            "unexpected #{context.interrupts.last}",
+            node.token,
+            context.template.source,
+            context.template.name
+          )
+        end
       end
 
       if context.env.max_render_size && buffer.bytesize > context.env.max_render_size
         raise ResourceLimitError.new("memory limits exceeded")
       end
+
+      break unless context.interrupts.empty?
     end
   end
 
