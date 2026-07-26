@@ -70,7 +70,8 @@ puts template.render("you" => "Liquid")  # Hello, Liquid!
 - `{% define %}` tag static analysis. We need to analyze the block when it is rendered, keyed on the current static scope state. Do this for lambda expressions too.
 - Store and report the "call site" of defined blocks and partial templates.
 - docs
-- strict
+- test strict mode
+  - For lambda expressions, all arguments but left default to nil
 - Test drop API
   - test render array of drops
 

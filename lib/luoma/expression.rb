@@ -183,7 +183,6 @@ module Luoma
         )
       end
 
-      # TODO: Normalize args here too
       expr.call([@left.evaluate(context), *@filter.args.map { |arg| arg.evaluate(context) }])
     end
 
@@ -208,11 +207,11 @@ module Luoma
       left = @left.evaluate(context)
 
       # This will throw a FilterArgumentError if needed when `strict` is `true`.
-      args, kwargs = Luoma.normalize_arguments(
+      args, kwargs = normalize_arguments(
+        context,
         func,
         @filter.args.map { |arg| arg.evaluate(context) },
-        @filter.kwargs.to_h { |arg| [arg.name.value.to_sym, arg.expression.evaluate(context)] },
-        strict: context.env.strict
+        @filter.kwargs.to_h { |arg| [arg.name.value.to_sym, arg.expression.evaluate(context)] }
       )
 
       if args.empty? && kwargs.empty?
@@ -227,14 +226,124 @@ module Luoma
           **kwargs
         )
       end
-    rescue ArgumentError => e
-      # TODO: Pass context to normalize_arguments and raise there
-      raise FilterArgumentError.new(
-        e.message,
-        @span,
-        context.template.source,
-        context.template.name
-      )
+    end
+
+    def normalize_arguments(context, method, args, kwargs)
+      params = method.parameters
+
+      # The first two required arguments are always `context` and `left`, neither
+      # of which are included in `args`.
+      required_positional = params.count { |type, _name| type == :req } - 2
+      optional_positional = params.count { |type, _name| type == :opt }
+      has_rest = params.any? { |type, _name| type == :rest }
+
+      required_keys = params.select { |type, _name| type == :keyreq }.map(&:last) # rubocop:disable Style/HashSlice
+      optional_keys = params.select { |type, _name| type == :key }.map(&:last) # rubocop:disable Style/HashSlice
+      has_keyrest = params.any? { |type, _name| type == :keyrest }
+
+      if context.env.strict
+        validate_arguments(
+          context,
+          method,
+          args,
+          kwargs,
+          required_positional: required_positional,
+          optional_positional: optional_positional,
+          has_rest: has_rest,
+          required_keys: required_keys,
+          optional_keys: optional_keys,
+          has_keyrest: has_keyrest
+        )
+      end
+
+      unless has_rest
+        max = required_positional + optional_positional
+        args = args.take(max)
+      end
+
+      args.fill(:nothing, args.length...required_positional)
+
+      unless has_keyrest
+        allowed_keys = required_keys + optional_keys
+        kwargs.select! { |key, _value| allowed_keys.include?(key) }
+      end
+
+      required_keys.each do |key|
+        kwargs[key] = :nothing unless kwargs.key?(key)
+      end
+
+      [args, kwargs]
+    end
+
+    def validate_arguments(
+      context, method, args, kwargs,
+      required_positional:,
+      optional_positional:,
+      has_rest:,
+      required_keys:,
+      optional_keys:,
+      has_keyrest:
+    )
+      if args.length < required_positional
+        message = [
+          "wrong number of arguments (given #{args.length}, ",
+          "expected #{required_positional}+) for #{@name}"
+        ]
+        raise FilterArgumentError.new(
+          message.join,
+          @span,
+          context.template.source,
+          context.template.name
+        )
+      end
+
+      unless has_rest
+        max_positional = required_positional + optional_positional
+        if args.length > max_positional
+          message = [
+            "wrong number of arguments (given #{args.length}, ",
+            "expected #{required_positional}..#{max_positional}) for #{@name}"
+          ]
+          raise FilterArgumentError.new(
+            message.join,
+            @span,
+            context.template.source,
+            context.template.name
+          )
+        end
+      end
+
+      unless has_keyrest
+        allowed_keys = required_keys + optional_keys
+        unknown_keys = kwargs.keys - allowed_keys
+        unless unknown_keys.empty?
+          message = [
+            "unknown keyword#{"s" if unknown_keys.length > 1}: ",
+            "#{unknown_keys.map(&:inspect).join(", ")} for #{@name}"
+          ]
+          raise FilterArgumentError.new(
+            message.join,
+            @span,
+            context.template.source,
+            context.template.name
+          )
+        end
+      end
+
+      missing_keys = required_keys.reject { |key| kwargs.key?(key) }
+      unless missing_keys.empty?
+        message = [
+          "missing keyword#{"s" if missing_keys.length > 1}: ",
+          "#{missing_keys.map(&:inspect).join(", ")} for #{@name}"
+        ]
+
+        raise FilterArgumentError.new(
+          message.join,
+          @span,
+          context.template.source,
+          context.template.name
+        )
+      end
     end
   end
 

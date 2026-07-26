@@ -71,6 +71,21 @@ module Luoma
     def evaluate_lambda: (LambdaExpr expr, RenderContext context) -> untyped
                        
     def evaluate_filter: (String name, RenderContext context) -> untyped
+                       
+    def normalize_arguments: (RenderContext context, ::Method method, Array[untyped] args, Hash[Symbol, untyped] kwargs) -> [Array[untyped], Hash[Symbol, untyped]]
+
+    def validate_arguments: (
+      RenderContext context, 
+      ::Method method, 
+      Array[untyped] args, 
+      Hash[Symbol, untyped] kwargs,
+      required_positional: untyped, 
+      optional_positional: untyped, 
+      has_rest: untyped, 
+      required_keys: untyped, 
+      optional_keys: untyped, 
+      has_keyrest: untyped
+    ) -> void
   end
 
   class PrefixExpression < Expression
