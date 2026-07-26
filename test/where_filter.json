@@ -79,7 +79,7 @@
         ]
       },
       "invalid": true,
-      "tags": ["strict filters"]
+      "tags": ["strict"]
     },
     {
       "name": "too many arguments",
@@ -98,7 +98,7 @@
         ]
       },
       "invalid": true,
-      "tags": ["strict filters"]
+      "tags": ["strict"]
     },
     {
       "name": "left value is undefined",

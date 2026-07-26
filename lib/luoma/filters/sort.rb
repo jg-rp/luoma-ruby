@@ -36,7 +36,7 @@ module Luoma
             end
           end
         rescue IncomparableValuesError
-          raise LuomaError.new("Cannot sort incomparable values") if context.render_context.env.strict_filters
+          raise LuomaError.new("Cannot sort incomparable values") if context.render_context.env.strict
 
           return array # rubocop:disable Lint/NoReturnInBeginEndBlocks
         end

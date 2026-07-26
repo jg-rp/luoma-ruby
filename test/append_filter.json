@@ -19,13 +19,13 @@
       "name": "missing argument",
       "template": "{{ \"hello\" | append }}",
       "invalid": true,
-      "tags": ["strict filters"]
+      "tags": ["strict"]
     },
     {
       "name": "too many arguments",
       "template": "{{ \"hello\" | append: \"how\", \"are\", \"you\" }}",
       "invalid": true,
-      "tags": ["strict filters"]
+      "tags": ["strict"]
     },
     {
       "name": "undefined left value",

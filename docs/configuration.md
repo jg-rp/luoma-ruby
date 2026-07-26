@@ -21,7 +21,7 @@ env = Luoma::Environment.new(
   max_render_score: nil,
   max_render_size: nil,
   parser: Luoma::UnifiedParser,
-  strict_filters: false,
+  strict: false,
   suppress_blank_control_flow_blocks: true,
   undefined: Luoma::UndefinedDrop
 )
@@ -115,6 +115,6 @@ env = Luoma::Environment.new(
 
 TODO:
 
-## Strict filters
+## strict
 
 TODO:

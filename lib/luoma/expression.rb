@@ -151,9 +151,9 @@ module Luoma
         evaluate_lambda(obj.expr, context)
       elsif @name
         evaluate_filter(@name, context) # steep:ignore
-      elsif context.env.strict_filters
+      elsif context.env.strict
         raise FilterArgumentError.new(
-          "expected a filter name",
+          "unknown filter",
           @token,
           context.template.source,
           context.template.name
@@ -174,7 +174,7 @@ module Luoma
 
     #: (LambdaExpr, RenderContext) -> untyped
     def evaluate_lambda(expr, context)
-      if context.env.strict_filters && !@filter.kwargs.empty?
+      if context.env.strict && !@filter.kwargs.empty?
         raise FilterArgumentError.new(
           "unexpected keyword arguments",
           @span,
@@ -183,6 +183,7 @@ module Luoma
         )
       end
 
+      # TODO: Normalize args here too
       expr.call([@left.evaluate(context), *@filter.args.map { |arg| arg.evaluate(context) }])
     end
 
@@ -191,7 +192,7 @@ module Luoma
       func = context.env.filters[name]
 
       if func.nil?
-        if context.env.strict_filters
+        if context.env.strict
           raise FilterNotFoundError.new(
             "unknown filter #{name.inspect}",
             @filter.token,
@@ -206,20 +207,28 @@ module Luoma
       filter_context = FilterContext.new(@span, context)
       left = @left.evaluate(context)
 
-      return func.call(filter_context, left) if @filter.args.empty? && @filter.kwargs.empty?
+      # This will throw a FilterArgumentError if needed when `strict` is `true`.
+      args, kwargs = Luoma.normalize_arguments(
+        func,
+        @filter.args.map { |arg| arg.evaluate(context) },
+        @filter.kwargs.to_h { |arg| [arg.name.value.to_sym, arg.expression.evaluate(context)] },
+        strict: context.env.strict
+      )
 
-      if @filter.kwargs.empty?
-        func.call(filter_context, left, *@filter.args.map { |arg| arg.evaluate(context) }) # steep:ignore
+      if args.empty? && kwargs.empty?
+        func.call(filter_context, left)
+      elsif kwargs.empty?
+        func.call(filter_context, left, *args)
       else
         func.call(
           filter_context,
           left,
-          *@filter.args.map { |arg| arg.evaluate(context) }, # steep:ignore
-          **@filter.kwargs.to_h { |arg| [arg.name.value.to_sym, arg.expression.evaluate(context)] } # steep:ignore
+          *args,
+          **kwargs
         )
       end
-    rescue TypeError, ArgumentError => e
-      # TODO: Suppress arity errors by padding and trimming if not strict_filters.
+    rescue ArgumentError => e
+      # TODO: Pass context to normalize_arguments and raise there
       raise FilterArgumentError.new(
         e.message,
         @span,
@@ -867,9 +876,16 @@ module Luoma
     def evaluate(context)
       func = context.env.predicates[@value]
 
-      # TODO: strict predicate like strict filters
-
       if func.nil?
+        if context.env.strict
+          raise FilterNotFoundError.new(
+            "unknown predicate #{@value.inspect}",
+            @token,
+            context.template.source,
+            context.template.name
+          )
+        end
+
         :nothing
       else
         PredicateFunction.new(@value, func)

@@ -31,7 +31,7 @@
         "a": []
       },
       "invalid": true,
-      "tags": ["strict filters"]
+      "tags": ["strict"]
     },
     {
       "name": "left value not an array",

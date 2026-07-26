@@ -1,0 +1,20 @@
+module Luoma
+    def self.normalize_arguments: (
+      ::Method method,
+      Array[untyped] args,
+      Hash[Symbol, untyped] kwargs,
+      ?strict: bool
+    ) -> [Array[untyped], Hash[Symbol, untyped]]
+
+    def self.validate_arguments: (
+      ::Method method,
+      Array[untyped] args, 
+      Hash[Symbol, untyped] kwargs, 
+      required_positional: untyped, 
+      optional_positional: untyped, 
+      has_rest: untyped, 
+      required_keys: untyped, 
+      optional_keys: untyped, 
+      has_keyrest: untyped
+      ) -> void
+end

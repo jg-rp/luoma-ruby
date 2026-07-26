@@ -20,7 +20,7 @@
       "name": "too many arguments",
       "template": "{{ a | compact: 'foo', 'bar' }}",
       "invalid": true,
-      "tags": ["strict filters"]
+      "tags": ["strict"]
     },
     {
       "name": "left value is not an array",

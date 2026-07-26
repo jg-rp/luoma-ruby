@@ -335,6 +335,13 @@
       "template": "{{ a.numeric? }}",
       "data": { "a": "foo" },
       "result": "false"
+    },
+    {
+      "name": "unknown predicate",
+      "template": "{{ a.foo? }}",
+      "data": { "a": "foo" },
+      "invalid": true,
+      "tags": ["strict"]
     }
   ]
 }

@@ -59,7 +59,7 @@
         "a": ["b", "a"]
       },
       "invalid": true,
-      "tags": ["strict filters"]
+      "tags": ["strict"]
     },
     {
       "name": "left value is not an array",
@@ -102,7 +102,7 @@
         "a": [[], {}, 1, "4"]
       },
       "invalid": true,
-      "tags": ["strict filters"]
+      "tags": ["strict"]
     }
   ]
 }

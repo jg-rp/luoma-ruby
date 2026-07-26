@@ -39,7 +39,7 @@
       "name": "unexpected argument",
       "template": "{{ -3.1 | ceil: 1 }}",
       "invalid": true,
-      "tags": ["strict filters"]
+      "tags": ["strict"]
     },
     {
       "name": "string not a number",

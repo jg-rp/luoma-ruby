@@ -19,7 +19,7 @@
       "name": "missing argument",
       "template": "{{ 'March 14, 2016' | date }}",
       "invalid": true,
-      "tags": ["strict filters"]
+      "tags": ["strict"]
     },
     {
       "name": "undefined argument",

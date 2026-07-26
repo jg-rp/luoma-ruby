@@ -34,7 +34,7 @@
       "name": "too many args",
       "template": "{{ 5 | modulo: 1, '5' }}",
       "invalid": true,
-      "tags": ["strict filters"]
+      "tags": ["strict"]
     },
     {
       "name": "not a string, int or float",

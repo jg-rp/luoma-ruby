@@ -75,7 +75,7 @@
         "arr": ["a", "b"]
       },
       "invalid": true,
-      "tags": ["strict filters"]
+      "tags": ["strict"]
     }
   ]
 }

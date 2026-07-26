@@ -24,7 +24,7 @@
         "a": ["a", "b"]
       },
       "invalid": true,
-      "tags": ["strict filters"]
+      "tags": ["strict"]
     },
     {
       "name": "non array-like argument",

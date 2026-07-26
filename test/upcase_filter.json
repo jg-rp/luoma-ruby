@@ -14,7 +14,7 @@
       "name": "unexpected argument",
       "template": "{{ \"hello\" | upcase: 5 }}",
       "invalid": true,
-      "tags": ["strict filters"]
+      "tags": ["strict"]
     },
     {
       "name": "undefined left value",

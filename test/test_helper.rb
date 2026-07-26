@@ -19,7 +19,7 @@ def assert_test_case(test_case)
              Luoma::HashLoader.new(templates)
            end
 
-  env = Luoma::Environment.new(loader: loader, strict_filters: true)
+  env = Luoma::Environment.new(loader: loader, strict: true)
 
   if test_case["invalid"]
     assert_raises Luoma::LuomaError do

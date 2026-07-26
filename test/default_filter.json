@@ -61,7 +61,7 @@
       "name": "too many arguments",
       "template": "{{ None | default: 'foo', 'bar', 'baz' }}",
       "invalid": true,
-      "tags": ["strict filters"]
+      "tags": ["strict"]
     },
     {
       "name": "missing argument",

@@ -42,7 +42,7 @@
         "a": [1, 2, 3]
       },
       "invalid": true,
-      "tags": ["strict filters"]
+      "tags": ["strict"]
     },
     {
       "name": "undefined left value",

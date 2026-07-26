@@ -29,13 +29,13 @@
       "name": "missing arg",
       "template": "{{ 5 | times }}",
       "invalid": true,
-      "tags": ["strict filters"]
+      "tags": ["strict"]
     },
     {
       "name": "too many args",
       "template": "{{ 5 | times: 1, 2 }}",
       "invalid": true,
-      "tags": ["strict filters"]
+      "tags": ["strict"]
     },
     {
       "name": "undefined left value",

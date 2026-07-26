@@ -49,7 +49,7 @@
       "name": "too many arguments",
       "template": "{{ nosuchthing | uniq: 'foo', 'bar' }}",
       "invalid": true,
-      "tags": ["strict filters"]
+      "tags": ["strict"]
     },
     {
       "name": "array of objects with key property",

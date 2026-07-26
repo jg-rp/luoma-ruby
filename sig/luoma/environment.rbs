@@ -27,7 +27,7 @@ module Luoma
 
     @parser: _Parser
 
-    @strict_filters: bool
+    @strict: bool
 
     @suppress_blank_control_flow_blocks: bool
 
@@ -67,7 +67,7 @@ module Luoma
 
     attr_reader predicates: Hash[String, ^(untyped) -> bool]
 
-    attr_accessor strict_filters: bool
+    attr_accessor strict: bool
 
     attr_reader tags: Hash[String, _Tag]
 
@@ -97,7 +97,7 @@ module Luoma
       ?lexer: _Lexer, 
       ?loader: TemplateLoader?, 
       ?parser: _Parser, 
-      ?strict_filters: bool, 
+      ?strict: bool, 
       ?suppress_blank_control_flow_blocks: bool, 
       ?undefined: singleton(UndefinedDrop),
       ?max_assign_score_cumulative: Integer?,

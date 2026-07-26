@@ -141,13 +141,13 @@
         "a": ["x", "y", "cat"]
       },
       "invalid": true,
-      "tags": ["strict filters"]
+      "tags": ["strict"]
     },
     {
       "name": "too many arguments",
       "template": "{{ a | reject: 'x', 'y', 'z' }}",
       "invalid": true,
-      "tags": ["strict filters"]
+      "tags": ["strict"]
     },
     {
       "name": "input is undefined",
