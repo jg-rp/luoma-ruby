@@ -1,0 +1,10 @@
+module Luoma
+  class ChoiceLoader < TemplateLoader
+    @loaders: Array[TemplateLoader]
+
+    def initialize: (*TemplateLoader loaders) -> void
+
+    #  (Environment, String, ?globals: t_namespace?, ?context: RenderContext?, **kwargs) -> Template
+    def load: (Environment env, String name, ?globals: untyped?, ?context: RenderContext?, **untyped) -> untyped
+  end
+end

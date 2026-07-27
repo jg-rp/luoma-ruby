@@ -41,6 +41,7 @@ Copyright &copy; 2026 The authors
 nav = [
   { "Get started" = "index.md" },
   { "Setup" = "configuration.md" },
+  { "Template loaders" = "template_loaders.md" },
   { "Template syntax" = "luoma_for_template_authors.md" },
 ]
 

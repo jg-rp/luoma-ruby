@@ -19,13 +19,13 @@ module Luoma
 
     @matter: t_namespace?
 
-    attr_reader source: String
+    attr_accessor source: String
 
-    attr_reader name: String
+    attr_accessor name: String
 
-    attr_reader up_to_date: Proc::_Callable?
+    attr_accessor up_to_date: Proc::_Callable?
 
-    attr_reader matter: t_namespace?
+    attr_accessor matter: t_namespace?
 
     def initialize: (source: String, name: String, ?up_to_date: Proc::_Callable?, ?matter: t_namespace?) -> void
   end

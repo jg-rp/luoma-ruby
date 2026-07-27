@@ -22,7 +22,7 @@ module Luoma
 
   # Template source text and meta data.
   class TemplateSource
-    attr_reader :source, :name, :up_to_date, :matter
+    attr_accessor :source, :name, :up_to_date, :matter
 
     def initialize(source:, name:, up_to_date: nil, matter: nil)
       @source = source
