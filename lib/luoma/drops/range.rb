@@ -58,9 +58,9 @@ module Luoma
       when :data
         @range.to_a
       when :numeric
-        0
+        :nothing
       when :string
-        ""
+        JSON.generate(@range.to_a)
       when :boolean
         false
       end

@@ -39,17 +39,19 @@ By default, Luoma has special rules for rendering **arrays** of `BlockDrop`. Giv
 
 A `Luoma::ExpressionDrop` encapsulates a single Luoma expression for later evaluation. When rendered or coerced to a string, `ExpressionDrop` produces a textual representation of its expression.
 
-Internally, Luoma's filter application operator (`|`) recognizes instances of `ExpressionDrop` as user-defined filters. And some built-in filters accept instances of `ExpressionDrop` as arguments.
-
-Lambda literals (`(a, b) -> expression`) evaluate to an instance of `ExpressionDrop`. `ExpressionDrop` captures nothing about the scope in which it is defined.
+Lambda literals (`(a, b) -> expression`) evaluate to an instance of `ExpressionDrop`, without capturing anything about the scope in which it is defined. Internally, Luoma's filter application operator (`|`) recognizes instances of `ExpressionDrop` as user-defined filters, and some built-in filters accept instances of `ExpressionDrop` as arguments.
 
 ### `RangeDrop`
 
-TODO:
+Range literals (`(1..5)`) evaluate to instances of `Luoma::RangeDrop`. When iterated, `RangeDrop` yields integers from its range of integer values.
+
+When rendered or coerced to a string, `RangeDrop` produces a JSON-like array of integers.
 
 ### `UndefinedDrop`
 
-TODO:
+Undefined variables resolve to an instance of of `Luoma::UndefinedDrop`, or one of its subclasses. Undefined variable behavior is configured by passing a `Luoma::UndefinedDrop` singleton to `Luoma::Environment.new`.
+
+See [Undefined variables](./undefined_variables.md) for a breakdown of the built-in `Undefined` types.
 
 ## Custom drops
 

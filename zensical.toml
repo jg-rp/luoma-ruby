@@ -43,6 +43,7 @@ nav = [
   { "Setup" = "configuration.md" },
   { "Template loaders" = "template_loaders.md" },
   { "Data types" = "data_types.md" },
+  { "Undefined variables" = "undefined_variables.md" },
   { "Template syntax" = "luoma_for_template_authors.md" },
 ]
 
