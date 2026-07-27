@@ -6,7 +6,7 @@ Every `Luoma::Environment` has exactly one configured template loader, the defau
 
 !!! info
 
-    Both `NoSuchTemplateError` and `TemplateNotFoundError` inherit from `Luoma::LuomaError`. The former is a detailed error including diagnostic information about where in the parent template `{% render %}`, `{% include %}` or `{% import %}` was called. 
+    Both `NoSuchTemplateError` and `TemplateNotFoundError` inherit from `Luoma::LuomaError`. The former is a detailed error including diagnostic information about where in the parent template `{% render %}`, `{% include %}` or `{% import %}` was called.
 
     `NoSuchTemplateError` does not include diagnostic information. It is thrown by template loaders and surfaces when there is no parent template available, like when calling `Environment#get_template` directly.
 

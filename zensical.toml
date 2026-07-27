@@ -42,6 +42,7 @@ nav = [
   { "Get started" = "index.md" },
   { "Setup" = "configuration.md" },
   { "Template loaders" = "template_loaders.md" },
+  { "Data types" = "data_types.md" },
   { "Template syntax" = "luoma_for_template_authors.md" },
 ]
 

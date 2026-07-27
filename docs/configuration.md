@@ -33,7 +33,6 @@ env = Luoma::Environment.new(
 
 Top-level convenience methods `Luoma.parse` and `Luoma.render` always use the default environment.
 
-
 ## Managing tags, filters and predicates
 
 New instances of `Luoma::Environment` and the [default Luoma environment](#the-default-environment) have all standard tags, filters and predicates enabled by default. `Environment.tags`, `Environment.filters` and `Environment.predicates` are hashes mapping strings to `_Tag`, filter callables and predicate callables, respectively. You can add, remove, replace or alias tags, filters and predicates in an environment by updating these mappings after environment initialization.
@@ -89,7 +88,6 @@ puts Luoma::Environment.new(auto_trim: "~").render(source)
 
 ```html title="output"
 <ul>
-
   <li>1</li>
 
   <li>2</li>
@@ -97,7 +95,6 @@ puts Luoma::Environment.new(auto_trim: "~").render(source)
   <li>3</li>
 
   <li>4</li>
-
 </ul>
 ---
 <ul>
@@ -170,7 +167,7 @@ source = "Hello, {{ you | title }}"
 puts Luoma::Environment.new.render(source)
 puts Luoma::Environment.new(strict: true).render(source)
 
-# Hello, 
+# Hello,
 # /home/james/projects/luoma-ruby/lib/luoma/expression.rb:195:in 'Luoma::FilteredExpression#evaluate_filter': Luoma::FilterNotFoundError: unknown filter "title"
 #   -> "Hello, {{ you | title }}":1:17
 #   |
