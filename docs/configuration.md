@@ -4,6 +4,10 @@ Template parsing and rendering behavior is configured using an instance of `Luom
 
 An `Environment` is where you'd register custom filters or tags, or define variables that should be available to all templates, for example.
 
+!!! tip
+
+    In addition to the environment options shown here, `Luoma::Environment` is designed to be extended. You can, for example, override `Luoma::Environment#eq?` to redefine expression equality, or override `Luoma::Environment#serialize` to change the way objects are rendered. See [environment.rb](https://github.com/jg-rp/luoma-ruby/blob/main/lib/luoma/expression.rb) for a complete method reference and default implementations.
+
 ## The default environment
 
 The default Luoma environment and new instances of `Luoma::Environment` constructed without any arguments are equivalent to passing the following arguments to `Environment.new`.
@@ -28,6 +32,7 @@ env = Luoma::Environment.new(
 ```
 
 Top-level convenience methods `Luoma.parse` and `Luoma.render` always use the default environment.
+
 
 ## Managing tags, filters and predicates
 
@@ -60,6 +65,48 @@ end
 
 env = MyLuomaEnv.new
 # ...
+```
+
+## Auto trim
+
+The `auto_trim` option sets the default whitespace trimming mode. Setting `auto_trim: "-"` or `auto_trim: "~"` is equivalent to adding `-` or `~` before every closing markup delimiter.
+
+```ruby
+require "luoma"
+
+source = <<~SOURCE.chomp
+  <ul>
+  {% for x in (1..4) %}
+    <li>{{ x }}</li>
+  {% endfor %}
+  </ul>
+  ---
+SOURCE
+
+puts Luoma::Environment.new.render(source)
+puts Luoma::Environment.new(auto_trim: "~").render(source)
+```
+
+```html title="output"
+<ul>
+
+  <li>1</li>
+
+  <li>2</li>
+
+  <li>3</li>
+
+  <li>4</li>
+
+</ul>
+---
+<ul>
+  <li>1</li>
+  <li>2</li>
+  <li>3</li>
+  <li>4</li>
+</ul>
+---
 ```
 
 ## Global variables
@@ -111,10 +158,22 @@ env = Luoma::Environment.new(
 )
 ```
 
-## Auto trim
+## Strict mode
 
-TODO:
+When `strict: false` (the default) unknown filters, unknown predicates and filter argument errors are silently ignored at render time. When `strict: true`, `Luoma::FilterNotFoundError`, `Luoma::PredicateNotFoundError` or `Luoma::FilterArgumentError` is raised, all of which inherit from `Luoma::LuomaError`.
 
-## strict
+```ruby
+require "luoma"
 
-TODO:
+source = "Hello, {{ you | title }}"
+
+puts Luoma::Environment.new.render(source)
+puts Luoma::Environment.new(strict: true).render(source)
+
+# Hello, 
+# /home/james/projects/luoma-ruby/lib/luoma/expression.rb:195:in 'Luoma::FilteredExpression#evaluate_filter': Luoma::FilterNotFoundError: unknown filter "title"
+#   -> "Hello, {{ you | title }}":1:17
+#   |
+# 1 | Hello, {{ you | title }}
+#   |                 ^^^^^ unknown filter "title"
+```
