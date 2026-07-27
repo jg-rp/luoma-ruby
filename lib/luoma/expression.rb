@@ -287,7 +287,7 @@ module Luoma
       if args.length < required_positional
         message = [
           "wrong number of arguments (given #{args.length}, ",
-          "expected #{required_positional}+) for #{@name}"
+          "expected #{required_positional}) for #{@name.inspect}"
         ]
         raise FilterArgumentError.new(
           message.join,
@@ -302,7 +302,7 @@ module Luoma
         if args.length > max_positional
           message = [
             "wrong number of arguments (given #{args.length}, ",
-            "expected #{required_positional}..#{max_positional}) for #{@name}"
+            "expected #{required_positional}..#{max_positional}) for #{@name.inspect}"
           ]
           raise FilterArgumentError.new(
             message.join,
@@ -319,7 +319,7 @@ module Luoma
         unless unknown_keys.empty?
           message = [
             "unknown keyword#{"s" if unknown_keys.length > 1}: ",
-            "#{unknown_keys.map(&:inspect).join(", ")} for #{@name}"
+            "#{unknown_keys.map(&:inspect).join(", ")} for #{@name.inspect}"
           ]
           raise FilterArgumentError.new(
             message.join,
@@ -334,7 +334,7 @@ module Luoma
       unless missing_keys.empty?
         message = [
           "missing keyword#{"s" if missing_keys.length > 1}: ",
-          "#{missing_keys.map(&:inspect).join(", ")} for #{@name}"
+          "#{missing_keys.map(&:inspect).join(", ")} for #{@name.inspect}"
         ]
 
         raise FilterArgumentError.new(
@@ -987,7 +987,7 @@ module Luoma
 
       if func.nil?
         if context.env.strict
-          raise FilterNotFoundError.new(
+          raise PredicateNotFoundError.new(
             "unknown predicate #{@value.inspect}",
             @token,
             context.template.source,

@@ -65,15 +65,11 @@ puts template.render("you" => "Liquid")  # Hello, Liquid!
 
 ## TODO:
 
-- replace :nothing with a singleton Nothing drop
 - finish testing string filters
 - `{% define %}` tag static analysis. We need to analyze the block when it is rendered, keyed on the current static scope state. Do this for lambda expressions too.
 - Store and report the "call site" of defined blocks and partial templates.
 - docs
-- test strict mode
-  - For lambda expressions, all arguments but left default to nil
 - Test drop API
-  - test render array of drops
 
 ## Notes
 

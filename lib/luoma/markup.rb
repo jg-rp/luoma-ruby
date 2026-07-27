@@ -83,6 +83,7 @@ module Luoma
 
         node.render(context, buffer)
 
+        # TODO: disable these when strict is false?
         if root && !context.interrupts.empty?
           raise TemplateSyntaxError.new(
             "unexpected #{context.interrupts.last}",

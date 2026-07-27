@@ -892,6 +892,16 @@ module Luoma
             end
 
             low_surrogate = (scanner.captures&.first || raise).to_i(16)
+
+            unless low_surrogate?(low_surrogate)
+              raise TemplateSyntaxError.new(
+                "expected low surrogate",
+                token,
+                @source,
+                @template_name
+              )
+            end
+
             code_point = 0x10000 + (
               ((code_point & 0x03FF) << 10) | (low_surrogate & 0x03FF)
             )

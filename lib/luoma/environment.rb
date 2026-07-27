@@ -293,10 +293,10 @@ module Luoma
       when Array
         if obj.all?(String)
           to_string(obj, context)
-        elsif obj.all? { |i| i.is_a?(String) || i.is_a?(BlockDrop) }
-          obj.map { |i| i.is_a?(String) ? i : i.render(context) }.join
         elsif obj.all?(BlockDrop)
           obj.map { |i| i.render(context) }.join("\n")
+        elsif obj.all? { |i| i.is_a?(String) || i.is_a?(BlockDrop) }
+          obj.map { |i| i.is_a?(String) ? i : i.render(context) }.join
         else # rubocop: disable Lint/DuplicateBranch
           to_string(obj, context)
         end

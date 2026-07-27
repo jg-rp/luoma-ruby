@@ -32,6 +32,9 @@ module Luoma
   class FilterNotFoundError < DetailedLuomaError
   end
 
+  class PredicateNotFoundError < DetailedLuomaError
+  end
+
   class RequiredBlockError < TemplateInheritanceError
   end
 
