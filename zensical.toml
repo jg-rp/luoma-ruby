@@ -39,12 +39,18 @@ Copyright &copy; 2026 The authors
 
 
 nav = [
-  { "Get started" = "index.md" },
-  { "Setup" = "configuration.md" },
-  { "Template loaders" = "template_loaders.md" },
-  { "Data types" = "data_types.md" },
-  { "Undefined variables" = "undefined_variables.md" },
-  { "Template syntax" = "luoma_for_template_authors.md" },
+  { "Home" = [
+    "index.md",
+    { "Setup" = "configuration.md" },
+    "template_loaders.md",
+    "data_types.md",
+    "undefined_variables.md",
+    { "Template syntax" = "luoma_for_template_authors.md"}
+  ]},
+  
+  { "Tags" = "tag_reference.md" },
+  { "Filters" = "filter_reference.md" },
+  { "Predicates" = "predicate_reference.md" }
 ]
 
 # With the "extra_css" option you can add your own CSS styling to customize
@@ -213,7 +219,7 @@ features = [
     # When tabs are enabled, top-level sections are rendered in a menu layer
     # below the header for viewports above 1220px, but remain as-is on mobile.
     # https://zensical.org/docs/setup/navigation/#navigation-tabs
-    #"navigation.tabs",
+    "navigation.tabs",
 
     # When sticky tabs are enabled, navigation tabs will lock below the header
     # and always remain visible when scrolling down.

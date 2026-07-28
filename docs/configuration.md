@@ -1,3 +1,7 @@
+---
+title: Setup
+---
+
 # Luoma environments
 
 Template parsing and rendering behavior is configured using an instance of `Luoma::Environment`. Once configured, parse templates with `Environment#parse(source)` or `Environment#get_template(name)`, both of which return an instance of `Luoma::Template`.

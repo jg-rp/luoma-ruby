@@ -70,6 +70,7 @@ puts template.render("you" => "Liquid")  # Hello, Liquid!
 - Store and report the "call site" of defined blocks and partial templates.
 - docs
 - Test drop API
+- Public/private modifier for `{% define %}`.
 
 ## Notes
 
