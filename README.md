@@ -57,7 +57,7 @@ puts template.render("you" => "Luoma")  # Hello, Luoma!
 
 ## Links
 
-- Documentation: https://jg-rp.github.io/luoma/
+- Documentation: https://jg-rp.github.io/luoma-ruby/
 - Change log: https://github.com/jg-rp/luoma-ruby/blob/main/CHANGELOG.md
 - RubyGems: https://rubygems.org/gems/luoma
 - Source code: https://github.com/jg-rp/luoma-ruby

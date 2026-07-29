@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.email = ["jamesgr.prior@gmail.com"]
 
   spec.summary = "A modern template engine with a well-defined, composable agnostic expression language."
-  spec.homepage = "https://jg-rp.github.io/luoma/"
+  spec.homepage = "https://jg-rp.github.io/luoma-ruby/"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.3.0"
   # spec.metadata["allowed_push_host"] = "TODO: Set to your gem server 'https://example.com'"
