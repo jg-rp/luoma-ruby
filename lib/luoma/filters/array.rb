@@ -69,7 +69,7 @@ module Luoma
 
       case key
       when :nothing
-        left.compact
+        left.reject { |value| value.nil? || context.nothing?(value) }
       when ExpressionDrop
         left.each_with_index.reject do |item, index|
           value = key.expr.call_with_index(item, index)

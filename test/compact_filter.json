@@ -76,6 +76,11 @@
         ]
       },
       "result": "[{\"title\":\"foo\",\"name\":\"a\"},{\"title\":\"bar\",\"name\":\"c\"}]"
+    },
+    {
+      "name": "null and nothing",
+      "template": "{{ [1, null, 'a' + 'b'] | compact }}",
+      "result": "[1]"
     }
   ]
 }

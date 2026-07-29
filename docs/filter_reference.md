@@ -86,7 +86,7 @@ If both input value and argument can not be cast to an integer or float, the spe
 {{ "hello" | at_least: 2 }}
 {{ "hello" | at_least: -2 }}
 {{ -1 | at_least: "abc" }}
-{{ ('foo' | at_least: "bar") orElse 42 }}
+{{ ('foo' | at_least: "bar") or 42 }}
 ```
 
 ```plain title="output"
@@ -114,18 +114,20 @@ Return the minimum of the filter's input value and its argument. If either input
 5
 ```
 
-If either input value or argument can not be cast to an integer or float, `0` will be used instead.
+If both input value and argument can not be cast to an integer or float, the special value `Nothing` will be returned instead.
 
 ```liquid2
 {{ "hello" | at_most: 2 }}
 {{ "hello" | at_most: -2 }}
 {{ -1 | at_most: "abc" }}
+{{ ('foo' | at_most: "bar") or 42 }}
 ```
 
 ```plain title="output"
-0
--2
+2
+2
 -1
+42
 ```
 
 ## capitalize
@@ -176,96 +178,69 @@ Round the input value up to the nearest whole number. The input value will be co
 5
 ```
 
-If the input is undefined or can't be converted to a number, `0` is returned.
+If the input is undefined or can't be converted to a number, the special value `Nothing` is returned.
 
 ```liquid2
 {{ 'hello' | ceil }}
-{{ nosuchthing | ceil }}
+{{ ('hello' | ceil) or 1 }}
 ```
 
 ```plain title="output"
-0
-0
+
+1
 ```
 
 ## compact
 
 ```
-<array> | compact[: <string>]
+<array> | compact[: <key>]
 ```
 
-Remove `nil`/`null` (or `undefined` in JavaScript) values from an array-like object. If given, the argument should be the name of a property that exists on each item (hash, dict etc.) in the array-like sequence.
+Return a new array containing items from the input array excluding `null` and `Nothing` values.
 
-For example, ff `pages` is an array of objects, some of which have a `category` property:
+```liquid2
+{%- assign a = [1, 2, null, nosuchthing ] -%}
+{{ a | compact }}
+```
 
-```json title="data"
-{
-  "pages": [
-    { "category": "business" },
-    { "category": "celebrities" },
-    {},
-    { "category": "lifestyle" },
-    { "category": "sports" },
-    {},
-    { "category": "technology" }
+```title="Output"
+[1,2]
+```
+
+If `key` is given and it is a string, array items should be objects and the key is used to lookup a property of each object.
+
+```liquid2
+{%- assign
+  items = [
+    { "title": "foo", "id": 1 },
+    { "title": null, "id": 2 },
+    { "title": "baz", "id": 3 },
   ]
-}
+-%}
+
+{{ items | compact: "title" }}
 ```
 
-Without `compact`, iterating those categories will include `nil`/`null` values.
+```title="Output"
+[{"title":"foo","id":1},{"title":"baz","id":3}]
+```
+
+If `key` is a lambda expression, the expression is evaluated for each item in the input array. If the expression evaluates to `nil` or `Nothing`, the item is excluded from the result.
 
 ```liquid2
-{% assign categories = pages | map: "category" -%}
+{%- assign
+  items = [
+    { "title": "foo", "id": 1 },
+    { "id": null },
+    { "title": null, "id": 3 },
+  ]
+-%}
 
-{% for category in categories -%}
-- {{ category }}
-{%- endfor %}
+{{ items | compact: x -> (x.title or x.id) }}
 ```
 
-```plain title="output"
-- business
-- celebrities
--
-- lifestyle
-- sports
--
-- technology
-```
-
-With `compact`, we can remove those missing categories before the loop.
-
-```liquid2
-{% assign categories = pages | map: "category" | compact %}
-
-{% for category in categories %}
-- {{ category }}
-{% endfor %}
-```
-
-```plain title="output"
-- business
-- celebrities
-- lifestyle
-- sports
-- technology
-```
-
-Using the optional argument to `compact`, we could avoid using `map` and create an array of pages with a `category` property, rather than an array of categories.
-
-```liquid2
-{% assign pages_with_category = pages | compact: "category" %}
-
-{% for page in pages_with_category %}
-- {{ page.category }}
-{% endfor %}
-```
-
-```plain title="output"
-- business
-- celebrities
-- lifestyle
-- sports
-- technology
+```title="Output"
+[{"title":"foo","id":1},{"title":null,"id":3}]
 ```
 
 ## concat

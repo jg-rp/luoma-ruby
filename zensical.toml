@@ -39,8 +39,8 @@ Copyright &copy; 2026 The authors
 
 
 nav = [
-  { "Home" = [
-    { "Introduction" = "intro.md" },
+  { "Docs" = [
+    { "Introduction" = "index.md" },
     { "Setup" = "configuration.md" },
     "template_loaders.md",
     "data_types.md",
@@ -50,8 +50,8 @@ nav = [
     { "Template syntax" = "luoma_for_template_authors.md"}
   ]},
   
-  { "Tags" = ["tag_reference.md"] },
-  { "Filters" = ["filter_reference.md"] },
+  { "Tags" = ["tag_reference.md", "custom_tags.md"] },
+  { "Filters" = ["filter_reference.md", "custom_filters.md"] },
   { "Expressions" = ["expressions.md"] },
   { "Predicates" = ["predicate_reference.md"] }
 ]
