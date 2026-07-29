@@ -19,7 +19,7 @@ An expression surrounded by double curly braces (`{{` and `}}`) is an _output st
 
 In this example the expression is the variable `you` - which will be resolved to a value and the value's string representation will be written to the output stream - but output statements can contain any expression.
 
-```liquid-html
+```liquid2
 Hello, {{ you }}!
 ```
 
@@ -31,14 +31,14 @@ Hello, {{ you }}!
 
 The `assign` tag binds the result of evaluating an expression to a name, creating or updating a variable.
 
-```liquid-html
+```liquid2
 {% assign foo = "bar" %}
 {% assign foo = 42 %}
 ```
 
 A single `assign` tag can define multiple variables, separated by commas. Earlier bindings are immediately available in later expressions.
 
-```liquid-html
+```liquid2
 {% assign
   a = 1,
   b = a + 1
@@ -53,7 +53,7 @@ A single `assign` tag can define multiple variables, separated by commas. Earlie
 
 The `capture` tag renders a block of markup to a string variable instead of writing it directly to the output stream.
 
-```liquid-html
+```liquid2
 {% assign first_name = "Sam" %}
 {% assign points = 120 %}
 
@@ -76,14 +76,14 @@ See also the [`define`](#define) tag.
 
 ```title="Syntax"
 {% case <expression> %}
-  [ {% when <expression> %} <markup> ] ...
+  [ {% when <expression | predicate> [, <expression | predicate>] %} <markup> ] ...
   [ {% else %} <markup> ]
 {% endcase %}
 ```
 
-The `case` tag evaluates an expression, matching the result against one or more `when` clauses. In the event of a match, the `when` block is rendered. The `else` clause is rendered if no `when` clauses match the `case` expression.
+The `case` tag provides a multi-way conditional. It compares the result of a single expression against the result of one or more candidate expressions, and renders the block following the first matching `{% when %}` tag. If no branch matches, the optional `{% else %}` branch is rendered.
 
-```liquid-html
+```liquid2
 {% assign day = "Monday" %}
 
 {% case day %}
@@ -98,6 +98,17 @@ The `case` tag evaluates an expression, matching the result against one or more 
 {% endcase %}
 ```
 
+`when` tags also understand _bare predicates_, like `.defined?` and `.empty?` in place of a standard expression.
+
+```liquid2
+{% case items %}
+  {% when empty? %}
+    No items.
+  {% else %}
+    {{ items | size }} items.
+{% endcase %}
+```
+
 ## define
 
 ```title="Syntax"
@@ -106,7 +117,7 @@ The `case` tag evaluates an expression, matching the result against one or more 
 
 The `define` tag captures a block of markup for later rendering. `define` captures nothing about the scope in which it rendered. Defined blocks are rendered in the scope in which they are output or coerced to a string.
 
-```liquid-html
+```liquid2
 {% assign name = "Alice" %}
 
 {% define greeting %}
@@ -124,9 +135,7 @@ Hello Bob!
 HELLO BOB!
 ```
 
-`define` can be though of as a deferred [`capture`](#capture).
-
-See also [`import`](#import).
+`define` can be though of as a deferred [`capture`](#capture). See also [`import`](#import).
 
 ## for
 
@@ -139,7 +148,7 @@ See also [`import`](#import).
 
 The `for` tag renders its block once for each item in an iterable object, like an array/list or mapping/dict/hash. If the iterable is empty and an `else` block given, it will be rendered instead.
 
-```liquid-html
+```liquid2
 {% for product in collection %}
     - {{ product.title }}
 {% else %}
@@ -149,7 +158,7 @@ The `for` tag renders its block once for each item in an iterable object, like a
 
 Range expression are often used with the `for` tag to loop over increasing integers.
 
-```liquid-html
+```liquid2
 {% for i in (1..4) %}
     {{ i }}
 {% endfor %}
@@ -159,7 +168,7 @@ Range expression are often used with the `for` tag to loop over increasing integ
 
 You can exit a loop early using the `break` tag.
 
-```liquid-html
+```liquid2
 {% for product in collection.products %}
     {% if product.title == "Shirt" %}
         {% break %}
@@ -172,7 +181,7 @@ You can exit a loop early using the `break` tag.
 
 You can skip all or part of a loop iteration with the `continue` tag.
 
-```liquid-html
+```liquid2
 {% for product in collection.products %}
     {% if product.title == "Shirt" %}
         {% continue %}
@@ -193,7 +202,7 @@ You can skip all or part of a loop iteration with the `continue` tag.
 
 The `if` tag conditionally renders its block if its expression evaluates to be truthy. Any number of `elsif` blocks can be given to add alternative conditions, and an `else` block is used as a default if no preceding conditions were truthy.
 
-```liquid-html
+```liquid2
 {% if product.title == "OK Hat" %}
   This hat is OK.
 {% elsif product.title == "Rubbish Tie" %}
@@ -211,7 +220,7 @@ The `if` tag conditionally renders its block if its expression evaluates to be t
 
 The `import` tag loads and renders a named template for its side effects, discarding its output. `import` is used to bring variables (including blocks defined with the [`define` tag](#define)) into scope.
 
-```liquid-html
+```liquid2
 {% import button_utils as buttons %}
 ```
 
@@ -225,7 +234,7 @@ The `import` tag loads and renders a named template for its side effects, discar
 
 The `include` tag loads and renders a named template, inserting the resulting text in its place. The name of the template to include can be a string literal or a variable resolving to a string. When rendered, the included template will share the same scope as the current template.
 
-```liquid-html
+```liquid2
 {% include "snippets/header.html" %}
 ```
 
@@ -233,7 +242,7 @@ The `include` tag loads and renders a named template, inserting the resulting te
 
 Additional keyword arguments given to the `include` tag will be added to the included template's scope, then go out of scope after the included template has been rendered.
 
-```liquid-html
+```liquid2
 {% include "partial_template" greeting: "Hello", num: 3, skip: 2 %}
 ```
 
@@ -245,7 +254,7 @@ Additional keyword arguments given to the `include` tag will be added to the inc
 
 Any text between `{% raw %}` and `{% endraw %}` will not be interpreted as Liquid markup, but output as plain text instead.
 
-```liquid-html
+```liquid2
 {% raw %}
   This will be rendered {{verbatim}}, with the curly brackets.
 {% endraw %}
@@ -261,7 +270,7 @@ Any text between `{% raw %}` and `{% endraw %}` will not be interpreted as Liqui
 
 The `render` tag loads and renders a named template, inserting the resulting text in its place. The name of the template to include **must** be a string literal. When rendered, the included template will have its onw scope, without variables define in the calling template.
 
-```liquid-html
+```liquid2
 {% render "snippets/header.html" %}
 ```
 
@@ -269,7 +278,7 @@ The `render` tag loads and renders a named template, inserting the resulting tex
 
 Additional keyword arguments given to the `render` tag will be added to the rendered template's scope, then go out of scope after the it has been rendered.
 
-```liquid-html
+```liquid2
 {% render "partial_template" greeting: "Hello", num: 3, skip: 2 %}
 ```
 
