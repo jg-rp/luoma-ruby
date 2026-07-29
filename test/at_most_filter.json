@@ -61,6 +61,11 @@
       "name": "left value not a number",
       "template": "{{ \"abc\" | at_most: -2 }}",
       "result": "-2"
+    },
+    {
+      "name": "left and argument are not a number",
+      "template": "{{ (\"foo\" | at_most: \"bar\") orElse 42 }}",
+      "result": "42"
     }
   ]
 }

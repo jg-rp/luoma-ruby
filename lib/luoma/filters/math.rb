@@ -10,12 +10,12 @@ module Luoma
 
     # Return the maximum of `left` and `right`.
     def self.at_least(context, left, right)
-      [context.to_numeric(left, default: nil), context.to_numeric(right, default: nil)].compact.max
+      [context.to_numeric(left, default: nil), context.to_numeric(right, default: nil)].compact.max || :nothing
     end
 
     # Return the minimum of `left` and `right`.
     def self.at_most(context, left, right)
-      [context.to_numeric(left, default: nil), context.to_numeric(right, default: nil)].compact.min
+      [context.to_numeric(left, default: nil), context.to_numeric(right, default: nil)].compact.min || :nothing
     end
 
     # Return `left` rounded up to the next whole number.

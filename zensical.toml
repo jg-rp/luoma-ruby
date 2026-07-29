@@ -40,17 +40,20 @@ Copyright &copy; 2026 The authors
 
 nav = [
   { "Home" = [
-    "index.md",
+    { "Introduction" = "intro.md" },
     { "Setup" = "configuration.md" },
     "template_loaders.md",
     "data_types.md",
     "undefined_variables.md",
+    "template_loaders.md",
+    "static_analysis.md",
     { "Template syntax" = "luoma_for_template_authors.md"}
   ]},
   
-  { "Tags" = "tag_reference.md" },
-  { "Filters" = "filter_reference.md" },
-  { "Predicates" = "predicate_reference.md" }
+  { "Tags" = ["tag_reference.md"] },
+  { "Filters" = ["filter_reference.md"] },
+  { "Expressions" = ["expressions.md"] },
+  { "Predicates" = ["predicate_reference.md"] }
 ]
 
 # With the "extra_css" option you can add your own CSS styling to customize

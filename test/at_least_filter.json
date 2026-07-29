@@ -71,6 +71,11 @@
       "name": "argument string not a number",
       "template": "{{ -1 | at_least: \"abc\" }}",
       "result": "-1"
+    },
+    {
+      "name": "left and argument are not a number",
+      "template": "{{ (\"foo\" | at_least: \"bar\") orElse 42 }}",
+      "result": "42"
     }
   ]
 }

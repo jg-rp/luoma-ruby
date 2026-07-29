@@ -1,8 +1,3 @@
----
-hide:
-  - navigation
----
-
 # Built-in tags
 
 ## Comments

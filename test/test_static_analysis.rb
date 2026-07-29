@@ -854,44 +854,6 @@ class TestStaticAnalysis < Minitest::Test
     assert_locations(analysis.tags, tags)
   end
 
-  def test_import_with_arguments
-    loader = Luoma::HashLoader.new({ "a" => "{{ x | append: y }}" })
-    env = Luoma::Environment.new(loader: loader)
-    source = "{% import 'a', x:y, z:42 %}{{ x }}"
-    analysis = env.parse(source).analyze(include_partials: true)
-
-    locals = {}
-    globals = {
-      "y" => [
-        [["y"], "y"],
-        [["y"], "y"]
-      ]
-
-    }
-    variables = {
-      "y" => [
-        [["y"], "y"],
-        [["y"], "y"]
-      ],
-      "x" => [
-        [["x"], "x"],
-        [["x"], "x"]
-      ]
-    }
-    filters = {
-      "append" => ["append: y"]
-    }
-    tags = {
-      "import" => %w[import]
-    }
-
-    assert_vars(analysis.locals, locals)
-    assert_vars(analysis.globals, globals)
-    assert_vars(analysis.variables, variables)
-    assert_locations(analysis.filters, filters)
-    assert_locations(analysis.tags, tags)
-  end
-
   def test_import_template_not_found
     loader = Luoma::HashLoader.new({ "a" => "{{ x | append: y }}" })
     env = Luoma::Environment.new(loader: loader)

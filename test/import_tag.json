@@ -15,12 +15,12 @@
       "result": ""
     },
     {
-      "name": "more keyword arguments",
+      "name": "keyword arguments",
       "template": "{% import 'product-args', foo: 'hello', bar: 'there' %}",
       "templates": {
         "product-args": "{{ foo }} {{ bar }}"
       },
-      "result": ""
+      "invalid": true
     },
     {
       "name": "assign persists in outer scope",
@@ -34,14 +34,6 @@
         "assign-outer-scope": "Hello, {{ customer.first_name }}{% assign last_name = 'Smith' %}"
       },
       "result": " Smith"
-    },
-    {
-      "name": "arguments go out of scope",
-      "template": "{% import 'product-args', foo: 'hello', bar: 'there' %}{{ foo }}",
-      "templates": {
-        "product-args": "{{ foo }} {{ bar }}"
-      },
-      "result": ""
     },
     {
       "name": "namespaced",
