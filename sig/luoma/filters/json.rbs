@@ -1,5 +1,5 @@
 module Luoma
-  # Liquid filters and helper methods.
+  
   module Filters
     # Return _left_ serialized in JSON format.
     def self.json: (FilterContext context, untyped left, ?pretty: bool) -> untyped

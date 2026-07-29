@@ -3,7 +3,7 @@
 require "test_helper"
 
 class TestStaticAnalysisHelpers < Minitest::Test
-  SOURCE = <<~LIQUID
+  SOURCE = <<~TEXT
     Hello, {{ you }}!
     {% assign x = 'foo' | upcase %}
     {% for ch in x %}
@@ -11,7 +11,7 @@ class TestStaticAnalysisHelpers < Minitest::Test
     {% endfor %}
     Goodbye, {{ you.first_name | capitalize }} {{ you.last_name }}
     Goodbye, {{ you.first_name }} {{ you.last_name }}
-  LIQUID
+  TEXT
 
   TEMPLATE = Luoma.parse(SOURCE)
 
@@ -68,7 +68,7 @@ class TestStaticAnalysisHelpers < Minitest::Test
   end
 
   def test_get_comments
-    source = <<~LIQUID.chomp
+    source = <<~TEXT.chomp
       Hello
       {# some comment #}
       World!
@@ -76,7 +76,7 @@ class TestStaticAnalysisHelpers < Minitest::Test
       {% if false %}
         {# conditional comment #}
       {% endif%}
-    LIQUID
+    TEXT
 
     template = Luoma.parse(source)
     nodes = template.comments

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 module Luoma
-  # Liquid filters and helper methods.
   module Filters
     # Return _left_ serialized in JSON format.
     def self.json(context, left, pretty: false)

@@ -3,7 +3,7 @@ module Luoma
     # The template being rendered.
     @template: Template
 
-    # The Liquid environment this render context and associated template is
+    # The Luoma environment this render context and associated template is
     # bound to.
     @env: Environment
 

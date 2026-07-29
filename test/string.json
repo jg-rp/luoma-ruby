@@ -257,8 +257,8 @@
     {
       "name": "literal, interpolation, nested",
       "expression": "'Hello, ${you | append: '${something}'}!'",
-      "data": { "you": "World", "something": " and Liquid" },
-      "result": "Hello, World and Liquid!"
+      "data": { "you": "World", "something": " and Luoma" },
+      "result": "Hello, World and Luoma!"
     }
   ]
 }

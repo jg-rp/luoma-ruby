@@ -9,7 +9,7 @@ module Luoma
     def load: (Environment env, String name, ?globals: t_namespace?, ?context: RenderContext?, **untyped kwargs) -> Template
   end
 
-  # Liquid template source text and meta data.
+  # Template source text and meta data.
   class TemplateSource
     @source: String
 

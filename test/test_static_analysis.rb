@@ -865,12 +865,12 @@ class TestStaticAnalysis < Minitest::Test
   end
 
   def test_with
-    source = <<~LIQUID.chomp
+    source = <<~TEXT.chomp
       {% with a: 1, b: 3.4 -%}
       {{ a }} + {{ b }} = {{ a | plus: b }}
       {%- endwith -%}
       {{ a }}
-    LIQUID
+    TEXT
 
     analysis = Luoma.parse(source).analyze(include_partials: true)
 

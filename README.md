@@ -52,7 +52,7 @@ require "luoma"
 
 template = Luoma.parse("Hello, {{ you }}!")
 puts template.render("you" => "World")  # Hello, World!
-puts template.render("you" => "Liquid")  # Hello, Liquid!
+puts template.render("you" => "Luoma")  # Hello, Luoma!
 ```
 
 ## Links
