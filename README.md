@@ -71,6 +71,8 @@ puts template.render("you" => "Liquid")  # Hello, Liquid!
 - docs
 - Test drop API
 - Public/private modifier for `{% define %}`.
+- A `take` filter
+- Remove args from `{% import %}`?
 
 ## Notes
 

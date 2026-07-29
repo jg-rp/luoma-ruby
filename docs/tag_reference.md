@@ -7,7 +7,38 @@ hide:
 
 ## Comments
 
-TODO
+```title="Syntax"
+{# <comment text> #}
+```
+
+Comments can be used to add documentation to your templates or "comment out" chunks of markup so that it wont be rendered.
+
+```liquid2
+{# This is a comment #}
+{#
+    Comments can
+    span
+    multiple lines
+#}
+```
+
+You can safely comment out markup containing comments by adding hashes, as long as the number of hashes is balanced.
+
+```liquid2
+{##
+  {# existing comment #}
+  {{ something }}
+##}
+```
+
+By convention, comments that start with a single hash on every line are considered doc comments to be parsed by a documentation generator.
+
+```liquid2
+{##
+ # @param font
+ # @returns CSS
+ ##}
+```
 
 ## Output
 
@@ -146,21 +177,30 @@ HELLO BOB!
 {% endfor %}
 ```
 
-The `for` tag renders its block once for each item in an iterable object, like an array/list or mapping/dict/hash. If the iterable is empty and an `else` block given, it will be rendered instead.
+The `for` tag renders its block once for each item in an iterable object. If the iterable is empty and an `else` block given, it will be rendered instead.
 
 ```liquid2
 {% for product in collection %}
-    - {{ product.title }}
+  - {{ product.title }}
 {% else %}
-    No products available
+  No products available
 {% endfor %}
 ```
 
-Range expression are often used with the `for` tag to loop over increasing integers.
+Optionally, the current zero-based iteration index can be bound to a name.
 
 ```liquid2
-{% for i in (1..4) %}
-    {{ i }}
+{% for product, index in collection %}
+  - {{ product.title }} at index {{ index }}
+{% endfor %}
+```
+
+And the optional third identifier binds the array being iterated to a name.
+
+```liquid2
+{% for product, index, array in collection %}
+  {%- assign last = index == (array | size) - 1 -%}
+  ...
 {% endfor %}
 ```
 
@@ -170,10 +210,11 @@ You can exit a loop early using the `break` tag.
 
 ```liquid2
 {% for product in collection.products %}
-    {% if product.title == "Shirt" %}
-        {% break %}
-    {% endif %}
-    - {{ product.title }}
+  {% if product.title == "Shirt" %}
+    {% break %}
+  {% endif %}
+
+  - {{ product.title }}
 {% endfor %}
 ```
 
@@ -183,10 +224,11 @@ You can skip all or part of a loop iteration with the `continue` tag.
 
 ```liquid2
 {% for product in collection.products %}
-    {% if product.title == "Shirt" %}
-        {% continue %}
-    {% endif %}
-    - {{ product.title }}
+  {% if product.title == "Shirt" %}
+    {% continue %}
+  {% endif %}
+
+  - {{ product.title }}
 {% endfor %}
 ```
 
@@ -232,7 +274,7 @@ The `import` tag loads and renders a named template for its side effects, discar
 %}
 ```
 
-The `include` tag loads and renders a named template, inserting the resulting text in its place. The name of the template to include can be a string literal or a variable resolving to a string. When rendered, the included template will share the same scope as the current template.
+The `include` tag loads and renders a named template, inserting the resulting text in its place. The name of the template to include can be a string literal or a variable resolving to a string. When rendered, the included template will share the same scope as the "calling" template.
 
 ```liquid2
 {% include "snippets/header.html" %}
@@ -252,7 +294,7 @@ Additional keyword arguments given to the `include` tag will be added to the inc
 {% raw %} <text> {% endraw %}
 ```
 
-Any text between `{% raw %}` and `{% endraw %}` will not be interpreted as Liquid markup, but output as plain text instead.
+Any text between `{% raw %}` and `{% endraw %}` will not be interpreted as markup, but output as plain text instead.
 
 ```liquid2
 {% raw %}
@@ -284,4 +326,32 @@ Additional keyword arguments given to the `render` tag will be added to the rend
 
 ## with
 
-TODO
+```title="Syntax"
+{% with <identifier> = <expression> [, <identifier> = <expression> ... ] %}
+  <markup>
+{% endwith %}
+```
+
+The `with` tag introduces block-scoped variables. These variables have the potential to shadow global variables or variables assigned with `{% assign %}`, `{% capture %}` and `{% define %}`.
+
+```liquid2
+{% with p = collection.products.first %}
+  {{ p.title }}
+{% endwith %}
+
+{% with a = 1, b = 3.4 %}
+  {{ a }} + {{ b }} = {{ a + b }}
+{% endwith %}
+```
+
+When multiple bindings are given, earlier variables are in scope for later expressions.
+
+```liquid2
+{% with
+  a = 1,
+  b = 3.4,
+  c = a + b,
+%}
+  {{ a }} + {{ b }} = {{ c }}
+{% endwith %}
+```
