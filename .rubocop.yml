@@ -68,3 +68,7 @@ Lint/UnusedMethodArgument:
 
 Naming/MethodParameterName:
   AllowedNames: [op, re, e, s]
+
+# This can upset steep
+Style/ArgumentsForwarding:
+  Enabled: false

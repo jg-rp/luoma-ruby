@@ -1,21 +1,4 @@
-# Data types
-
-Luoma has weak typing. Anywhere a particular type is expected - like filter and tag arguments - Luoma will automatically convert a value to the required type. This implicit conversion can never fail. That is, the expression language is _total_.
-
-The following basic data types are supported. All other types - either built-in or custom - inherit from `Luoma::Drop` and implement the _drop interface_.
-
-| Luoma type | Ruby type  | Example Luoma literal  |
-| ---------- | ---------- | ---------------------- |
-| Boolean    | bool       | `true` or `false`      |
-| Null       | nil        | `null` or `nil`        |
-| Integer    | Integer    | `123`, `0`, `-7`       |
-| Float      | Float      | `1.23`, `0.1`          |
-| String     | String     | `"Hello"` or `'Hello'` |
-| Array      | Array      | `[1, 2, 3]`            |
-| Object     | Hash       | `{"a": 1, "b": 42}`    |
-| Nothing    | `:nothing` |                        |
-
-## Extension types
+# Extension types
 
 A drop is a developer-defined type that plays nicely with Luoma tags, filters, predicates and operators. Drops are often used to implement lazy data retrieval or context sensitive logic.
 

@@ -10,8 +10,8 @@ module Luoma
     end
 
     #: (Environment, String, ?globals: t_namespace?, ?context: RenderContext?, **kwargs) -> Template
-    def load(env, name, globals: nil, context: nil, **)
-      data = get_source(env, name, context: context, **)
+    def load(env, name, globals: nil, context: nil, **kwargs)
+      data = get_source(env, name, context: context, **kwargs)
       env.parse(data.source,
                 name: data.name,
                 globals: globals,

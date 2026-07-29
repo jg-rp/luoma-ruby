@@ -43,7 +43,7 @@ nav = [
     { "Introduction" = "index.md" },
     { "Setup" = "configuration.md" },
     "template_loaders.md",
-    "data_types.md",
+    "extension_types.md",
     "undefined_variables.md",
     "template_loaders.md",
     "static_analysis.md",

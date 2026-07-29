@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require "pathname"
-require_relative "../loader"
-require_relative "mixins"
 
 module Luoma
   # A template loader that reads template from a file system.

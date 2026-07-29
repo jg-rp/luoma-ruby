@@ -2,16 +2,14 @@
 
 module Luoma
   class ChoiceLoader < TemplateLoader
-    #: (*TemplateLoader) -> void
     def initialize(*loaders)
-      super()
+      super
       @loaders = loaders
     end
 
-    #: (Environment, String, ?globals: t_namespace?, ?context: RenderContext?, **kwargs) -> Template
-    def load(env, name, globals: nil, context: nil, **)
+    def load(env, name, **kwargs)
       @loaders.each do |loader|
-        return loader.load(env, name, globals: globals, context: context, **)
+        return loader.load(env, name, **kwargs)
       rescue TemplateNotFoundError
         next
       end
