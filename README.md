@@ -14,7 +14,7 @@
     <img alt="Gem Version" src="https://img.shields.io/gem/v/luoma?style=flat-square">
   </a>
   <a href="https://github.com/jg-rp/luoma-ruby">
-    <img alt="Static Badge" src="https://img.shields.io/badge/Ruby-3.1%20%7C%203.2%20%7C%203.3%20%7C%203.4-CC342D?style=flat-square">
+    <img alt="Static Badge" src="https://img.shields.io/badge/Ruby-3.3%20%7C%203.4%20%7C%204.0-CC342D?style=flat-square">
   </a>
 </p>
 
