@@ -18,6 +18,10 @@ module Luoma
 
       until parser.kind != :token_comma
         parser.next
+
+        # Trailing commas are OK.
+        break unless parser.kind == :token_ident
+
         name = parser.parse_ident
         assign_token = parser.eat(
           :token_assign,

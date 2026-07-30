@@ -31,22 +31,23 @@ module Luoma
         template_path = template_path.sub_ext(@default_extension || raise)
       end
 
-      # TODO: better relative path check
-
-      # Don't alow template names to escape the search path with "../".
-      template_path.each_filename do |part|
-        next unless part == ".."
-
-        raise TemplateNotFoundError.new("template not found #{template_name}")
-      end
-
       # Search each path in turn.
       @search_path.each do |path|
         source_path = path.join(template_path)
+        next unless child_path?(source_path, path)
         return source_path if source_path.file?
       end
 
       raise TemplateNotFoundError.new("template not found #{template_name}")
+    end
+
+    private
+
+    #: (Pathname, Pathname) -> bool
+    def child_path?(child, parent)
+      child_ = child.expand_path
+      parent_ = parent.expand_path
+      child_.ascend.drop(1).include?(parent_)
     end
   end
 

@@ -8,6 +8,10 @@ module Luoma
     def initialize: (String | Array[String] search_path, ?default_extension: String?) -> void
 
     def resolve_path: (String template_name) -> Pathname
+                    
+    private
+
+    def child_path?: (Pathname child, Pathname parent) -> bool
   end
 
   # A file system template loader that caches parsed templates.

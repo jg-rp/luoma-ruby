@@ -41,7 +41,7 @@ Given a value that can't be cast to an integer or float, the special value `Noth
 
 ```
 <array> | all
-<array> | all: <string> [, <value>]
+<array> | all: <string> [, <any>]
 <array> | all: <lambda>
 ```
 
@@ -115,7 +115,7 @@ true
 
 ```
 <array> | any
-<array> | any: <string> [, <value>]
+<array> | any: <string> [, <any>]
 <array> | any: <lambda>
 ```
 
@@ -222,7 +222,7 @@ World!
 <number> | at_least: <number>
 ```
 
-Return the maximum of the filter's input value and its argument. If either input value or argument are string representations of an integer or float, they will be cast to an integer or float prior to comparison.
+Return the maximum of the input value and the argument value. Both input and argument will be cast to a number if they aren't numbers already.
 
 ```liquid2
 {{ -5.1 | at_least: 8 }}
@@ -234,7 +234,7 @@ Return the maximum of the filter's input value and its argument. If either input
 8
 ```
 
-If both input value and argument can not be cast to an integer or float, the special value `Nothing` will be returned instead.
+If both input value and argument can not be cast to number, the special value `Nothing` will be returned instead.
 
 ```liquid2
 {{ "hello" | at_least: 2 }}
@@ -256,7 +256,7 @@ If both input value and argument can not be cast to an integer or float, the spe
 <number> | at_most: <number>
 ```
 
-Return the minimum of the filter's input value and its argument. If either input value or argument are string representations of an integer or float, they will be cast to an integer or float prior to comparison.
+Return the minimum of the input value and the argument value. Both input and argument will be cast to a number if they aren't numbers already.
 
 ```liquid2
 {{ 5 | at_most: 8 }}
@@ -268,7 +268,7 @@ Return the minimum of the filter's input value and its argument. If either input
 5
 ```
 
-If both input value and argument can not be cast to an integer or float, the special value `Nothing` will be returned instead.
+If both input value and argument can not be cast to a number, the special value `Nothing` will be returned instead.
 
 ```liquid2
 {{ "hello" | at_most: 2 }}
@@ -290,7 +290,7 @@ If both input value and argument can not be cast to an integer or float, the spe
 <string> | capitalize
 ```
 
-Return the input string with the first character in upper case and the rest lowercase.
+Return a copy of the input string with the first character in upper case and all other characters in lowercase.
 
 ```liquid2
 {{ 'heLLO, World!' | capitalize }}
@@ -347,7 +347,9 @@ If the input is undefined or can't be converted to a number, the special value `
 ## compact
 
 ```
-<array> | compact[: <key>]
+<array> | compact
+<array> | compact: <string>
+<array> | compact: <lambda>
 ```
 
 Return a new array containing items from the input array excluding `null` and `Nothing` values.
@@ -361,7 +363,7 @@ Return a new array containing items from the input array excluding `null` and `N
 [1,2]
 ```
 
-If `key` is given and it is a string, array items should be objects and the key is used to lookup a property of each object.
+If a string argument is given, array items should be objects and the string is used to lookup a property of each object.
 
 ```liquid2
 {%- assign
@@ -379,7 +381,7 @@ If `key` is given and it is a string, array items should be objects and the key 
 [{"title":"foo","id":1},{"title":"baz","id":3}]
 ```
 
-If `key` is a lambda expression, the expression is evaluated for each item in the input array. If the expression evaluates to `nil` or `Nothing`, the item is excluded from the result.
+If a lambda expression is given, the expression is evaluated for each item in the input array. If the expression evaluates to `nil` or `Nothing`, the item is excluded from the result.
 
 ```liquid2
 {%- assign
@@ -403,83 +405,39 @@ If `key` is a lambda expression, the expression is evaluated for each item in th
 <array> | concat: <array>
 ```
 
-Create a new array by joining one array-like object with another.
+Create a new array by concatenating the input array with the argument array.
 
 ```liquid2
-{% assign fruits = "apples, oranges, peaches" | split: ", " %}
-{% assign vegetables = "carrots, turnips, potatoes" | split: ", " %}
+{%- assign
+  fruits = ["apples", "oranges", "peaches"],
+  vegetables = ["carrots", "turnips", "potatoes"],
+-%}
 
-{% assign everything = fruits | concat: vegetables %}
-
-{% for item in everything %}
-- {{ item }}
-{% endfor %}
+{{ fruits | concat: vegetables }}
 ```
 
-```plain title="output"
-- apples
-- oranges
-- peaches
-- carrots
-- turnips
-- potatoes
+```title="Output"
+["apples","oranges","peaches","carrots","turnips","potatoes"]
 ```
 
-If the input value is not array-like, it will be converted to an array. No conversion is attempted for the argument value.
+If the input value or argument are not array-like, they will be coerced to arrays.
 
 ```liquid2
-{% assign fruits = "apples, oranges, peaches" | split: ", " -%}
-{% assign things = "hello" | concat: fruits -%}
-
-{% for item in things -%}
-- {{ item }}
-{% endfor %}
+{% assign fruits = ["apples", "oranges", "peaches"] -%}
+{{ fruits | concat: "hello" }}
 ```
 
-```plain title="output"
-- h
-- e
-- l
-- l
-- o
-- apples
-- oranges
-- peaches
-```
-
-If the input is a nested array, it will be flattened before concatenation. The argument is not flattened.
-
-```json title="data"
-{
-  "a": [
-    ["a", "x"],
-    ["b", ["y", ["z"]]]
-  ],
-  "b": ["c", "d"]
-}
-```
-
-```liquid2
-{{ a | concat: b | join: '#' }}
-```
-
-```plain title="output"
-a#x#b#y#z#c#d
+```title="Output"
+["apples","oranges","peaches","h","e","l","l","o"]
 ```
 
 ## date
 
 ```
-<datetime> | date: <string>
+<string | integer> | date: <string>
 ```
 
-Format a date and/or time according the the given format string. The input can be a string, in which case the string will be parsed as a date/time before formatting.
-
-:::caution
-
-LiquidScript's `date` filter can parse Unix timestamps, ISO 8601, RFC2822, SQL and HTTP header formatted date/time strings. It does not do fuzzy parsing like Ruby or Python Liquid.
-
-:::
+Format a date and/or time according the the given format string. The input value will be parsed as a date/time before formatting.
 
 ```liquid2
 {{ "March 14, 2016" | date: "%b %d, %y" }}
@@ -499,45 +457,30 @@ The special `'now'` or `'today'` input values can be used to get the current tim
 2021-12-02 10:17
 ```
 
-If the input is undefined, an empty string is returned.
-
-```liquid2
-{{ nosuchthing | date: "%Y-%m-%d %H:%M" }}
-```
-
-```plain title="output"
-
-```
-
 ## default
 
 ```
-<expression> | default[: <object>[, allow_false:<bool>]]
+<any> | default[: <any>[, allow_false:<bool>]]
 ```
 
-Return a default value if the input is undefined, `nil`/`null`, `false` or empty, or return the input unchanged otherwise.
+Return a default value if the input is undefined, `null`, `false` or empty. Otherwise return the input value unchanged.
 
 ```liquid2
-{{ product_price | default: 2.99 }}
-
-{%- assign product_price = "" %}
-{{ product_price | default: 2.99 }}
-
-{%- assign product_price = 4.99 %}
-{{ product_price | default: 2.99 }}
+{{ 1.99 | default: 2.99 }}
+{{ nosuchthing | default: 2.99 }}
+{{ [] | default: [1,2,3] }}
 ```
 
 ```plain title="output"
+1.99
 2.99
-2.99
-4.99
+[1,2,3]
 ```
 
-If the optional `allow_false` argument is `true`, an input of `false` will not return the default. `allow_false` defaults to `false`.
+If the optional `allow_false` argument is `true`, an input of `false` will be passed through.
 
 ```liquid2
-{% assign product_reduced = false -%}
-{{ product_reduced | default: true, allow_false: true }}
+{{ false | default: 42, allow_false: true }}
 ```
 
 ```plain title="output"
@@ -547,23 +490,11 @@ false
 If no argument is given, the default value will be an empty string.
 
 ```liquid2
-{{ product_price | default }}
+{{ false | default }}
 ```
 
 ```plain title="output"
 
-```
-
-Empty strings, arrays and objects all cause the default value to be returned. `0` does not.
-
-```liquid2
-{{ "" | default: "hello" }}
-{{ 0 | default: 99 }}
-```
-
-```plain title="output"
-hello
-0
 ```
 
 ## divided_by
