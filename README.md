@@ -1,6 +1,6 @@
 <h1 align="center">Luoma - Ruby</h1>
 
-<p align="center">A modern template engine for Ruby.</p>
+<p align="center">A modern template engine with a well-defined, composable, implementation agnostic expression language.</p>
 
 <p align="center">
   <a href="https://github.com/jg-rp/luoma-ruby/blob/main/LICENSE.txt">
