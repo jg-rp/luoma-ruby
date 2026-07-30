@@ -70,5 +70,9 @@ module Luoma
     # Return the maximum numeric value found in _left_.
     # Coerce _left_ to an array if it's not an array already.
     def self.max: (FilterContext context, untyped left, ?untyped key) -> untyped
+                
+    # Return at most _count_ items from `_left` as a new array.
+    # Coerce _left_ to an array if it's not an array already.
+    def self.take: (FilterContext context, untyped left, untyped count) -> Array[untyped]
   end
 end

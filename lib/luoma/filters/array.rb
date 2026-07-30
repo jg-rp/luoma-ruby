@@ -368,5 +368,14 @@ module Luoma
         max_.call(left) { |item, _index| context.fetch(item, key, default: nil) }
       end
     end
+
+    # Return at most _count_ items from `_left` as a new array.
+    # Coerce _left_ to an array if it's not an array already.
+    # Coerce _count_ to an integer, or zero if it is not numeric.
+    def self.take(context, left, count)
+      count_ = context.to_i(count, default: 0)
+      count_ = 0 if count_.negative?
+      context.to_enumerable(left).take(count_)
+    end
   end
 end

@@ -1,0 +1,60 @@
+{
+  "tests": [
+    {
+      "name": "array",
+      "template": "{{ a | take: 2 }}",
+      "data": {
+        "a": [1, 2, 3]
+      },
+      "result": "[1,2]"
+    },
+    {
+      "name": "array, too many",
+      "template": "{{ a | take: 9 }}",
+      "data": {
+        "a": [1, 2, 3]
+      },
+      "result": "[1,2,3]"
+    },
+    {
+      "name": "array, zero",
+      "template": "{{ a | take: 0 }}",
+      "data": {
+        "a": [1, 2, 3]
+      },
+      "result": "[]"
+    },
+    {
+      "name": "array, negative",
+      "template": "{{ a | take: -1 }}",
+      "data": {
+        "a": [1, 2, 3]
+      },
+      "result": "[]"
+    },
+    {
+      "name": "array, non-numeric",
+      "template": "{{ a | take: 'foo' }}",
+      "data": {
+        "a": [1, 2, 3]
+      },
+      "result": "[]"
+    },
+    {
+      "name": "string",
+      "template": "{{ s | take: 3 }}",
+      "data": {
+        "s": "hello"
+      },
+      "result": "[\"h\",\"e\",\"l\"]"
+    },
+    {
+      "name": "object",
+      "template": "{{ o | take: 1 }}",
+      "data": {
+        "o": { "a": 1, "b": 2 }
+      },
+      "result": "[[\"a\",1]]"
+    }
+  ]
+}

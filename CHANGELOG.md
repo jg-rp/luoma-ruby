@@ -1,5 +1,7 @@
-## [Unreleased]
+## [0.2.0] - 2026-07-29
 
-## [0.1.0] - 2026-06-05
+- Added the `take` filter. `a | take: 5` is equivalent to `a | slice: stop=6`.
+
+## [0.1.0] - 2026-07-29
 
 - Initial release

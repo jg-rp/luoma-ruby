@@ -37,6 +37,156 @@ Given a value that can't be cast to an integer or float, the special value `Noth
 0
 ```
 
+## all
+
+```
+<array> | all
+<array> | all: <string> [, <value>]
+<array> | all: <lambda>
+```
+
+Return `true` if all items in the input array are truthy, or `false` otherwise.
+
+```liquid2
+{{ [true, true, true] | all }}
+{{ [true, false, true] | all }}
+```
+
+```title="Output"
+true
+false
+```
+
+If a string argument is given, array items should be objects and the string is used as a property name to test for truthiness.
+
+```liquid2
+{% assign
+  items = [
+    {"title": "foo", "active": true},
+    {"title": "bar", "active": false},
+    {"title": "baz", "active": true},
+  ]
+%}
+
+{{ items | all: "active" }}
+```
+
+```title="Output"
+false
+```
+
+If the optional second argument is given, the value at the given property will be compared to the argument value instead of testing for truthiness.
+
+```liquid2
+{% assign
+  items = [
+    {"title": "foo", "state": 2},
+    {"title": "bar", "state": 2},
+    {"title": "baz", "state": 2},
+  ]
+%}
+
+{{ items | all: "state", 2 }}
+```
+
+```title="Output"
+true
+```
+
+Given a lambda expression as the first argument, the expression will be evaluated for each item in the input array and the result tested for truthiness.
+
+```liquid2
+{% assign
+  items = [
+    {"title": "foo", "state": 2},
+    {"title": "bar", "state": 3},
+    {"title": "baz", "state": 1},
+  ]
+%}
+
+{{ items | all: (x) -> x.state < 5 }}
+```
+
+```title="Output"
+true
+```
+
+## any
+
+```
+<array> | any
+<array> | any: <string> [, <value>]
+<array> | any: <lambda>
+```
+
+Return `true` if any of the items in the input array are truthy, or `false` if they are all falsy.
+
+```liquid2
+{{ [true, true, true] | any }}
+{{ [true, false, true] | any }}
+{{ [false, false, false] | any }}
+```
+
+```title="Output"
+true
+true
+false
+```
+
+If a string argument is given, array items should be objects and the string is used as a property name to test for truthiness.
+
+```liquid2
+{% assign
+  items = [
+    {"title": "foo", "active": true},
+    {"title": "bar", "active": false},
+    {"title": "baz", "active": true},
+  ]
+%}
+
+{{ items | any: "active" }}
+```
+
+```title="Output"
+true
+```
+
+If the optional second argument is given, the value at the given property will be compared to the argument value instead of testing for truthiness.
+
+```liquid2
+{% assign
+  items = [
+    {"title": "foo", "state": 2},
+    {"title": "bar", "state": 2},
+    {"title": "baz", "state": 2},
+  ]
+%}
+
+{{ items | any: "state", 2 }}
+```
+
+```title="Output"
+true
+```
+
+Given a lambda expression as the first argument, the expression will be evaluated for each item in the input array and the result tested for truthiness.
+
+```liquid2
+{% assign
+  items = [
+    {"title": "foo", "state": 2},
+    {"title": "bar", "state": 3},
+    {"title": "baz", "state": 1},
+  ]
+%}
+
+{{ items | any: (x) -> x.state < 2 }}
+```
+
+```title="Output"
+true
+```
+
 ## append
 
 ```
@@ -677,6 +827,14 @@ Ground
 
 If the input sequence is undefined, empty or not a sequence, `nil` is returned.
 
+## flatten
+
+TODO
+
+## flat_map
+
+TODO
+
 ## floor
 
 ```
@@ -779,6 +937,10 @@ If an argument string is not given, it defaults to a single space.
 John Paul George Ringo
 ```
 
+## json
+
+TODO
+
 ## last
 
 ```
@@ -851,6 +1013,14 @@ For example, if `pages` is an array of objects with a `category` property:
 - sports
 - technology
 ```
+
+## max
+
+TODO:
+
+## min
+
+TODO:
 
 ## minus
 
@@ -1366,6 +1536,10 @@ The optional argument is a sort key. If given, it should be the name of a proper
 <h4>A Shoe</h4>
 ```
 
+## sort_numeric
+
+TODO
+
 ## split
 
 ```
@@ -1486,6 +1660,10 @@ Return the sum of all numeric elements in an array.
 ```
 
 If the optional string argument is given, it is assumed that array items are hash/dict/mapping-like, and the argument should be the name of a property/key. The values at `array[property]` will be summed.
+
+## take
+
+TODO
 
 ## times
 
@@ -1700,3 +1878,7 @@ Available product:
 - Television
 - Garlic press
 ```
+
+## zip
+
+TODO:

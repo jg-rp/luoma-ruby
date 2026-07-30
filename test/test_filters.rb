@@ -302,6 +302,14 @@ class TestFilters < Minitest::Spec
     end
   end
 
+  describe "take filter" do
+    load_test_cases("test/take_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
   describe "times filter" do
     load_test_cases("test/times_filter.json").each do |test_case|
       it test_case["name"] do

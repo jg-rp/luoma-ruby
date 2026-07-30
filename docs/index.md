@@ -1,5 +1,9 @@
 # Luoma - Ruby
 
+!!! warning
+
+    This documentation is a work in progress.
+
 Luoma is a modern template engine with a well-defined, composable, implementation agnostic expression language.
 
 Luoma markup will be familiar to anyone who's used [Liquid](https://github.com/Shopify/liquid), [Jinja](https://jinja.palletsprojects.com/en/stable/) or [Django's template language](https://docs.djangoproject.com/en/6.0/topics/templates/#the-django-template-language), but with a strictly immutable data model, first-class blocks and expressions, and functional primitives for when data transformation is necessary.

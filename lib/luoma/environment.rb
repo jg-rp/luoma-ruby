@@ -205,6 +205,7 @@ module Luoma
       register_filter("strip_newlines", Luoma::Filters.method(:strip_newlines))
       register_filter("strip", Luoma::Filters.method(:strip))
       register_filter("sum", Luoma::Filters.method(:sum))
+      register_filter("take", Luoma::Filters.method(:take))
       register_filter("times", Luoma::Filters.method(:times))
       register_filter("truncate", Luoma::Filters.method(:truncate))
       register_filter("truncatewords", Luoma::Filters.method(:truncatewords))
