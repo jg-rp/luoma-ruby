@@ -503,39 +503,37 @@ If no argument is given, the default value will be an empty string.
 <number> | divided_by: <number>
 ```
 
-Divide a number by another number. The result is rounded down to the nearest integer if the divisor is an integer.
+Divide the input number by the argument number.
 
 ```liquid2
 {{ 16 | divided_by: 4 }}
 {{ 5 | divided_by: 3 }}
+{{ 20 | divided_by: 7 }}
+{{ 16 / 4 }}
+{{ 5 / 3 }}
+{{ 20 / 7 }}
 ```
 
 ```plain title="output"
 4
-1
-```
-
-If you divide by a float, the result will be a float.
-
-```liquid2
-{{ 20 | divided_by: 7 }}
-{{ 20 | divided_by: 7.0 }}
-```
-
-```plain title="output"
-2
+1.6666666666666667
+2.857142857142857
+4
+1.6666666666666667
 2.857142857142857
 ```
 
-If either the input or argument are not an integer or float, Liquid will try to convert them to an integer or float. If the input can't be converted, `0` will be used instead. If the argument can't be converted, an exception is raised.
+If either the input or argument are not numeric, they will be converted to an integer or float. If conversion fails or the argument is zero, the special value `Nothing` is returned.
 
 ```liquid2
 {{ "20" | divided_by: "7" }}
 {{ "hello" | divided_by: 2 }}
+{{ ("hello" | divided_by: 2) or 0 }}
 ```
 
 ```plain title="output"
-2
+2.857142857142857
+
 0
 ```
 
@@ -555,7 +553,7 @@ Return the input string with all characters in lowercase.
 hello, world!
 ```
 
-If the input is not a string, Liquid will convert it to a string before forcing characters to lowercase.
+If the input is not a string, it will be converted to a string before forcing characters to lowercase.
 
 ```liquid2
 {{ 5 | downcase }}
@@ -564,8 +562,6 @@ If the input is not a string, Liquid will convert it to a string before forcing 
 ```plain title="output"
 5
 ```
-
-If the input is undefined, an empty string is returned.
 
 ## escape
 
@@ -585,11 +581,9 @@ This filter replaces the characters `&`, `<`, `>`, `'`, and `"` with their corre
 
 This helps prevent HTML injection when rendering untrusted content in HTML element bodies or attributes.
 
-:::caution
+!!! warning
 
-This filter does **not** make strings safe for use in JavaScript, including in `<script>` blocks, inline event handler attributes (e.g. `onerror`), or other JavaScript contexts. For those cases, use the [`escapejs`](#escapejs) filter instead.
-
-:::
+    This filter does **not** make strings safe for use in JavaScript, including in `<script>` blocks, inline event handler attributes (e.g. `onerror`), or other JavaScript contexts. For those cases, use the [`escapejs`](#escapejs) filter instead.
 
 ```liquid2
 {{ "Have you read 'James & the Giant Peach'?" | escape }}
