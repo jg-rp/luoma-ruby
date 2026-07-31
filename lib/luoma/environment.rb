@@ -164,6 +164,7 @@ module Luoma
       register_filter("default", Luoma::Filters.method(:default))
       register_filter("divided_by", Luoma::Filters.method(:divided_by))
       register_filter("downcase", Luoma::Filters.method(:downcase))
+      register_filter("escape_js", Luoma::Filters.method(:escape_js))
       register_filter("escape_once", Luoma::Filters.method(:escape_once))
       register_filter("escape", Luoma::Filters.method(:escape))
       register_filter("find_index", Luoma::Filters.method(:find_index))

@@ -7,9 +7,16 @@ module Luoma
 
   UNESCAPE_MAP: Hash[String, String]
 
+  RE_ESCAPE_JS: ::Regexp
+
+  ESCAPE_JS_MAP: Hash[String, String]
+
   #  (String) -> String
   def self.escape: (String s) -> String
 
   #  (String) -> String
   def self.unescape: (String s) -> String
+                   
+  #  (String) -> String
+  def self.escape_js: (String s) -> String
 end

@@ -31,7 +31,7 @@ module Luoma
     # Return _left_ with special HTML characters replaced with their HTML-safe escape sequences.
     # Coerce _left_ to a string if it is not one already.
     def self.escape(context, left)
-      CGI.escape_html(context.to_string(left)) unless left.nil?
+      CGI.escapeHTML(context.to_string(left)) unless left.nil?
     end
 
     # Return _left_ with special HTML characters replaced with their HTML-safe escape sequences.
@@ -39,7 +39,7 @@ module Luoma
     #
     # It is safe to use `escape_once` on string values that already contain HTML-escape sequences.
     def self.escape_once(context, left)
-      CGI.escape_html(CGI.unescape_html(context.to_string(left)))
+      CGI.escapeHTML(CGI.unescapeHTML(context.to_string(left)))
     end
 
     # Return _left_ with leading whitespace removed.

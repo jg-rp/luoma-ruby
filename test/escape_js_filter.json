@@ -1,0 +1,22 @@
+{
+  "tests": [
+    {
+      "name": "<script> tag",
+      "template": "{{ s | escape_js }}",
+      "data": { "s": "<script>alert('x')</script>" },
+      "result": "\\u003Cscript\\u003Ealert(\\u0027x\\u0027)\\u003C/script\\u003E"
+    },
+    {
+      "name": "quotes and backslash",
+      "template": "{{ s | escape_js }}",
+      "data": { "s": "\"foo\\bar\"" },
+      "result": "\\u0022foo\\u005Cbar\\u0022"
+    },
+    {
+      "name": "control characters",
+      "template": "{{ s | escape_js }}",
+      "data": { "s": "foo\u0000bar\u001fbaz" },
+      "result": "foo\\u0000bar\\u001Fbaz"
+    }
+  ]
+}

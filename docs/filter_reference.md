@@ -593,10 +593,10 @@ This helps prevent HTML injection when rendering untrusted content in HTML eleme
 Have you read &#39;James &amp; the Giant Peach&#39;?
 ```
 
-## escapejs
+## escape_js
 
 ```
-<string> | escapejs
+<string> | escape_js
 ```
 
 Escape characters for safe use in JavaScript string literals.
@@ -608,20 +608,18 @@ Escaped characters include:
 - ASCII control characters (U+0000 to U+001F)
 - Characters like quotes, angle brackets, ampersands, equals signs - Line/paragraph separators (U+2028, U+2029)
 
-:::caution
+!!! warning
 
-This filter does **not** make strings safe for use in JavaScript template literals (backtick strings), or in raw JavaScript expressions. Use it only when placing data inside quoted JS strings within inline `<script>` blocks or event handlers.
+    This filter does **not** make strings safe for use in JavaScript template literals (backtick strings), or in raw JavaScript expressions. Use it only when placing data inside quoted JS strings within inline `<script>` blocks or event handlers.
 
-**Recommended alternatives:**
+    **Recommended alternatives:**
 
-- Pass data using HTML `data-*` attributes and read them in JS via `element.dataset`.
-- For structured data, prefer a JSON-serialization approach using a JSON filter.
-
-:::
+    - Pass data using HTML `data-*` attributes and read them in JS via `element.dataset`.
+    - For structured data, prefer a JSON-serialization approach using a JSON filter.
 
 ```liquid2
 {% assign some_string = "<script>alert('x')</script>" %}
-<img src="" onerror="{{ some_string | escapejs }}" />
+<img src="" onerror="{{ some_string | escape_js }}" />
 ```
 
 ```plain title="output"

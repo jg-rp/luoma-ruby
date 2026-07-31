@@ -1,0 +1,6 @@
+module Luoma
+  module Filters
+    # Escape characters for safe use in JavaScript string literals.
+    def self.escape_js: (FilterContext context, untyped left) -> untyped
+  end
+end
