@@ -52,7 +52,6 @@ nav = [
   
   { "Tags" = ["tag_reference.md", "custom_tags.md"] },
   { "Filters" = ["filter_reference.md", "custom_filters.md"] },
-  { "Expressions" = ["expressions.md"] },
   { "Predicates" = ["predicate_reference.md"] }
 ]
 

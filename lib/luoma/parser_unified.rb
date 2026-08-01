@@ -770,7 +770,8 @@ module Luoma
     #: () -> Expression
     def parse_int_literal
       token = self.next
-      IntegerLiteral.new(token, Luoma.get_token_value(token, @source).to_i)
+      # Float first for scientific notation
+      IntegerLiteral.new(token, Float(Luoma.get_token_value(token, @source)).to_i)
     end
 
     #: () -> Expression

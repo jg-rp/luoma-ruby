@@ -35,6 +35,7 @@ Given a value that can't be cast to an integer or float, the special value `Noth
 ```plain title="output"
 
 0
+99
 ```
 
 ## all
@@ -766,7 +767,7 @@ Mastering JavaScript
 <sequence> | first
 ```
 
-Return the first item of the input sequence. The input could be array-like, a mapping or a string.
+Return the first item in the input sequence. The input could be array-like, a mapping or a string.
 
 ```liquid2
 {{ ["a", "b", "c"] | first }}
@@ -881,7 +882,7 @@ If the input can't be converted to a number, the special value `Nothing` is retu
 <array> | join[: <string>]
 ```
 
-Return concatenated items from the input array separated by the argument string. If array items are not strings, they will be converted to strings before joining.
+Return items from the input array concatenated separated by the argument string. If array items are not strings, they will be converted to strings before joining.
 
 ```liquid2
 {% assign beatles = ["John", "Paul", "George", "Ringo"] -%}
@@ -934,20 +935,22 @@ Return the input value as a JSON-formatted string.
 ## last
 
 ```
-<array> | last
+<sequence> | last
 ```
 
-Return the last item in the array-like input.
+Return the last item in the input sequence. The input could be array-like, a mapping or a string.
 
 ```liquid2
-{{ "Ground control to Major Tom." | split: " " | last }}
+{{ ["a", "b", "c"] | last }}
+{{ "abc" | last }}
 ```
 
 ```plain title="output"
-Tom.
+c
+c
 ```
 
-If the input is undefined, empty, string or a number, `nil` will be returned.
+If the input sequence is undefined, empty or not a sequence, the special value `Nothing` is returned.
 
 ## lstrip
 
@@ -955,8 +958,7 @@ If the input is undefined, empty, string or a number, `nil` will be returned.
 <string> | lstrip
 ```
 
-Return the input string with all leading whitespace removed. If the input is not a string, it will
-be converted to a string before stripping whitespace.
+Return a copy of the input string with all leading whitespace removed. If the input is not a string, it will be converted to a string before stripping whitespace.
 
 ```liquid2
 {{ "          So much room for activities          " | lstrip }}!
@@ -969,39 +971,52 @@ So much room for activities          !
 ## map
 
 ```
-<array> | map: <string | lambda expression>
+<array> | map: <string|lambda>
 ```
 
-Extract properties from an array of objects into a new array.
+Transform items from the input array into a new array.
 
-For example, if `pages` is an array of objects with a `category` property:
+If a string argument is given, array items should be objects and the argument a property name.
 
-```json title="data"
-{
-  "pages": [
+```liquid2
+{% assign
+  pages = [
     { "category": "business" },
     { "category": "celebrities" },
     { "category": "lifestyle" },
     { "category": "sports" },
     { "category": "technology" }
-  ]
-}
-```
+  ],
 
-```liquid2
-{% assign categories = pages | map: "category" -%}
+  categories = pages | map: "category"
+-%}
 
-{% for category in categories -%}
+{% for category in categories ~%}
 - {{ category }}
-{%- endfor %}
+{% endfor -%}
 ```
 
-```plain title="output"
+```plain title="Output"
 - business
 - celebrities
 - lifestyle
 - sports
 - technology
+```
+
+If a lambda expression is given, apply the expression to every item in the input array.
+
+```liquid2
+{# ...continued from above #}
+{{ pages | map: (p) -> (p.category | upcase) | join: '\n' }}
+```
+
+```title="Output"
+BUSINESS
+CELEBRITIES
+LIFESTYLE
+SPORTS
+TECHNOLOGY
 ```
 
 ## max
