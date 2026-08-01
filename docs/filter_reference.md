@@ -766,7 +766,7 @@ Mastering JavaScript
 <sequence> | first
 ```
 
-Return the first item of the input sequence. The input could be array-like a mapping or a string.
+Return the first item of the input sequence. The input could be array-like, a mapping or a string.
 
 ```liquid2
 {{ ["a", "b", "c"] | first }}
@@ -782,11 +782,72 @@ If the input sequence is undefined, empty or not a sequence, the special value `
 
 ## flatten
 
-TODO
+```
+<array> | flatten[: <integer>]
+```
+
+Return a copy of the input array with nested arrays flattened to at most the given depth.
+
+```liquid2
+{% assign a = [[1, 2, 3, [4, 5, 6]], 7] %}
+{{ a | flatten }}
+{{ a | flatten: 1 }}
+```
+
+```title="Output"
+[1,2,3,4,5,6,7]
+[1,2,3,[4,5,6],7]
+```
+
+If the optional depth argument can not be cast to an integer, it defaults to 1.
 
 ## flat_map
 
-TODO
+```
+<array> | flat_map: <string|lambda>
+```
+
+Transform and flatten the input array into a new array.
+
+If a string argument is given, array items should be objects and the argument a property name.
+
+```liquid2
+{% assign
+  items = [
+    { "prices": [3, 10, 99] },
+    { "prices": [1, 0.5, 42] },
+    { "prices": [87, 24, 1] },
+  ],
+
+  total = items | flat_map: "prices" | sum
+%}
+
+{{ total }}
+```
+
+```title="Output"
+267.5
+```
+
+If the argument is a lambda expression, the expression is applied to each array item before flattening.
+
+```liquid2
+{% assign
+  items = [
+    { "prices": [3, 10, 99] },
+    { "prices": [1, 0.5, 42] },
+    { "prices": [87, 24, 1] },
+  ],
+
+  total = items | flat_map: (i) -> [7, ...i.prices] | sum
+%}
+
+{{ total }}
+```
+
+```title="Output"
+288.5
+```
 
 ## floor
 
@@ -794,7 +855,7 @@ TODO
 <number> | floor
 ```
 
-Return the input down to the nearest whole number. Liquid tries to convert the input to a number before the filter is applied.
+Return the input number rounded down to the nearest whole number.
 
 ```liquid2
 {{ 1.2 | floor }}
@@ -812,51 +873,7 @@ Return the input down to the nearest whole number. Liquid tries to convert the i
 3
 ```
 
-If the input can't be converted to a number, `0` is returned.
-
-## has
-
-```
-<array> | has: <string>[, <object>]
-```
-
-Return `true` if the input array contains an object with a property identified by the first argument that is equal to the object given as the second argument. `false` is returned if none of the items in the input array contain such a property/value.
-
-In this example we test to see if any pages are in the "Programming" category.
-
-```json title="data"
-{
-  "pages": [
-    {
-      "id": 1,
-      "title": "Introduction to Cooking",
-      "category": "Cooking",
-      "tags": ["recipes", "beginner", "cooking techniques"]
-    },
-    {
-      "id": 2,
-      "title": "Top 10 Travel Destinations in Europe",
-      "category": "Travel",
-      "tags": ["Europe", "destinations", "travel tips"]
-    },
-    {
-      "id": 3,
-      "title": "Mastering JavaScript",
-      "category": "Programming",
-      "tags": ["JavaScript", "web development", "coding"]
-    }
-  ]
-}
-```
-
-```liquid2
-{% assign has_programming_page = pages | has: 'category', 'Programming' %}
-{{ has_programming_page }}
-```
-
-```plain title="output"
-true
-```
+If the input can't be converted to a number, the special value `Nothing` is returned.
 
 ## join
 
@@ -864,13 +881,10 @@ true
 <array> | join[: <string>]
 ```
 
-Return the items in the input array as a single string, separated by the argument string. If the
-input is not an array, Liquid will convert it to one. If input array items are not strings, they
-will be converted to strings before joining.
+Return concatenated items from the input array separated by the argument string. If array items are not strings, they will be converted to strings before joining.
 
 ```liquid2
-{% assign beatles = "John, Paul, George, Ringo" | split: ", " -%}
-
+{% assign beatles = ["John", "Paul", "George", "Ringo"] -%}
 {{ beatles | join: " and " }}
 ```
 
@@ -878,11 +892,10 @@ will be converted to strings before joining.
 John and Paul and George and Ringo
 ```
 
-If an argument string is not given, it defaults to a single space.
+If separator is not given it defaults to a single space.
 
 ```liquid2
-{% assign beatles = "John, Paul, George, Ringo" | split: ", " -%}
-
+{% assign beatles = ["John", "Paul", "George", "Ringo"] -%}
 {{ beatles | join }}
 ```
 
@@ -892,7 +905,31 @@ John Paul George Ringo
 
 ## json
 
-TODO
+```
+<any> | json[: pretty:<bool>]
+```
+
+Return the input value as a JSON-formatted string.
+
+```liquid2
+{%- assign
+  data = {
+    "foo": 42,
+    "bar": "baz"
+  }
+-%}
+
+{{ data | json }}
+{{ data | json: pretty:true }}
+```
+
+```title="Output"
+{"foo":42,"bar":"baz"}
+{
+  "foo": 42,
+  "bar": "baz"
+}
+```
 
 ## last
 
