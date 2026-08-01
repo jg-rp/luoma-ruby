@@ -15,14 +15,16 @@ Literals represent fixed values directly inside an expression.
 ```liquid2
 {%- assign x = null -%}
 {{ x.defined? }}
+{{ x }}
 {{ x or 'a' }}
-{{ x orElse 'b' }}
+{{ (x orElse 'b') | json }}
 ```
 
 ```title="Output"
 true
-a
 
+a
+null
 ```
 
 Booleans `true` and `false` represent _True_ and _False_ data values, respectively.
@@ -76,11 +78,59 @@ String literals can be single-quoted or double-quoted. Both support JavaScript-s
 Hello, Sue! 😀
 ```
 
-TODO: finish me
+Array literals are comma separated expressions surrounded by square brackets. The spread operator (`...`) expands a collection into the array literal.
 
-- **Arrays:** Defined using square brackets `[1, 2, 3]`. Arrays support the spread operator (`...`) to expand existing collections.
+```liquid2
+{%- assign
+  a = [1, 2, 3],
+  b = ["a", "b", ["c", "d"]],
+  c = [foo or 99, ...a, (b | flatten)],
+-%}
 
-- **Objects:** Key-value maps defined using braces `{ key: "value", count: 42 }`. Objects also support spread syntax (`...`).
+{{ a }}
+{{ b }}
+{{ c }}
+```
+
+```title="Output"
+[1,2,3]
+["a","b",["c","d"]]
+[99,1,2,3,["a","b","c","d"]]
+```
+
+Object literals use JavaScript-style braces (`{` and `}`) and colons (`:`). Quotes around keys are optional if they are simple identifiers.
+
+```liquid2
+{%- assign
+  obj = {
+    a: 1,
+    "b": 2,
+    'c': [3,4,5],
+    d: {"foo": "bar"}
+  }
+-%}
+
+{{ obj }}
+{{ obj | json: pretty=true }}
+```
+
+```title="Output"
+{"a":1,"b":2,"c":[3,4,5],"d":{"foo":"bar"}}
+{
+  "a": 1,
+  "b": 2,
+  "c": [
+    3,
+    4,
+    5
+  ],
+  "d": {
+    "foo": "bar"
+  }
+}
+```
+
+TODO
 
 - **Ranges:** Enclosed in parentheses with two dots, such as `(1..5)`.
 

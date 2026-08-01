@@ -1021,11 +1021,55 @@ TECHNOLOGY
 
 ## max
 
-TODO:
+```
+<array> | max[: <string|lambda>]
+```
+
+Return the item from the input array with the maximum numeric value.
+
+```liquid2
+{{ [1, 10, 9] | max }}
+{{ ['1', '10', '-9'] | max }}
+{{ ['1', 'foo', '10', '-99'] | max }}
+{{ [{'a': 100}, {'a': -100}] | max: 'a' }}
+{{ [{'a': 100}, {'a': -100}] | max: o -> o.a }}
+```
+
+```title="Output"
+10
+10
+10
+{"a":100}
+{"a":100}
+```
+
+If the input can't be coerced to an array, the input array is empty or contains no numeric values, `nil` is returned.
 
 ## min
 
-TODO:
+```
+<array> | min[: <string|lambda>]
+```
+
+Return the item from the input array with the minimum numeric value.
+
+```liquid2
+{{ [1, 10, 9] | min }}
+{{ ['1', '10', '-9'] | min }}
+{{ ['1', 'foo', '10', '-99'] | min }}
+{{ [{'a': 100}, {'a': -100}] | min: 'a' }}
+{{ [{'a': 100}, {'a': -100}] | min: o -> o.a }}
+```
+
+```title="Output"
+1
+-9
+-99
+{"a":-100}
+{"a":-100}
+```
+
+If the input can't be coerced to an array, is empty or contains no numeric values, `nil` is returned.
 
 ## minus
 
@@ -1033,7 +1077,7 @@ TODO:
 <number> | minus: <number>
 ```
 
-Return the result of subtracting one number from another. If either the input or argument are not a number, Liquid will try to convert them to a number. If that conversion fails, `0` is used instead.
+Return the result of subtracting the input number from the argument number. If either input or argument can not be coerced to numbers, the special value `Nothing` is returned.
 
 ```liquid2
 {{ 4 | minus: 2 }}
@@ -1046,7 +1090,7 @@ Return the result of subtracting one number from another. If either the input or
 2
 12
 171.157
--10
+
 ```
 
 ## modulo
@@ -1055,7 +1099,7 @@ Return the result of subtracting one number from another. If either the input or
 <number> | modulo: <number>
 ```
 
-Return the remainder from the division of the input by the argument.
+Return the remainder from dividing the input number by the argument number. If either input or argument are not numeric of the argument is zero, the special value `Nothing` is returned.
 
 ```liquid2
 {{ 3 | modulo: 2 }}
@@ -1069,10 +1113,6 @@ Return the remainder from the division of the input by the argument.
 3.357
 ```
 
-If either the input or argument are not an integer or float, Liquid will try to convert them to an
-integer or float. If the input can't be converted, `0` will be used instead. If the argument can't
-be converted, an exception is raised.
-
 ## newline_to_br
 
 ```
@@ -1082,21 +1122,12 @@ be converted, an exception is raised.
 Return the input string with `\n` and `\r\n` replaced with `<br />\n`.
 
 ```liquid2
-{% capture string_with_newlines %}
-Hello
-there
-{% endcapture %}
-
-{{ string_with_newlines | newline_to_br }}
+{{ "Hello\nthere" | newline_to_br }}
 ```
 
 ```plain title="output"
-
-
-<br />
 Hello<br />
-there<br />
-
+there
 ```
 
 ## plus
@@ -1105,7 +1136,7 @@ there<br />
 <number> | plus: <number>
 ```
 
-Return the result of adding one number to another. If either the input or argument are not a number, Liquid will try to convert them to a number. If that conversion fails, `0` is used instead.
+Return the result of adding the input number to the argument number. If either the input or argument are not numeric, the special value `Nothing` is returned.
 
 ```liquid2
 {{ 4 | plus: 2 }}
@@ -1125,7 +1156,7 @@ Return the result of adding one number to another. If either the input or argume
 <string> | prepend: <string>
 ```
 
-Return the argument concatenated with the filter input.
+Return the argument string concatenated with the input string.
 
 ```liquid2
 {{ "apples, oranges, and bananas" | prepend: "Some fruit: " }}
@@ -1133,20 +1164,6 @@ Return the argument concatenated with the filter input.
 
 ```plain title="output"
 Some fruit: apples, oranges, and bananas
-```
-
-If either the input value or argument are not a string, they will be coerced to a string before
-concatenation.
-
-```liquid2
-{% assign a_number = 7.5 -%}
-{{ 42 | prepend: a_number }}
-{{ nosuchthing | prepend: 'World!' }}
-```
-
-```plain title="output"
-7.542
-World!
 ```
 
 ## reject

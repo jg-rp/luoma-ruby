@@ -1,6 +1,11 @@
 {
   "tests": [
     {
+      "name": "empty array",
+      "template": "{{ [] | min | json }}",
+      "result": "null"
+    },
+    {
       "name": "array of ints",
       "template": "{{ [1, 10, 9] | min }}",
       "result": "1"
