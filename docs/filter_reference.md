@@ -583,7 +583,7 @@ This helps prevent HTML injection when rendering untrusted content in HTML eleme
 
 !!! warning
 
-    This filter does **not** make strings safe for use in JavaScript, including in `<script>` blocks, inline event handler attributes (e.g. `onerror`), or other JavaScript contexts. For those cases, use the [`escapejs`](#escapejs) filter instead.
+    This filter does **not** make strings safe for use in JavaScript, including in `<script>` blocks, inline event handler attributes (e.g. `onerror`), or other JavaScript contexts. For those cases, use the [`escape_js`](#escape_js) filter instead.
 
 ```liquid2
 {{ "Have you read 'James & the Giant Peach'?" | escape }}
@@ -632,7 +632,7 @@ Escaped characters include:
 <string> | escape_once
 ```
 
-Escape a string for HTML, but avoid double-escaping existing entities.
+Escape a string for safe use in HTML while avoiding double-escaping existing entities.
 
 Converts characters like `&`, `<`, and `>` to their HTML-safe sequences, but leaves existing HTML entities untouched (e.g., `&amp;` stays `&amp;`).
 
@@ -651,16 +651,17 @@ Have you read &#39;James &amp; the Giant Peach&#39;?
 ## find
 
 ```
-<array> | find: <string>[, <object>]
+<array> | find: <string>[, <any>]
+<array> | find: <lambda>
 ```
 
-Return the first item in the input array that contains a property, given as the first argument, equal to the value given as the second argument. If no such item exists, `null` is returned.
+Find and return the first item in the input array matching the argument, or `null` if no items match.
 
-In this example we select the first page in the "Programming" category.
+Given a string argument and a value, array items should be objects and the first object with a property matching the value will be returned. In this example we select the first page in the "Programming" category.
 
-```json title="data"
-{
-  "pages": [
+```liquid2
+{%- assign
+  pages = [
     {
       "id": 1,
       "title": "Introduction to Cooking",
@@ -679,13 +680,24 @@ In this example we select the first page in the "Programming" category.
       "category": "Programming",
       "tags": ["JavaScript", "web development", "coding"]
     }
-  ]
-}
+  ],
+
+  page = pages | find: 'category', 'Programming'
+-%}
+
+{{ page.title }}
 ```
 
+```plain title="output"
+Mastering JavaScript
+```
+
+Alternatively we can pass a lambda expression. When the expression is applied to each array item, the first item that evaluates to `true` will be returned.
+
 ```liquid2
-{% assign page = pages | find: 'category', 'Programming' %}
-{{ page.title }}
+{# ...continued from above #}
+
+{{ (pages | find: page -> (page.category == 'Programming')).title }}
 ```
 
 ```plain title="output"
@@ -694,13 +706,18 @@ Mastering JavaScript
 
 ## find_index
 
-Return the index of the first item in the input array that contains a property, given as the first argument, equal to the value given as the second argument. If no such item exists, `null` is returned.
+```
+<array> | find_index: <string>[, <any>]
+<array> | find_index: <lambda>
+```
 
-In this example we find the index for the first page in the "Programming" category.
+Return the index of the first item in the input array matching the argument, or `null` if no items match.
 
-```json title="data"
-{
-  "pages": [
+Given a string argument and a value, array items should be objects and the index of the first object with a property matching the value will be returned. In this example we find the index for the first page in the "Programming" category.
+
+```liquid2
+{%- assign
+  pages = [
     {
       "id": 1,
       "title": "Introduction to Cooking",
@@ -719,12 +736,23 @@ In this example we find the index for the first page in the "Programming" catego
       "category": "Programming",
       "tags": ["JavaScript", "web development", "coding"]
     }
-  ]
-}
+  ],
+
+  index = pages | find_index: 'category', 'Programming'
+-%}
+
+{{ pages[index].title }}
 ```
 
+```plain title="output"
+Mastering JavaScript
+```
+
+Alternatively we can pass a lambda expression. When the expression is applied to each array item, the index of the first item that evaluates to `true` will be returned.
+
 ```liquid2
-{% assign index = pages | find_index: 'category', 'Programming' %}
+{# ...continued from above #}
+{%- assign index = pages | find_index: page -> (page.category == 'Programming') -%}
 {{ pages[index].title }}
 ```
 
@@ -738,17 +766,19 @@ Mastering JavaScript
 <sequence> | first
 ```
 
-Return the first item of the input sequence. The input could be array-like or a mapping, but not a string.
+Return the first item of the input sequence. The input could be array-like a mapping or a string.
 
 ```liquid2
-{{ "Ground control to Major Tom." | split: " " | first }}
+{{ ["a", "b", "c"] | first }}
+{{ "abc" | first }}
 ```
 
 ```plain title="output"
-Ground
+a
+a
 ```
 
-If the input sequence is undefined, empty or not a sequence, `nil` is returned.
+If the input sequence is undefined, empty or not a sequence, the special value `Nothing` is returned.
 
 ## flatten
 

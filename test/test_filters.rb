@@ -134,6 +134,14 @@ class TestFilters < Minitest::Spec
     end
   end
 
+  describe "escape_once filter" do
+    load_test_cases("test/escape_once_filter.json").each do |test_case|
+      it test_case["name"] do
+        assert_test_case(test_case)
+      end
+    end
+  end
+
   describe "find filter" do
     load_test_cases("test/find_filter.json").each do |test_case|
       it test_case["name"] do
