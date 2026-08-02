@@ -1169,54 +1169,56 @@ Some fruit: apples, oranges, and bananas
 ## reject
 
 ```
-<array> | reject: <string>[, <object>]
+<array> | reject: <string>[, <any>]
+<array> | reject: <lambda>
 ```
 
-Return a copy of the input array including only those objects that have a property, named with the first argument, **that is not equal to** a value, given as the second argument. If a second argument is not given, only elements with the named property that are falsy will be included.
+Return a new array containing items from the input array for which the argument expression evaluates to `null` or `false`.
 
-```json title="data"
-{
-  "products": [
+```liquid2
+{%- assign
+  products = [
     { "title": "Vacuum", "type": "house", "available": true },
     { "title": "Spatula", "type": "kitchen", "available": false },
     { "title": "Television", "type": "lounge", "available": true },
     { "title": "Garlic press", "type": "kitchen", "available": true }
   ]
-}
-```
+-%}
 
-```liquid2
-All products:
-{% for product in products -%}
-- {{ product.title }}
-{% endfor %}
-
-{%- assign kitchen_products = products | reject: "type", "kitchen" -%}
-
-Non kitchen products:
-{% for product in kitchen_products -%}
-- {{ product.title }}
-{% endfor %}
-
-{%- assign unavailable_products = products | reject: "available" -%}
-
-Unavailable products:
-{% for product in unavailable_products -%}
-- {{ product.title }}
-{% endfor %}
+{{ products | reject: "type", "kitchen" | json: pretty=true }}
+{{ products | reject: p -> (p.type == "kitchen" and not p.available) | json: pretty=true }}
 ```
 
 ```plain title="output"
-All products:
-- Vacuum
-- Spatula
-- Television
-- Garlic press
-Non kitchen products:
-- Vacuum
-- Television
-Unavailable products:
-- Spatula
+[
+  {
+    "title": "Vacuum",
+    "type": "house",
+    "available": true
+  },
+  {
+    "title": "Television",
+    "type": "lounge",
+    "available": true
+  }
+]
+[
+  {
+    "title": "Vacuum",
+    "type": "house",
+    "available": true
+  },
+  {
+    "title": "Television",
+    "type": "lounge",
+    "available": true
+  },
+  {
+    "title": "Garlic press",
+    "type": "kitchen",
+    "available": true
+  }
+]
 ```
 
 ## remove
