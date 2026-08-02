@@ -54,21 +54,6 @@ module Luoma
       end
     end
 
-    def self.sort_natural(context, left, key = :nothing)
-      left = context.to_enumerable(left)
-
-      if key.nil? || context.nothing?(key)
-        left.sort { |a, b| nil_safe_casecmp(a, b) }
-      elsif key.is_a?(ExpressionDrop)
-        key.expr.broadcast_with_index(left).zip(left).sort do |a, b|
-          nil_safe_casecmp(a.first, b.first)
-        end.map(&:last)
-      else
-        key = context.to_string(key)
-        left.sort { |a, b| nil_safe_casecmp(context.fetch(a, key), context.fetch(b, key)) }
-      end
-    end
-
     def self.sort_numeric(context, left, key = :nothing)
       left = context.to_enumerable(left)
 
@@ -81,16 +66,6 @@ module Luoma
       else
         key = context.to_string(key)
         left.sort { |a, b| numeric_compare(context.fetch(a, key), context.fetch(b, key), context) }
-      end
-    end
-
-    def self.nil_safe_casecmp(left, right)
-      if !left.nil? && !right.nil?
-        left.to_s.casecmp(right.to_s)
-      elsif left.nil? && right.nil?
-        0
-      else
-        left.nil? ? 1 : -1
       end
     end
 

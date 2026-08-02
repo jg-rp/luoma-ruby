@@ -4,11 +4,7 @@ module Luoma
 
     def self.sort: (FilterContext context, untyped left, ?untyped? key) -> untyped
 
-    def self.sort_natural: (FilterContext context, untyped left, ?untyped? key) -> untyped
-
     def self.sort_numeric: (FilterContext context, untyped left, ?untyped? key) -> untyped
-
-    def self.nil_safe_casecmp: (untyped left, untyped right) -> (untyped | 0 | 1 | -1)
 
     def self.numeric_compare: (untyped left, untyped right, FilterContext context) -> untyped
 

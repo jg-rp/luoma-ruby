@@ -1438,95 +1438,85 @@ Negative indexes work too.
 
 ## sort
 
-````
-<array> | sort[: <string>]
-``
-
-Return a copy of the input array with its elements sorted.
-
-```liquid
-{% assign my_array = "zebra, octopus, giraffe, Sally Snake" | split: ", " -%}
-{{ my_array | sort | join: ", " }}
-````
-
-```plain title="Output"
-Sally Snake, giraffe, octopus, zebra
+```
+<array> | sort[: <string|lambda>]
 ```
 
-The optional argument is a sort key. If given, it should be the name of a property and the filter's input should be an array of objects.
+Return items from the input array sorted in ascending order.
 
-```json title="data"
-{
-  "collection": {
+```liquid
+{{ ["zebra", "octopus", "giraffe", "Sally Snake"] | sort }}
+```
+
+```title="Output"
+["Sally Snake","giraffe","octopus","zebra"]
+```
+
+If a string argument is given, array items should be objects and the argument should be the name of a property to sort by.
+
+```liquid2 title="template"
+{%- assign
+  collection = {
     "products": [
       { "title": "A Shoe", "price": "9.95" },
       { "title": "A Tie", "price": "0.50" },
       { "title": "A Hat", "price": "2.50" }
     ]
   }
-}
-```
+-%}
 
-```liquid2 title="template"
-{% assign products_by_price = collection.products | sort: "price" -%}
-{% for product in products_by_price %}
+{% for product in collection.products | sort: "price" ~%}
   <h4>{{ product.title }}</h4>
-{% endfor %}
+{% endfor -%}
 ```
 
-```plain title="Output"
-<h4>A Tie</h4>
-<h4>A Hat</h4>
-<h4>A Shoe</h4>
-```
-
-## sort_natural
-
-```
-<array> | sort_natural[: <string>]
-```
-
-Return a copy of the input array with its elements sorted case-insensitively. Array items will be compared by their string representations, forced to lowercase.
-
-```liquid2
-{% assign my_array = "zebra, octopus, giraffe, Sally Snake" | split: ", " -%}
-{{ my_array | sort_natural | join: ", " }}
-```
-
-```plain title="Output"
-giraffe, octopus, Sally Snake, zebra
-```
-
-The optional argument is a sort key. If given, it should be the name of a property and the filter's input should be an array of objects. Array elements are compared using the lowercase string representation of that property.
-
-```json title="data"
-{
-  "collection": {
-    "products": [
-      { "title": "A Shoe", "company": "Cool Shoes" },
-      { "title": "A Tie", "company": "alpha Ties" },
-      { "title": "A Hat", "company": "Beta Hats" }
-    ]
-  }
-}
-```
-
-```liquid2 title="template"
-{% assign products_by_company = collection.products | sort_natural: "company" %}
-{% for product in products_by_company %}
-  <h4>{{ product.title }}</h4>
-{% endfor %}
-```
-
-```plain title="Output"
-<h4>A Tie</h4>
-<h4>A Hat</h4>
-<h4>A Shoe</h4>
+```title="Output"
+  <h4>A Tie</h4>
+  <h4>A Hat</h4>
+  <h4>A Shoe</h4>
 ```
 
 ## sort_numeric
 
-TODO
+```
+<array> | sort_numeric[: <string|lambda>]
+```
+
+Return items from the input array sorted by runs of digits found in the string representation of each item.
+
+```liquid2
+{%- assign
+  a = ["107", "042", "0001", "02", "17"],
+  b = [
+    { "y": "-1", "x": "10" },
+    { "x": "3" },
+    { "x": "2" },
+    { "x": "1" },
+  ]
+-%}
+
+{{ a | sort_numeric }}
+{{ b | sort_numeric: o => o.x | json: pretty=true }}
+```
+
+```title="Output"
+["0001","02","17","042","107"]
+[
+  {
+    "x": "1"
+  },
+  {
+    "x": "2"
+  },
+  {
+    "x": "3"
+  },
+  {
+    "y": "-1",
+    "x": "10"
+  }
+]
+```
 
 ## split
 
@@ -1534,7 +1524,7 @@ TODO
 <string> | split: <string>
 ```
 
-Return an array of strings that are the input string split on the filter's argument string.
+Return an array of substrings by splitting the input string at each occurrence of the argument string.
 
 ```liquid2
 {% assign beatles = "John, Paul, George, Ringo" | split: ", " -%}
@@ -1544,7 +1534,7 @@ Return an array of strings that are the input string split on the filter's argum
 {% endfor %}
 ```
 
-```plain title="Output"
+```title="Output"
 John
 Paul
 George
@@ -1583,7 +1573,7 @@ Hello, World!
 <string> | strip
 ```
 
-Return the input string with all leading and trailing whitespace removed. If the input is not a string, it will be converted to a string before stripping whitespace.
+Return the input string with all leading and trailing whitespace removed.
 
 ```liquid2
 {{ "          So much room for activities          " | strip }}!
@@ -1633,21 +1623,20 @@ Hellothere
 ## sum
 
 ```
-<array> | sum[: <string>]
+<array> | sum[: <string|lambda>]
 ```
 
-Return the sum of all numeric elements in an array.
+Return the sum of all numeric elements in the input array.
 
 ```liquid2
-{% assign array = '1,2,3' | split: ',' -%}
-{{ array | sum }}
+{{ [1, 2, 3] | sum }}
 ```
 
 ```plain title="Output"
 6
 ```
 
-If the optional string argument is given, it is assumed that array items are hash/dict/mapping-like, and the argument should be the name of a property/key. The values at `array[property]` will be summed.
+If a string argument is given, array items should be objects and the argument should be the name of a property. The values at `array[property]` will be summed.
 
 ## take
 

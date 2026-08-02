@@ -199,7 +199,6 @@ module Luoma
       register_filter("size", Luoma::Filters.method(:size))
       register_filter("slice", Luoma::Filters.method(:slice))
       register_filter("sort", Luoma::Filters.method(:sort))
-      register_filter("sort_natural", Luoma::Filters.method(:sort_natural))
       register_filter("sort_numeric", Luoma::Filters.method(:sort_numeric))
       register_filter("split", Luoma::Filters.method(:split))
       register_filter("strip_html", Luoma::Filters.method(:strip_html))
