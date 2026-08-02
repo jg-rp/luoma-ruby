@@ -52,7 +52,7 @@ nav = [
   
   { "Tags" = ["tag_reference.md", "custom_tags.md"] },
   { "Filters" = ["filter_reference.md", "custom_filters.md"] },
-  { "Predicates" = ["predicate_reference.md"] }
+  { "Predicates" = ["predicate_reference.md", "custom_predicates.md"] }
 ]
 
 # With the "extra_css" option you can add your own CSS styling to customize

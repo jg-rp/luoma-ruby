@@ -18,7 +18,7 @@ Return the absolute value of a number. Works on integers, floats and string repr
 {{ '42.0' | abs }}
 ```
 
-```plain title="output"
+```plain title="Output"
 42
 7.5
 42.0
@@ -32,7 +32,7 @@ Given a value that can't be cast to an integer or float, the special value `Noth
 {{ ('hello' | abs) or 99 }}
 ```
 
-```plain title="output"
+```plain title="Output"
 
 0
 99
@@ -200,7 +200,7 @@ Return the input value concatenated with the argument value.
 {{ 'Hello, ' | append: 'World!' }}
 ```
 
-```plain title="output"
+```plain title="Output"
 Hello, World!
 ```
 
@@ -212,7 +212,7 @@ If either the input value or argument are not a string, they will be coerced to 
 {{ nosuchthing | append: 'World!' }}
 ```
 
-```plain title="output"
+```plain title="Output"
 427.5
 World!
 ```
@@ -230,7 +230,7 @@ Return the maximum of the input value and the argument value. Both input and arg
 {{ 8 | at_least: '5' }}
 ```
 
-```plain title="output"
+```plain title="Output"
 8
 8
 ```
@@ -244,7 +244,7 @@ If both input value and argument can not be cast to number, the special value `N
 {{ ('foo' | at_least: "bar") or 42 }}
 ```
 
-```plain title="output"
+```plain title="Output"
 2
 -2
 -1
@@ -264,7 +264,7 @@ Return the minimum of the input value and the argument value. Both input and arg
 {{ '8' | at_most: 5 }}
 ```
 
-```plain title="output"
+```plain title="Output"
 5
 5
 ```
@@ -278,7 +278,7 @@ If both input value and argument can not be cast to a number, the special value 
 {{ ('foo' | at_most: "bar") or 42 }}
 ```
 
-```plain title="output"
+```plain title="Output"
 2
 2
 -1
@@ -297,7 +297,7 @@ Return a copy of the input string with the first character in upper case and all
 {{ 'heLLO, World!' | capitalize }}
 ```
 
-```plain title="output"
+```plain title="Output"
 Hello, world!
 ```
 
@@ -307,7 +307,7 @@ If the input value is not a string, it will be converted to a string.
 {{ 42 | capitalize }}
 ```
 
-```plain title="output"
+```plain title="Output"
 42
 ```
 
@@ -326,7 +326,7 @@ Round the input value up to the nearest whole number. The input value will be co
 {{ '5.4' | ceil }}
 ```
 
-```plain title="output"
+```plain title="Output"
 6
 5
 5
@@ -340,7 +340,7 @@ If the input is undefined or can't be converted to a number, the special value `
 {{ ('hello' | ceil) or 1 }}
 ```
 
-```plain title="output"
+```plain title="Output"
 
 1
 ```
@@ -444,7 +444,7 @@ Format a date and/or time according the the given format string. The input value
 {{ "March 14, 2016" | date: "%b %d, %y" }}
 ```
 
-```plain title="output"
+```plain title="Output"
 Mar 14, 16
 ```
 
@@ -454,7 +454,7 @@ The special `'now'` or `'today'` input values can be used to get the current tim
 {{ "now" | date: "%Y-%m-%d %H:%M" }}
 ```
 
-```plain title="output"
+```plain title="Output"
 2021-12-02 10:17
 ```
 
@@ -472,7 +472,7 @@ Return a default value if the input is undefined, `null`, `false` or empty. Othe
 {{ [] | default: [1,2,3] }}
 ```
 
-```plain title="output"
+```plain title="Output"
 1.99
 2.99
 [1,2,3]
@@ -484,7 +484,7 @@ If the optional `allow_false` argument is `true`, an input of `false` will be pa
 {{ false | default: 42, allow_false: true }}
 ```
 
-```plain title="output"
+```plain title="Output"
 false
 ```
 
@@ -494,7 +494,7 @@ If no argument is given, the default value will be an empty string.
 {{ false | default }}
 ```
 
-```plain title="output"
+```plain title="Output"
 
 ```
 
@@ -515,7 +515,7 @@ Divide the input number by the argument number.
 {{ 20 / 7 }}
 ```
 
-```plain title="output"
+```plain title="Output"
 4
 1.6666666666666667
 2.857142857142857
@@ -532,7 +532,7 @@ If either the input or argument are not numeric, they will be converted to an in
 {{ ("hello" | divided_by: 2) or 0 }}
 ```
 
-```plain title="output"
+```plain title="Output"
 2.857142857142857
 
 0
@@ -550,7 +550,7 @@ Return the input string with all characters in lowercase.
 {{ 'Hello, World!' | downcase }}
 ```
 
-```plain title="output"
+```plain title="Output"
 hello, world!
 ```
 
@@ -560,7 +560,7 @@ If the input is not a string, it will be converted to a string before forcing ch
 {{ 5 | downcase }}
 ```
 
-```plain title="output"
+```plain title="Output"
 5
 ```
 
@@ -590,7 +590,7 @@ This helps prevent HTML injection when rendering untrusted content in HTML eleme
 {{ "Have you read 'James & the Giant Peach'?" | escape }}
 ```
 
-```plain title="output"
+```plain title="Output"
 Have you read &#39;James &amp; the Giant Peach&#39;?
 ```
 
@@ -623,7 +623,7 @@ Escaped characters include:
 <img src="" onerror="{{ some_string | escape_js }}" />
 ```
 
-```plain title="output"
+```plain title="Output"
 <img src="" onerror="\u003Cscript\u003Ealert(\u0027x\u0027)\u003C/script\u003E" />
 ```
 
@@ -645,7 +645,7 @@ See the [`escape`](#escape) filter for details and limitations.
 {{ "Have you read 'James &amp; the Giant Peach'?" | escape_once }}
 ```
 
-```plain title="output"
+```plain title="Output"
 Have you read &#39;James &amp; the Giant Peach&#39;?
 ```
 
@@ -689,7 +689,7 @@ Given a string argument and a value, array items should be objects and the first
 {{ page.title }}
 ```
 
-```plain title="output"
+```plain title="Output"
 Mastering JavaScript
 ```
 
@@ -701,7 +701,7 @@ Alternatively we can pass a lambda expression. When the expression is applied to
 {{ (pages | find: page -> (page.category == 'Programming')).title }}
 ```
 
-```plain title="output"
+```plain title="Output"
 Mastering JavaScript
 ```
 
@@ -745,7 +745,7 @@ Given a string argument and a value, array items should be objects and the index
 {{ pages[index].title }}
 ```
 
-```plain title="output"
+```plain title="Output"
 Mastering JavaScript
 ```
 
@@ -757,7 +757,7 @@ Alternatively we can pass a lambda expression. When the expression is applied to
 {{ pages[index].title }}
 ```
 
-```plain title="output"
+```plain title="Output"
 Mastering JavaScript
 ```
 
@@ -774,7 +774,7 @@ Return the first item in the input sequence. The input could be array-like, a ma
 {{ "abc" | first }}
 ```
 
-```plain title="output"
+```plain title="Output"
 a
 a
 ```
@@ -866,7 +866,7 @@ Return the input number rounded down to the nearest whole number.
 {{ "3.5" | floor }}
 ```
 
-```plain title="output"
+```plain title="Output"
 1
 2
 183
@@ -889,7 +889,7 @@ Return items from the input array concatenated separated by the argument string.
 {{ beatles | join: " and " }}
 ```
 
-```plain title="output"
+```plain title="Output"
 John and Paul and George and Ringo
 ```
 
@@ -900,7 +900,7 @@ If separator is not given it defaults to a single space.
 {{ beatles | join }}
 ```
 
-```plain title="output"
+```plain title="Output"
 John Paul George Ringo
 ```
 
@@ -945,7 +945,7 @@ Return the last item in the input sequence. The input could be array-like, a map
 {{ "abc" | last }}
 ```
 
-```plain title="output"
+```plain title="Output"
 c
 c
 ```
@@ -964,7 +964,7 @@ Return a copy of the input string with all leading whitespace removed. If the in
 {{ "          So much room for activities          " | lstrip }}!
 ```
 
-```plain title="output"
+```plain title="Output"
 So much room for activities          !
 ```
 
@@ -1086,7 +1086,7 @@ Return the result of subtracting the input number from the argument number. If e
 {{ "hello" | minus: 10 }}
 ```
 
-```plain title="output"
+```plain title="Output"
 2
 12
 171.157
@@ -1107,7 +1107,7 @@ Return the remainder from dividing the input number by the argument number. If e
 {{ 183.357 | modulo: 12 }}
 ```
 
-```plain title="output"
+```plain title="Output"
 1
 3
 3.357
@@ -1125,7 +1125,7 @@ Return the input string with `\n` and `\r\n` replaced with `<br />\n`.
 {{ "Hello\nthere" | newline_to_br }}
 ```
 
-```plain title="output"
+```plain title="Output"
 Hello<br />
 there
 ```
@@ -1144,7 +1144,7 @@ Return the result of adding the input number to the argument number. If either t
 {{ 183.357 | plus: 12 }}
 ```
 
-```plain title="output"
+```plain title="Output"
 6
 20
 195.357
@@ -1162,7 +1162,7 @@ Return the argument string concatenated with the input string.
 {{ "apples, oranges, and bananas" | prepend: "Some fruit: " }}
 ```
 
-```plain title="output"
+```plain title="Output"
 Some fruit: apples, oranges, and bananas
 ```
 
@@ -1189,7 +1189,7 @@ Return a new array containing items from the input array for which the argument 
 {{ products | reject: p -> (p.type == "kitchen" and not p.available) | json: pretty=true }}
 ```
 
-```plain title="output"
+```plain title="Output"
 [
   {
     "title": "Vacuum",
@@ -1227,18 +1227,15 @@ Return a new array containing items from the input array for which the argument 
 <string> | remove: <string>
 ```
 
-Return the input with all occurrences of the argument string removed.
+Return a copy of the input string with all occurrences of the argument string removed.
 
 ```liquid2
 {{ "I strained to see the train through the rain" | remove: "rain" }}
 ```
 
-```plain title="output"
+```plain title="Output"
 I sted to see the t through the
 ```
-
-If either the filter input or argument are not a string, they will be coerced to a string before
-substring removal.
 
 ## remove_first
 
@@ -1252,11 +1249,9 @@ Return a copy of the input string with the first occurrence of the argument stri
 {{ "I strained to see the train through the rain" | remove_first: "rain" }}
 ```
 
-```plain title="output"
+```plain title="Output"
 I sted to see the train through the rain
 ```
-
-If either the filter input or argument are not a string, they will be coerced to a string before substring removal.
 
 ## remove_last
 
@@ -1270,11 +1265,9 @@ Return a copy of the input string with the last occurrence of the argument strin
 {{ "I strained to see the train through the rain" | remove_last: "rain" }}
 ```
 
-```plain title="output"
+```plain title="Output"
 I strained to see the train through the
 ```
-
-If either the filter input or argument are not a string, they will be coerced to a string before substring removal.
 
 ## replace
 
@@ -1282,7 +1275,7 @@ If either the filter input or argument are not a string, they will be coerced to
 <string> | replace: <string>[, <string>]
 ```
 
-Return the input with all occurrences of the first argument replaced with the second argument. If
+Return a copy of the input string with all occurrences of the first argument replaced with the second argument. If
 the second argument is omitted, it will default to an empty string, making `replace` behave like
 `remove`.
 
@@ -1290,12 +1283,9 @@ the second argument is omitted, it will default to an empty string, making `repl
 {{ "Take my protein pills and put my helmet on" | replace: "my", "your" }}
 ```
 
-```plain title="output"
+```plain title="Output"
 Take your protein pills and put your helmet on
 ```
-
-If either the filter input or argument are not a string, they will be coerced to a string before
-replacement.
 
 ## replace_first
 
@@ -1309,11 +1299,9 @@ Return a copy of the input string with the first occurrence of the first argumen
 {{ "Take my protein pills and put my helmet on" | replace_first: "my", "your" }}
 ```
 
-```plain title="output"
+```plain title="Output"
 Take your protein pills and put my helmet on
 ```
-
-If either the filter input or argument are not a string, they will be coerced to a string before replacement.
 
 ## replace_last
 
@@ -1327,28 +1315,34 @@ Return a copy of the input string with the last occurrence of the first argument
 {{ "Take my protein pills and put my helmet on" | replace_first: "my", "your" }}
 ```
 
-```plain title="output"
+```plain title="Output"
 Take my protein pills and put your helmet on
 ```
-
-If either the filter input or argument are not a string, they will be coerced to a string before replacement.
 
 ## reverse
 
 ```
-<array> | reverse
+<sequence> | reverse
 ```
 
-Return a copy of the input array with the items in reverse order. If the filter input is a string, `reverse` will return the string unchanged.
+Return items from the input sequence in reverse order.
 
 ```liquid2
-{% assign my_array = "apples, oranges, peaches, plums" | split: ", " -%}
+{%- assign
+  array = ["apples", "oranges", "peaches", "plums"],
+  string = "Hello",
+  object = {"a": 1, "b": 2},
+ -%}
 
-{{ my_array | reverse | join: ", " }}
+{{ array | reverse }}
+{{ string | reverse }}
+{{ object | reverse }}
 ```
 
-```plain title="output"
-plums, peaches, oranges, apples
+```plain title="Output"
+["plums","peaches","oranges","apples"]
+["o","l","l","e","H"]
+[["b",2],["a",1]]
 ```
 
 ## round
@@ -1365,13 +1359,11 @@ Return the input number rounded to the given number of decimal places. The numbe
 {{ 183.357 | round: 2 }}
 ```
 
-```plain title="output"
+```plain title="Output"
 1
 3
 183.36
 ```
-
-If either the filter input or its optional argument are not an integer or float, they will be converted to an integer or float before rounding.
 
 ## rstrip
 
@@ -1385,51 +1377,24 @@ Return the input string with all trailing whitespace removed. If the input is no
 {{ "          So much room for activities          " | rstrip }}!
 ```
 
-```plain title="output"
+```plain title="Output"
           So much room for activities!
-```
-
-## safe
-
-```
-<string> | safe
-```
-
-Return the input string marked as safe to use in an HTML or XML document. If the filter input is not a string, it will be converted to an HTML-safe string.
-
-With auto-escape enabled and the following global variables:
-
-```json title="data"
-{
-  "username": "Sally",
-  "greeting": "</p><script>alert('XSS!');</script>"
-}
-```
-
-```liquid2 title="template"
-<p>{{ greeting }}, {{ username }}</p>
-<p>{{ greeting | safe }}, {{ username }}</p>
-```
-
-```html title="output"
-<p>&lt;/p&gt;&lt;script&gt;alert(&#34;XSS!&#34;);&lt;/script&gt;, Sally</p>
-<p></p><script>alert('XSS!');</script>, Sally</p>
 ```
 
 ## size
 
 ```
-<object> | size
+<sequence> | size
 ```
 
-Return the size of the input object. Works on strings, arrays and hashes.
+Return a count of items in the input sequence.
 
 ```liquid2
 {{ "Ground control to Major Tom." | size }}
-{{ "apples, oranges, peaches, plums" | split: ", " | size }}
+{{ ["apples", "oranges", "peaches", "plums"] | size }}
 ```
 
-```plain title="output"
+```plain title="Output"
 28
 4
 ```
@@ -1437,39 +1402,38 @@ Return the size of the input object. Works on strings, arrays and hashes.
 ## slice
 
 ```
-<sequence> | slice: <int>[, <int>]
+<sequence> | slice[: <integer>[, <integer>[, <integer>]]]
+<sequence> | slice: start=<integer>, stop=<integer>, step=<integer>,
 ```
 
-Return a substring or subsequence of the input string or array. The first argument is the zero-based start index. The second, optional argument is the length of the substring or sequence, which defaults to `1`.
+Return a subsequence of items in the input sequence. A starting index, stop index and step size can be given as positional or keyword arguments. Start defaults to zero, stop defaults to the length of the input, and step default to `1`.
+
+The resulting array is includes the start index and excludes the stop index.
 
 ```liquid2
-{{ "Liquid" | slice: 0 }}
-{{ "Liquid" | slice: 2 }}
-{{ "Liquid" | slice: 2, 5 }}
-{% assign beatles = "John, Paul, George, Ringo" | split: ", " -%}
-{{ beatles | slice: 1, 2 | join: " " }}
+{{ "Luoma" | slice: 0 }}
+{{ "Luoma" | slice: 2 }}
+{{ "Luoma" | slice: 1, 3 }}
+{{ ["John", "Paul", "George", "Ringo"] | slice: 1, 2  }}
+{{ [1, 2, 3, 4, 5, 6] | slice: step=2 }}
 ```
 
-```plain title="output"
-L
-q
-quid
-Paul George
+```plain title="Output"
+["L","u","o","m","a"]
+["o","m","a"]
+["u","o"]
+["Paul"]
+[1,3,5]
 ```
 
-If the first argument is negative, the start index is counted from the end of the sequence.
+Negative indexes work too.
 
 ```liquid2
-{{ "Liquid" | slice: -3 }}
-{{ "Liquid" | slice: -3, 2 }}
-{% assign beatles = "John, Paul, George, Ringo" | split: ", " -%}
-{{ beatles | slice: -2, 2 | join: " " }}
+{{ [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] | slice: start=-1, stop=-5, step=-1 }}
 ```
 
-```plain title="output"
-u
-ui
-George Ringo
+```title="Output"
+[9,8,7,6]
 ```
 
 ## sort
@@ -1485,7 +1449,7 @@ Return a copy of the input array with its elements sorted.
 {{ my_array | sort | join: ", " }}
 ````
 
-```plain title="output"
+```plain title="Output"
 Sally Snake, giraffe, octopus, zebra
 ```
 
@@ -1510,7 +1474,7 @@ The optional argument is a sort key. If given, it should be the name of a proper
 {% endfor %}
 ```
 
-```plain title="output"
+```plain title="Output"
 <h4>A Tie</h4>
 <h4>A Hat</h4>
 <h4>A Shoe</h4>
@@ -1529,7 +1493,7 @@ Return a copy of the input array with its elements sorted case-insensitively. Ar
 {{ my_array | sort_natural | join: ", " }}
 ```
 
-```plain title="output"
+```plain title="Output"
 giraffe, octopus, Sally Snake, zebra
 ```
 
@@ -1554,7 +1518,7 @@ The optional argument is a sort key. If given, it should be the name of a proper
 {% endfor %}
 ```
 
-```plain title="output"
+```plain title="Output"
 <h4>A Tie</h4>
 <h4>A Hat</h4>
 <h4>A Shoe</h4>
@@ -1580,7 +1544,7 @@ Return an array of strings that are the input string split on the filter's argum
 {% endfor %}
 ```
 
-```plain title="output"
+```plain title="Output"
 John
 Paul
 George
@@ -1593,7 +1557,7 @@ If the argument is undefined or an empty string, the input will be split at ever
 {{ "Hello there" | split: nosuchthing | join: "#" }}
 ```
 
-```plain title="output"
+```plain title="Output"
 H#e#l#l#o# #t#h#e#r#e
 ```
 
@@ -1609,7 +1573,7 @@ Return the input string with all leading and trailing whitespace removed, and an
 {{ "    Hello, \n\t World! \r\n" | squish }}
 ```
 
-```plain title="output"
+```plain title="Output"
 Hello, World!
 ```
 
@@ -1625,7 +1589,7 @@ Return the input string with all leading and trailing whitespace removed. If the
 {{ "          So much room for activities          " | strip }}!
 ```
 
-```plain title="output"
+```plain title="Output"
 So much room for activities!
 ```
 
@@ -1641,7 +1605,7 @@ Return the input string with all HTML tags removed.
 {{ "Have <em>you</em> read <strong>Ulysses</strong>?" | strip_html }}
 ```
 
-```plain title="output"
+```plain title="Output"
 Have you read Ulysses?
 ```
 
@@ -1662,7 +1626,7 @@ there
 {{ string_with_newlines | strip_newlines }}
 ```
 
-```plain title="output"
+```plain title="Output"
 Hellothere
 ```
 
@@ -1679,7 +1643,7 @@ Return the sum of all numeric elements in an array.
 {{ array | sum }}
 ```
 
-```plain title="output"
+```plain title="Output"
 6
 ```
 
@@ -1703,7 +1667,7 @@ Return the product of the input number and the argument. If either the input or 
 {{ 183.357 | times: 12 }}
 ```
 
-```plain title="output"
+```plain title="Output"
 6
 168
 2200.284
@@ -1725,7 +1689,7 @@ If the length of the input string is less than the given length (first argument)
 {{ "Ground control to Major Tom." | truncate: 20, "" }}
 ```
 
-```plain title="output"
+```plain title="Output"
 Ground control to...
 Ground control, and so on
 Ground control to Ma
@@ -1747,7 +1711,7 @@ If the input string already has fewer than the given number of words, it is retu
 {{ "Ground control to Major Tom." | truncatewords: 3, "" }}
 ```
 
-```plain title="output"
+```plain title="Output"
 Ground control to...
 Ground control to--
 Ground control to
@@ -1766,7 +1730,7 @@ Return a copy of the input array with duplicate elements removed.
 {{ my_array | uniq | join: ", " }}
 ```
 
-```plain title="output"
+```plain title="Output"
 ants, bugs, bees
 ```
 
@@ -1792,7 +1756,7 @@ If an argument is given, it should be the name of a property and the filter's in
 {% endfor %}
 ```
 
-```plain title="output"
+```plain title="Output"
 - A Shoe
 - A Tie
 - A Hat
@@ -1810,7 +1774,7 @@ Return the input string with all characters in uppercase.
 {{ 'Hello, World!' | upcase }}
 ```
 
-```plain title="output"
+```plain title="Output"
 HELLO, WORLD!
 ```
 
@@ -1826,7 +1790,7 @@ Return the input string with `%xx` escapes replaced with their single-character 
 {{ "My+email+address+is+bob%40example.com%21" | url_decode }}
 ```
 
-```plain title="output"
+```plain title="Output"
 My email address is bob@example.com!
 ```
 
@@ -1842,7 +1806,7 @@ Return the input string with URL reserved characters %-escaped. Also replaces `'
 {{ My email address is bob@example.com! | url_encode }}
 ```
 
-```plain title="output"
+```plain title="Output"
 My+email+address+is+bob%40example.com%21
 ```
 
@@ -1886,7 +1850,7 @@ Available products:
 {% endfor %}
 ```
 
-```plain title="output"
+```plain title="Output"
 All products:
 - Vacuum
 - Spatula
