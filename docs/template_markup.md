@@ -306,7 +306,7 @@ Array items are accessed by their zero-based index and bracket notation. Dotted 
 {{ foo[path.to.variable] }}
 ```
 
-A trailing path segment ending with a question mark (`?`) is a _predicate_. A predicate "queries" the value obtained by resolving the path up to that point and returns `true` or `false`. See the [predicate reference](./predicate_reference.md) for details of all built-in predicate functions.
+A trailing path segment ending with a question mark (`?`) is a _predicate_. A predicate "queries" the value obtained by resolving preceding path segments and returns `true` or `false`. See the [predicate reference](./predicate_reference.md) for details of all built-in predicate functions.
 
 ```
 {{ foo.defined? }}

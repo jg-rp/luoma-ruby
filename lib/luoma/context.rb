@@ -105,7 +105,8 @@ module Luoma
                 :nothing
               end
 
-        return [:nothing, segment_index] if obj == :nothing
+        # We must keep going in case we find a predicate.
+        # return [:nothing, segment_index] if obj == :nothing
       end
 
       [obj, segment_index]
