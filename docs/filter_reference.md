@@ -1,6 +1,6 @@
 # Built-in filters
 
-By default, all built-in filters never fail to produce a value. Filter arguments are implicitly coerced to the expected type, or the special value `Nothing` if type conversion is not possible/reasonable.
+By default, built-in filters never fail to produce a value. Filter arguments are implicitly coerced to the expected type, or the special value `Nothing` if type conversion is not possible/reasonable.
 
 `Nothing` is like JavaScript's `undefined` and `NaN` combined. It is not equal to `null` or implementation specific `nil`, `None`, etc.
 

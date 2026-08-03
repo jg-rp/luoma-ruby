@@ -450,7 +450,7 @@ module Luoma
   class EqExpression < InfixExpression
     #: (RenderContext) -> untyped
     def evaluate(context)
-      context.env.eq?(@left.evaluate(context), @right.evaluate(context), context, @span)
+      context.env.eq?(@left.evaluate(context), @right.evaluate(context), context)
     end
 
     #: () -> String
@@ -462,7 +462,7 @@ module Luoma
   class NeExpression < InfixExpression
     #: (RenderContext) -> untyped
     def evaluate(context)
-      !context.env.eq?(@left.evaluate(context), @right.evaluate(context), context, @span)
+      !context.env.eq?(@left.evaluate(context), @right.evaluate(context), context)
     end
 
     #: () -> String
@@ -474,7 +474,7 @@ module Luoma
   class LtExpression < InfixExpression
     #: (RenderContext) -> untyped
     def evaluate(context)
-      context.env.lt?(@left.evaluate(context), @right.evaluate(context), context, @span)
+      context.env.lt?(@left.evaluate(context), @right.evaluate(context), context)
     end
 
     #: () -> String
@@ -488,7 +488,7 @@ module Luoma
     def evaluate(context)
       left = @left.evaluate(context)
       right = @right.evaluate(context)
-      context.env.lt?(left, right, context, @span) || context.env.eq?(left, right, context, @span)
+      context.env.lt?(left, right, context) || context.env.eq?(left, right, context)
     end
 
     #: () -> String
@@ -500,7 +500,7 @@ module Luoma
   class GtExpression < InfixExpression
     #: (RenderContext) -> untyped
     def evaluate(context)
-      context.env.lt?(@right.evaluate(context), @left.evaluate(context), context, @span)
+      context.env.lt?(@right.evaluate(context), @left.evaluate(context), context)
     end
 
     #: () -> String
@@ -514,7 +514,7 @@ module Luoma
     def evaluate(context)
       left = @left.evaluate(context)
       right = @right.evaluate(context)
-      context.env.lt?(right, left, context, @span) || context.env.eq?(left, right, context, @span)
+      context.env.lt?(right, left, context) || context.env.eq?(left, right, context)
     end
 
     #: () -> String
@@ -526,7 +526,7 @@ module Luoma
   class ContainsExpression < InfixExpression
     #: (RenderContext) -> untyped
     def evaluate(context)
-      context.env.contains?(@left.evaluate(context), @right.evaluate(context), context, @span)
+      context.env.contains?(@left.evaluate(context), @right.evaluate(context), context)
     end
 
     #: () -> String
@@ -538,7 +538,7 @@ module Luoma
   class InExpression < InfixExpression
     #: (RenderContext) -> untyped
     def evaluate(context)
-      context.env.contains?(@right.evaluate(context), @left.evaluate(context), context, @span)
+      context.env.contains?(@right.evaluate(context), @left.evaluate(context), context)
     end
 
     #: () -> String

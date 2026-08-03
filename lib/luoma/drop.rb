@@ -51,9 +51,8 @@ module Luoma
       0
     end
 
-    # TODO: pass context
-    #: (Integer, Integer, Integer) -> Enumerable[untyped]
-    def slice(start, stop, step)
+    #: (Integer, Integer, Integer, RenderContext) -> Enumerable[untyped]
+    def slice(start, stop, step, context)
       self
     end
 

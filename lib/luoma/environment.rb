@@ -3,6 +3,7 @@
 require "json"
 
 module Luoma
+  # Luoma template parsing and render configuration.
   class Environment
     attr_reader :persistent_registers
 
@@ -228,8 +229,8 @@ module Luoma
       register_predicate("string", Luoma::Predicates.method(:string?))
     end
 
-    #: (untyped, untyped, RenderContext, t_token) -> bool
-    def contains?(left, right, context, token)
+    #: (untyped, untyped, RenderContext) -> bool
+    def contains?(left, right, context)
       return left.contains?(right, context) if left.is_a?(Drop)
 
       right = right.to_primitive(:data, context) if right.is_a?(Drop)
@@ -241,18 +242,16 @@ module Luoma
       end
     end
 
-    #: (untyped, untyped, RenderContext, t_token) -> bool
-    def eq?(left, right, context, token)
-      # TODO: Don't accepts token
+    #: (untyped, untyped, RenderContext) -> bool
+    def eq?(left, right, context)
       return left.eq?(right, context) if left.is_a?(Drop)
       return right.eq?(left, context) if right.is_a?(Drop)
 
       left == right
     end
 
-    #: (untyped, untyped, RenderContext, t_token) -> bool?
-    def lt?(left, right, context, token)
-      # TODO: Don't accepts token
+    #: (untyped, untyped, RenderContext) -> bool?
+    def lt?(left, right, context)
       return left.lt?(right, context) if left.is_a?(Drop)
       return right.gt?(left, context) if right.is_a?(Drop)
 
@@ -261,11 +260,11 @@ module Luoma
       nil
     end
 
-    #: (untyped, untyped, RenderContext, t_token) -> (-1 | 1 | 0 | nil)
-    def cmp(left, right, context, token)
-      return -1 if lt?(left, right, context, token)
-      return  1 if lt?(right, left, context, token)
-      return  0 if eq?(left, right, context, token)
+    #: (untyped, untyped, RenderContext) -> (-1 | 1 | 0 | nil)
+    def cmp(left, right, context)
+      return -1 if lt?(left, right, context)
+      return  1 if lt?(right, left, context)
+      return  0 if eq?(left, right, context)
 
       if left.nil? || nothing?(left)
         1

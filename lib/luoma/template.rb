@@ -67,8 +67,6 @@ module Luoma
       @up_to_date&.call
     end
 
-    # TODO: static analysis methods
-
     # Statically analyze this template and report variable, tag and filter usage.
     #
     #: (?include_partials: bool) -> Luoma::StaticAnalysis::Result

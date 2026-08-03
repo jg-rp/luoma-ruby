@@ -163,7 +163,7 @@ env = Luoma::Environment.new(
 
 ## Strict mode
 
-When `strict: false` (the default) unknown filters, unknown predicates and filter argument errors are silently ignored at render time. When `strict: true`, `Luoma::FilterNotFoundError`, `Luoma::PredicateNotFoundError` or `Luoma::FilterArgumentError` is raised, all of which inherit from `Luoma::LuomaError`.
+When `strict: false` (the default) unknown filters, unknown predicates and filter argument errors are silently ignored at render time. When `strict: true`, `Luoma::FilterNotFoundError`, `Luoma::PredicateNotFoundError` or `Luoma::FilterArgumentError` can be raised, all of which inherit from `Luoma::LuomaError`.
 
 ```ruby
 require "luoma"

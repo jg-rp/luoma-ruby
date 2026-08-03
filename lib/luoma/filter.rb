@@ -71,17 +71,17 @@ module Luoma
 
     #: (untyped, untyped) -> bool
     def eq?(obj, other)
-      @env.eq?(obj, other, @render_context, @token)
+      @env.eq?(obj, other, @render_context)
     end
 
     #: (untyped, untyped) -> bool
     def lt?(obj, other)
-      @env.lt?(obj, other, @render_context, @token)
+      @env.lt?(obj, other, @render_context)
     end
 
     #: (untyped, untyped) -> (-1 | 1 | 0 | nil)
     def cmp(left, right)
-      @env.cmp(left, right, @render_context, @token)
+      @env.cmp(left, right, @render_context)
     end
 
     #: (untyped) -> bool

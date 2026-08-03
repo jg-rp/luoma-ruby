@@ -27,6 +27,6 @@ class TestRangeDrop < Minitest::Test
   end
 
   def test_slice
-    assert_equal([3, 4], Luoma::RangeDrop.new(2, 5).slice(1, 3, 1).to_a)
+    assert_equal([3, 4], Luoma::RangeDrop.new(2, 5).slice(1, 3, 1, MOCK_CONTEXT).to_a)
   end
 end

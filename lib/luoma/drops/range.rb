@@ -48,7 +48,7 @@ module Luoma
       @range.size
     end
 
-    def slice(start, stop, step)
+    def slice(start, stop, step, context)
       @range.to_a[(start...stop).step(step)] # steep:ignore
     end
 

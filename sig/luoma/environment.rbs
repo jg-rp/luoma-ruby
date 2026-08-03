@@ -157,17 +157,17 @@ module Luoma
     #  () -> void
     def setup_tags_filters_and_predicates: () -> void
 
-    #  (untyped, untyped, RenderContext, t_token) -> bool
-    def contains?: (untyped left, untyped right, RenderContext context, t_token token) -> bool
+    #  (untyped, untyped, RenderContext) -> bool
+    def contains?: (untyped left, untyped right, RenderContext context) -> bool
 
-    #  (untyped, untyped, RenderContext, t_token) -> bool
-    def eq?: (untyped left, untyped right, RenderContext context, t_token token) -> bool
+    #  (untyped, untyped, RenderContext) -> bool
+    def eq?: (untyped left, untyped right, RenderContext context) -> bool
 
-    #  (untyped, untyped, RenderContext, t_token) -> bool?
-    def lt?: (untyped left, untyped right, RenderContext context, t_token token) -> bool?
+    #  (untyped, untyped, RenderContext) -> bool?
+    def lt?: (untyped left, untyped right, RenderContext context) -> bool?
 
-    #  (untyped, untyped, RenderContext, t_token) -> (-1 | 1 | 0 | nil)
-    def cmp: (untyped left, untyped right, RenderContext context, t_token token) -> (-1 | 1 | 0 | nil)
+    #  (untyped, untyped, RenderContext) -> (-1 | 1 | 0 | nil)
+    def cmp: (untyped left, untyped right, RenderContext context) -> (-1 | 1 | 0 | nil)
 
     #  (untyped) -> bool
     def nothing?: (untyped obj) -> bool

@@ -39,7 +39,7 @@ module Luoma
                         end
 
       if left.is_a?(Drop)
-        left.slice(normalized_start, normalized_stop, step)
+        left.slice(normalized_start, normalized_stop, step, context.render_context)
       else
         # This does not work for strings.
         # left[(normalized_start...normalized_stop).step(step)]

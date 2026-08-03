@@ -51,7 +51,7 @@ module Luoma
           block.right.each do |expr|
             right = expr.evaluate(context)
             if (right.is_a?(PredicateFunction) && context.env.truthy?(right.call(context, left), context)) ||
-               context.env.eq?(left, right, context, expr.span)
+               context.env.eq?(left, right, context)
               return Luoma.render_block(block.block, context, buffer)
             end
           end

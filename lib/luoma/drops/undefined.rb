@@ -73,7 +73,7 @@ module Luoma
       error
     end
 
-    def slice(start, stop, step)
+    def slice(start, stop, step, context)
       error
     end
 
