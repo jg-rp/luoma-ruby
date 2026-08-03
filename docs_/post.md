@@ -2,59 +2,46 @@
 
 I [previously wrote](https://www.reddit.com/r/ruby/comments/1od9y8a/i_rewrote_liquid_from_scratch_and_added_features/) about adding new syntax and features to Liquid. Since then I’ve been working on a unified, composable expression language ([spec](https://jg-rp.github.io/template-expression-spec/), [grammar](https://jg-rp.github.io/template-expression-spec/#appendix-b.-collected-peg-grammar), [GitHub](https://github.com/jg-rp/template-expression-spec)), and luoma-ruby ([GitHub](https://github.com/jg-rp/luoma-ruby), [docs](https://jg-rp.github.io/luoma-ruby/), [RubyGems](https://rubygems.org/gems/luoma)), a reference template engine that implements it.
 
-The expression language is "unified" in the sense that all operators are valid in all contexts under a single precedence hierarchy. Meaning, for example, that we can apply filters in `{% for %}` tag expressions.
+The expression language is "unified" in the sense that all operators are valid in all contexts under a single precedence hierarchy. Meaning, for example, that we can apply filters in `{% for %}` tag expressions:
 
 ```
 {% for x in y | compact | take: 5 %} ... {% endfor %}
 ```
 
-Or
+And use logical operators (`not`, `and`, `or`) in `{% assign %}` tag expressions:
 
 ```
-{% for item, index in x | where: y -> (y.b.c > 2 or y.z.defined?) %}
-  ...
-{% endfor %}
+{% assign a = not b.c.null? %}
 ```
 
-Or
-
-TODO: replace this with an HTML attribute building example
+Or in filter arguments:
 
 ```
-{% with
-  logo_width = settings.logo_height * settings.logo.aspect_ratio | ceil,
-  logo_width_mobile = settings.logo_height_mobile * settings.logo.aspect_ratio | ceil,
-  inverse_logo_width = settings.logo_height * inverse_logo.aspect_ratio | ceil,
-  inverse_logo_width_mobile = settings.logo_height_mobile * inverse_logo.aspect_ratio | ceil,
-
-  logo_styles = [
-    '--header-logo-image-width: ${logo_width}px;',
-    '--header-logo-image-width-mobile: ${logo_width_mobile}px;',
-    '--header-logo-image-height: ${settings.logo_height}px;',
-    '--header-logo-image-height-mobile: ${settings.logo_height_mobile}px;',
-  ],
-
-  inverse_logo_styles = [
-    '--header-logo-image-width: ${inverse_logo_width}px;',
-    '--header-logo-image-width-mobile: ${inverse_logo_width_mobile}px;',
-    '--header-logo-image-height: ${settings.logo_height}px;',
-    '--header-logo-image-height-mobile: ${settings.logo_height_mobile}px;',
-  ]
-%}
-  {% assign
-    logo_style = logo_styles | join,
-    inverse_logo_style = inverse_logo_styles | join,
-  %}
-{% endwith %}
+{{ x | join: (y or "\n") }}
 ```
 
 Having a more expressive expression language introduces new idioms that are not possible in the current version of Liquid. This allows Luoma to discard some Liquid "workarounds" in favour of a smaller library of standard tags and drops.
 
-For example, Luoma does not include a `{% liquid %}` tag or any equivalent tag for newline terminated expressions. Instead we use multi-assigning `{% assign %}` tags, `{% with %}` for defining temporary block-scoped variables, short circuiting logical operators, ternary and lambda expressions.
+For example, Luoma does not include a `{% liquid %}` tag or an equivalent tag for newline terminated expressions. Instead we use multi-assigning `{% assign %}` tags, `{% with %}` for defining temporary block-scoped variables, short circuiting logical operators, ternary expressions and lambda expressions.
+
+```
+{%- with
+  classes = [
+    "product-card",
+    "product-card--sold-out" if not product.available,
+    "product-card--featured" if product.featured,
+    "product-card--new" if product.tags contains "new",
+  ]
+-%}
+  <div class="{{ classes | compact | join }}">
+    <h2>{{ product.title }}</h2>
+  </div>
+{% endwith %}
+```
 
 ## First-class blocks and expressions
 
-Both template inheritance and React-style props and slots can be good options when it comes to template composition, but Luoma includes just one new template composition primitive, `{% define %}`. `{% define %}` is like a deferred version of `{% capture %}`. The resulting `BlockDrop` captures nothing about where it was defined (it's not a closure). It is rendered in the scope where it is output or coerced to a string.
+When it comes to template composition, both template inheritance and React-style props and slots can be good options, but Luoma includes just one new template composition primitive, `{% define %}`. `{% define %}` is like a deferred version of `{% capture %}`. The resulting `BlockDrop` captures nothing about where it was defined (it's not a closure). It is rendered in the scope where it is output or coerced to a string.
 
 TODO: Example
 
@@ -93,8 +80,6 @@ Then
 ```
 
 ## Closing thoughts
-
-Notice that the expression language is formally defined and Luoma - which happens to implement the expression language - is left as a reference implementation. Markup delimiters, tags, filters and the surrounding template engine can vary in lots of equally valid ways, depending on the task at hand.
 
 As I said in my previous post, I understand why Liquid is the way it is, and I'm sure Shopify have explored many of these ideas before. In an ideal world I’d love to see Shopify adopt an opt-in upgrade path for theme developers to use new, backwards-incompatible template features with an explicit version scheme.
 

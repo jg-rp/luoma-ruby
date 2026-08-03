@@ -1,0 +1,51 @@
+{# buttons.luoma #}
+
+{% define basic_button %}
+  {%- with
+    classes = [
+      "btn",
+      "btn-${variant}" if variant, 
+      "btn-${size}" if size, 
+      "btn-full" if full_width,
+      "is-disabled" if disabled,
+    ]
+  ~%}
+    <a href="{{ url or '#' }}" class="{{ classes | compact | join }}">
+      {% if icon %}
+        <span class="btn__icon">
+          {{ icon }}
+        </span>
+      {% endif %}
+
+      <span class="btn__label">
+        {{ label }}
+      </span>
+    </a>
+  {% endwith -%}
+{% enddefine -%}
+
+
+{# icons.luoma #}
+
+{% define some_icon %}
+  <svg class="icon icon--arrow-right" viewBox="0 0 24 24">
+    <path ... />
+  </svg>
+{% enddefine %}
+
+---
+
+{% import
+  "buttons" as buttons,
+  "icons" as icons
+%}
+
+{%- with
+  label = "Shop Now",
+  url = "/collections/new",
+  variant = "primary",
+  size = "large",
+  icon = icons.some_icon,
+-%}
+  {{ buttons.basic_button }}
+{%- endwith -%}
