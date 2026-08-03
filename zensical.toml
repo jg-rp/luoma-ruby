@@ -46,10 +46,10 @@ nav = [
     "extension_types.md",
     "undefined_variables.md",
     "template_loaders.md",
-    "static_analysis.md",
-    { "Template markup" = "template_markup.md"}
+    "static_analysis.md"
   ]},
   
+  { "Markup" = ["template_markup.md", "expressions.md"]},
   { "Tags" = ["tag_reference.md", "custom_tags.md"] },
   { "Filters" = ["filter_reference.md", "custom_filters.md"] },
   { "Predicates" = ["predicate_reference.md", "custom_predicates.md"] }

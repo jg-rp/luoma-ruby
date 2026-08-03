@@ -4,7 +4,7 @@ A _drop_ is a developer-defined type that plays nicely with Luoma tags, filters,
 
 The base drop, `Luoma::Drop`, is falsy, is an empty iterable/enumerable, is equal to nothing (including itself) and renders as an empty string.
 
-TODO: document the complete Drop API.
+See https://github.com/jg-rp/luoma-ruby/blob/main/lib/luoma/drop.rb.
 
 ## Built-in drops
 

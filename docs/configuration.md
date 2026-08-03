@@ -8,9 +8,11 @@ Template parsing and rendering behavior is configured using an instance of `Luom
 
 An `Environment` is where you'd register custom filters or tags, or define variables that should be available to all templates, for example.
 
+See https://github.com/jg-rp/luoma-ruby/blob/main/lib/luoma/environment.rb.
+
 !!! tip
 
-    In addition to the environment options shown here, `Luoma::Environment` is designed to be extended. You can, for example, override `Luoma::Environment#eq?` to redefine expression equality, or override `Luoma::Environment#serialize` to change the way objects are rendered. See [environment.rb](https://github.com/jg-rp/luoma-ruby/blob/main/lib/luoma/expression.rb) for a complete method reference and default implementations.
+    In addition to the environment options shown here, `Luoma::Environment` is designed to be extended. You can, for example, override `Luoma::Environment#eq?` to redefine expression equality, or override `Luoma::Environment#serialize` to change the way objects are rendered.
 
 ## The default environment
 

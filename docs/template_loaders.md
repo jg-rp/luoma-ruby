@@ -4,6 +4,8 @@ A template loader is responsible for finding template source text given a name o
 
 Every `Luoma::Environment` has exactly one configured template loader, the default of which is an empty `Luoma::HashLoader`, meaning `Environment#get_template`, `{% render %}` and `{% include %}` will always throw an error.
 
+See https://github.com/jg-rp/luoma-ruby/tree/main/lib/luoma/loaders.
+
 !!! info
 
     Both `NoSuchTemplateError` and `TemplateNotFoundError` inherit from `Luoma::LuomaError`. The former is a detailed error including diagnostic information about where in the parent template `{% render %}`, `{% include %}` or `{% import %}` was called.

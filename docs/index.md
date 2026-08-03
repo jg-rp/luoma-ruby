@@ -42,7 +42,7 @@ puts luoma.render("Hello, {{ you }}!", "you" => "World")  # Hello, World!
 
 ### Parse
 
-Often you'll want to render the same template multiple times with different variables. We can parse source text without immediately rendering it using `Luoma.parse(source, globals: nil)`. `Luoma.parse` returns an instance of `Luoma::Template` with a `render(data)`method.
+Often you'll want to render the same template multiple times with different variables. We can parse source text without immediately rendering it using `Luoma.parse(source, globals: nil)`. `Luoma.parse` returns an instance of [`Luoma::Template`](https://github.com/jg-rp/luoma-ruby/blob/main/lib/luoma/template.rb) with a `render(data)`method.
 
 ```ruby
 require "luoma"
@@ -58,7 +58,7 @@ If _globals_ is given, data from _globals_ is pined to the resulting template an
 
 ### Configure
 
-Both `Luoma.parse` and `Luoma.render` are convenience functions that use the default Luoma environment. For all but the simplest of cases you'll want to configure your own instance of `Luoma::Environment`, then load and render templates from that.
+Both `Luoma.parse` and `Luoma.render` are convenience functions that use the default Luoma environment. For all but the simplest of cases you'll want to configure your own instance of [`Luoma::Environment`](https://github.com/jg-rp/luoma-ruby/blob/main/lib/luoma/environment.rb), then load and render templates from that.
 
 ```ruby
 require "luoma"
