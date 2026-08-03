@@ -1,8 +1,10 @@
 # Built-in filters
 
-!!! warning
+By default, all built-in filters never fail to produce a value. Filter arguments are implicitly coerced to the expected type, or the special value `Nothing` if type conversion is not possible/reasonable.
 
-    This page is a work in progress. Some of the information here is not accurate.
+`Nothing` is like JavaScript's `undefined` and `NaN` combined. It is not equal to `null` or implementation specific `nil`, `None`, etc.
+
+Math filters will return `Nothing` if their arguments are not numeric, or when dividing by zero, for example.
 
 ## abs
 
@@ -10,7 +12,7 @@
 <number> | abs
 ```
 
-Return the absolute value of a number. Works on integers, floats and string representations of integers or floats.
+Return the absolute value of the input number. Works on integers, floats and string representations of integers or floats.
 
 ```liquid2
 {{ -42 | abs }}
@@ -58,7 +60,7 @@ true
 false
 ```
 
-If a string argument is given, array items should be objects and the string is used as a property name to test for truthiness.
+If a string argument is given, array items should be objects and the string a property name to test for truthiness.
 
 ```liquid2
 {% assign
@@ -94,7 +96,7 @@ If the optional second argument is given, the value at the given property will b
 true
 ```
 
-Given a lambda expression as the first argument, the expression will be evaluated for each item in the input array and the result tested for truthiness.
+Given a lambda expression, the expression will be evaluated for each item in the input array and the result tested for truthiness.
 
 ```liquid2
 {% assign
@@ -1640,7 +1642,23 @@ If a string argument is given, array items should be objects and the argument sh
 
 ## take
 
-TODO
+```
+<sequence> | take: <number>
+```
+
+Return the first _n_ items from the input sequence.
+
+```liquid2
+{{ [0,1,2,3,4,5,6] | take: 3 }}
+{{ {"a": 1, "b": 2, "c": 3} | take: 2 }}
+{{ "Hello, World!" | take: 5 }}
+```
+
+```title="Output"
+[0,1,2]
+[["a",1],["b",2]]
+["H","e","l","l","o"]
+```
 
 ## times
 
@@ -1648,15 +1666,21 @@ TODO
 <number> | times: <number>
 ```
 
-Return the product of the input number and the argument. If either the input or argument are not a number, Liquid will try to convert them to a number. If that conversion fails, `0` is used instead.
+Return the product of the input number and the argument number. If either the input or argument are not numeric, the special value `Nothing` is returned.
 
 ```liquid2
 {{ 3 | times: 2 }}
 {{ "24" | times: "7" }}
 {{ 183.357 | times: 12 }}
+{{ 3 * 2 }}
+{{ "24" * "7" }}
+{{ 183.357 * 12 }}
 ```
 
 ```plain title="Output"
+6
+168
+2200.284
 6
 168
 2200.284
@@ -1709,13 +1733,13 @@ Ground control to
 ## uniq
 
 ```
-<array> | uniq[: <string>]
+<array> | uniq[: <string|lambda>]
 ```
 
 Return a copy of the input array with duplicate elements removed.
 
 ```liquid2
-{% assign my_array = "ants, bugs, bees, bugs, ants" | split: ", " -%}
+{%- assign my_array = ["ants", "bugs", "bees", "bugs", "ants"] -%}
 {{ my_array | uniq | join: ", " }}
 ```
 
@@ -1723,26 +1747,25 @@ Return a copy of the input array with duplicate elements removed.
 ants, bugs, bees
 ```
 
-If an argument is given, it should be the name of a property and the filter's input should be an array of objects.
+If a string argument is given, it should be the name of a property and the filter's input should be an array of objects.
 
-```json title="data"
-{
-  "collection": {
+```liquid2
+{%- assign
+  collections = {
     "products": [
       { "title": "A Shoe", "company": "Cool Shoes" },
       { "title": "A Tie", "company": "alpha Ties" },
       { "title": "Another Tie", "company": "alpha Ties" },
       { "title": "A Hat", "company": "Beta Hats" }
     ]
-  }
-}
-```
+  },
 
-```liquid2 title="template"
-{% assign one_product_from_each_company = collections.products | uniq: "company" -%}
+  one_product_from_each_company = collections.products | uniq: "company"
+-%}
+
 {% for product in one_product_from_each_company -%}
-  - product.title
-{% endfor %}
+  - {{ product.title }}
+{% endfor -%}
 ```
 
 ```plain title="Output"
@@ -1757,7 +1780,7 @@ If an argument is given, it should be the name of a property and the filter's in
 <string> | upcase
 ```
 
-Return the input string with all characters in uppercase.
+Return a copy of the input string with all characters in uppercase.
 
 ```liquid2
 {{ 'Hello, World!' | upcase }}
@@ -1803,52 +1826,39 @@ My+email+address+is+bob%40example.com%21
 
 ```
 <array> | where: <string>[, <object>]
+<array> | where: <lambda>
 ```
 
-Return a copy of the input array including only those objects that have a property, named with the first argument, equal to a value, given as the second argument. If a second argument is not given, only elements with the named property that are truthy will be included.
+Return items from the input array where the argument(s) evaluate to a truthy value.
 
-```json title="data"
-{
-  "products": [
+If a string argument is given, items should be objects and the argument string should be a property name.
+
+```liquid2
+{%- assign
+  products = [
     { "title": "Vacuum", "type": "house", "available": true },
     { "title": "Spatula", "type": "kitchen", "available": false },
     { "title": "Television", "type": "lounge", "available": true },
     { "title": "Garlic press", "type": "kitchen", "available": true }
   ]
-}
-```
-
-```liquid2
-All products:
-{% for product in products -%}
-- {{ product.title }}
-{% endfor %}
-
-{%- assign kitchen_products = products | where: "type", "kitchen" -%}
+-%}
 
 Kitchen products:
-{% for product in kitchen_products -%}
+{% for product in products | where: "type", "kitchen" -%}
 - {{ product.title }}
 {% endfor %}
 
-{%- assign available_products = products | where: "available" -%}
-
 Available products:
-{% for product in available_products -%}
+{% for product in products | where: (p) -> (p.available) -%}
 - {{ product.title }}
 {% endfor %}
 ```
 
 ```plain title="Output"
-All products:
-- Vacuum
-- Spatula
-- Television
-- Garlic press
-
 Kitchen products:
 - Spatula
 - Garlic press
+
 
 Available product:
 - Vacuum
@@ -1858,4 +1868,26 @@ Available product:
 
 ## zip
 
-TODO:
+```
+<array> | zip: <array>
+```
+
+Return an array of pairs.
+
+```liquid2
+{%- assign
+  a = ['a', 'b', 'c'],
+  b = [1, 2, 3],
+  c = ['d', 'e', 'f', 'g'],
+-%}
+
+{{ a | zip: b }}
+{{ b | zip: c }}
+{{ c | zip: b }}
+```
+
+```title="Output"
+[["a",1],["b",2],["c",3]]
+[[1,"d"],[2,"e"],[3,"f"]]
+[["d",1],["e",2],["f",3],["g",null]]
+```

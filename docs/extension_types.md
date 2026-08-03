@@ -1,6 +1,6 @@
 # Extension types
 
-A drop is a developer-defined type that plays nicely with Luoma tags, filters, predicates and operators. Drops are often used to implement lazy data retrieval or context sensitive logic.
+A _drop_ is a developer-defined type that plays nicely with Luoma tags, filters, predicates and operators. Drops are often used to implement lazy data retrieval or context sensitive logic.
 
 The base drop, `Luoma::Drop`, is falsy, is an empty iterable/enumerable, is equal to nothing (including itself) and renders as an empty string.
 

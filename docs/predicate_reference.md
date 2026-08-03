@@ -2,7 +2,7 @@
 
 A _predicate_ is a trailing path segment ending with a question mark (`?`). A predicate "queries" the value obtained by resolving preceding path segments and returns `true` or `false`.
 
-Note that a question mark (`?`) is not a valid identifier character. If a variable o property contains a literal `?`, bracket notation must be used: `foo["bar?"]`.
+Note that a question mark (`?`) is not a valid identifier character. If a variable or property contains a literal `?`, bracket notation must be used: `foo["bar?"]`.
 
 ## array?
 
