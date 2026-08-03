@@ -93,12 +93,23 @@ class TestFontRenderingExample < Minitest::Spec
           settings.type_accent_font
         ],
 
+        enum = f -> [
+          f,
+          f | bold,
+          f | italic,
+          f | bold_italic,
+        ],
+
+        id = f -> '${f.family}-${f.weight}-${f.style}',
+        face = f -> (f | font_face: font_display: 'swap'),
+
         font_faces = font_types
-          | flat_map : f -> [f, (f | bold), (f | italic), (f | bold_italic)]
-          | uniq     : f -> '${f.family}-${f.weight}-${f.style}'
-          | map      : f -> (f | font_face: font_display: 'swap')
+          | flat_map : enum
+          | uniq     : id
+          | map      : face
+          | join     : "\n\n"
       %}
-        {{- font_faces | join: "\n\n" -}}
+        {{- font_faces -}}
       {% endwith %}
     SOURCE
 

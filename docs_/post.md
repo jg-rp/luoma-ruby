@@ -5,51 +5,34 @@ I [previously wrote](https://www.reddit.com/r/ruby/comments/1od9y8a/i_rewrote_li
 The expression language is "unified" in the sense that all operators are valid in all contexts under a single precedence hierarchy. Meaning, for example, that we can apply filters in `{% for %}` tag expressions:
 
 ```
-{% for x in y | compact | take: 5 %} ... {% endfor %}
+{% for x in y | map: a -> a.b.c | reverse | take: 5 %} ... {% endfor %}
 ```
 
-And use logical operators (`not`, `and`, `or`) in `{% assign %}` tag expressions:
+Or pass lambda expressions to filters inside `{% if %}` tag expressions:
 
 ```
-{% assign a = not b.c.null? %}
+{% if cart.items | any: i -> i.on_sale %} ... {% endif %}
+```
+
+And use logical, comparison and math operators in `{% assign %}` tag expressions:
+
+```
+{% assign a = (b * c) or 42 %}
 ```
 
 Or in filter arguments:
 
 ```
-{{ x | join: (y or "\n") }}
+{{ a | split: (b or ',') | join: (c or '#') }}
 ```
 
-Having a more expressive expression language introduces new idioms that are not possible in the current version of Liquid. This allows Luoma to discard some Liquid "workarounds" in favour of a smaller library of standard tags and drops.
+Expressions are first-class. Using lambda syntax we can save an expression for later and apply it like a user-defined filter, or pass it to a filter that accepts expression arguments.
 
-For example, Luoma does not include a `{% liquid %}` tag or an equivalent tag for newline terminated expressions. Instead we use multi-assigning `{% assign %}` tags, `{% with %}` for defining temporary block-scoped variables, short circuiting logical operators, ternary expressions and lambda expressions.
+(This example is a little over the top but should give you an idea of what's possible.)
 
-```
-{%- with
-  classes = [
-    "product-card",
-    "product-card--sold-out" if not product.available,
-    "product-card--featured" if product.featured,
-    "product-card--new" if product.tags contains "new",
-  ]
--%}
-  <div class="{{ classes | compact | join }}">
-    <h2>{{ product.title }}</h2>
-  </div>
-{% endwith %}
-```
-
-## First-class blocks and expressions
-
-When it comes to template composition, both template inheritance and React-style props and slots can be good options, but Luoma includes just one new template composition primitive, `{% define %}`. `{% define %}` is like a deferred version of `{% capture %}`. The resulting `BlockDrop` captures nothing about where it was defined (it's not a closure). It is rendered in the scope where it is output or coerced to a string.
-
-TODO: Example
-
-Expressions are first-class too. Using lambda syntax we can save an expression for later and apply it like a user-defined filter.
+First, we can define reusable font utilities in `font_utils.luoma`:
 
 ```
-{# font_utils.luoma #}
-
 {% assign
   bold        = f -> (f | font_modify: 'weight', 'bold'),
   italic      = f -> (f | font_modify: 'style', 'italic'),
@@ -57,7 +40,7 @@ Expressions are first-class too. Using lambda syntax we can save an expression f
 %}
 ```
 
-Then
+Then we can import them with the `{% import %}` tag and use the `{% with %}` tag to define some temporary, block-scoped variables.
 
 ```
 {%- import "font_utils" -%}
@@ -70,17 +53,30 @@ Then
     settings.type_accent_font
   ],
 
+  enum = f -> [
+    f,
+    f | bold,
+    f | italic,
+    f | bold_italic,
+  ],
+
+  id = f -> '${f.family}-${f.weight}-${f.style}',
+  face = f -> (f | font_face: font_display: 'swap'),
+
   font_faces = font_types
-    | flat_map : f -> [f, (f | bold), (f | italic), (f | bold_italic)]
-    | uniq     : f -> '${f.family}-${f.weight}-${f.style}'
-    | map      : f -> (f | font_face: font_display: 'swap')
+    | flat_map : enum
+    | uniq     : id
+    | map      : face
+    | join     : "\n\n"
 %}
-  {{- font_faces | join: "\n\n" -}}
+  {{- font_faces -}}
 {% endwith %}
 ```
 
-## Closing thoughts
+Now, if you're thinking "ew, that sort of data transformation does not belong in the presentation layer", you'd be right. But in some scenarios - when the template is the only programmable layer available - data manipulation is going to happen anyway. When we have no other choice, we should be able to transform data without resorting to convoluted string manipulation workarounds.
 
-As I said in my previous post, I understand why Liquid is the way it is, and I'm sure Shopify have explored many of these ideas before. In an ideal world I’d love to see Shopify adopt an opt-in upgrade path for theme developers to use new, backwards-incompatible template features with an explicit version scheme.
+---
 
-Hopefully Luoma provides some inspiration and/or ideas that might someday make it into a future version of Liquid.
+While some of Luoma’s features lean towards more advanced use cases, the idea is that a unified expression language with consistent rules makes the language simpler and more predictable for everyone.
+
+I'm sure developers at Shopify have explored some of these ideas for Liquid in the past. Hopefully Luoma provides some inspiration or ideas that might someday make it into a future version of Liquid.
