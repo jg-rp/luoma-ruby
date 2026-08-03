@@ -5,18 +5,20 @@ I [previously wrote](https://www.reddit.com/r/ruby/comments/1od9y8a/i_rewrote_li
 The expression language is "unified" in the sense that all operators are valid in all contexts under a single precedence hierarchy. Meaning, for example, that we can apply filters in `{% for %}` tag expressions.
 
 ```
-{% for x in y | slice: 2, 8 | compact %} ... {% endfor %}
+{% for x in y | compact | take: 5 %} ... {% endfor %}
 ```
 
 Or
 
 ```
-{% for item, index, array in y | where: (a) -> (a.b.c > 2 or a.d) | take: 5 %}
+{% for item, index in x | where: y -> (y.b.c > 2 or y.z.defined?) %}
   ...
 {% endfor %}
 ```
 
 Or
+
+TODO: replace this with an HTML attribute building example
 
 ```
 {% with
@@ -52,7 +54,7 @@ For example, Luoma does not include a `{% liquid %}` tag or any equivalent tag f
 
 ## First-class blocks and expressions
 
-While both template inheritance and React-style props and slots can be good options, Luoma includes just one new template composition primitive, `{% define %}`. `{% define %}` is like a deferred version of `{% capture %}`. The resulting `BlockDrop` captures nothing about where it was defined (it's not a closure). It is rendered in the scope where it is output or coerced to a string.
+Both template inheritance and React-style props and slots can be good options when it comes to template composition, but Luoma includes just one new template composition primitive, `{% define %}`. `{% define %}` is like a deferred version of `{% capture %}`. The resulting `BlockDrop` captures nothing about where it was defined (it's not a closure). It is rendered in the scope where it is output or coerced to a string.
 
 TODO: Example
 
@@ -92,10 +94,8 @@ Then
 
 ## Closing thoughts
 
-Note that the expression language is formally defined and Luoma - which happens to implement the expression language - is left as a reference implementation. Markup delimiters, tags, filters and the surrounding template engine can vary in lots of equally valid ways, depending on the task at hand.
+Notice that the expression language is formally defined and Luoma - which happens to implement the expression language - is left as a reference implementation. Markup delimiters, tags, filters and the surrounding template engine can vary in lots of equally valid ways, depending on the task at hand.
 
-As I said in my previous post, I understand why Liquid is the way it is, and I imagine Shopify have explored many of these ideas before, only to be held back by integration practicalities and shifting priorities.
+As I said in my previous post, I understand why Liquid is the way it is, and I'm sure Shopify have explored many of these ideas before. In an ideal world I’d love to see Shopify adopt an opt-in upgrade path for theme developers to use new, backwards-incompatible template features with an explicit version scheme.
 
-In an ideal world I’d love to see Shopify adopt an opt-in upgrade path for theme developers to use new, backwards-incompatible template features with an explicit version scheme.
-
-Hopefully Luoma provides some inspiration and ideas that might someday make it into Liquid.
+Hopefully Luoma provides some inspiration and/or ideas that might someday make it into a future version of Liquid.
