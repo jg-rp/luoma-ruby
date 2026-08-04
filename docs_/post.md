@@ -8,7 +8,7 @@ The expression language is "unified" in the sense that all operators are valid i
 {% for x in y | map: a -> a.b.c | reverse | take: 5 %} ... {% endfor %}
 ```
 
-Or pass lambda expressions to filters inside `{% if %}` tag expressions:
+Or pass lambda expressions as callbacks to filters inside `{% if %}` tag expressions:
 
 ```
 {% if cart.items | any: i -> i.on_sale %} ... {% endif %}
@@ -17,7 +17,7 @@ Or pass lambda expressions to filters inside `{% if %}` tag expressions:
 And use logical, comparison and math operators in `{% assign %}` tag expressions:
 
 ```
-{% assign a = (b * c) or 42 %}
+{% assign a = (b / c) or 42 %}
 ```
 
 Or in filter arguments:
@@ -73,9 +73,7 @@ Then we can import them with the `{% import %}` tag and use the `{% with %}` tag
 {% endwith %}
 ```
 
-Now, if you're thinking "ew, that sort of data transformation does not belong in the presentation layer", you'd be right. But in some scenarios - when the template is the only programmable layer available - data manipulation is going to happen anyway. When we have no other choice, we should be able to transform data without resorting to convoluted string manipulation workarounds.
-
----
+If you're thinking "ew, that sort of data transformation does not belong in the presentation layer", you'd be right. But in some scenarios - when the template is the only programmable layer available - data manipulation is going to happen anyway. When we have no other choice, we should be able to transform data without resorting to convoluted string manipulation workarounds.
 
 While some of Luoma’s features lean towards more advanced use cases, the idea is that a unified expression language with consistent rules makes the language simpler and more predictable for everyone.
 

@@ -210,26 +210,39 @@ Positional arguments are separated by commas, e.g., `value | slice: 0, 5`.
 
 Keyword arguments are specified using `:` or `=`, e.g., `font | font_face: font_display = 'swap'`.
 
-## First-Class Lambdas
+TODO: finish me
 
-Expressions support first-class lambda functions using either `->` or `=>` arrow syntax. Lambdas accept single or grouped parameters and can be stored in variables or passed to filters:
+## Lambda expressions
+
+Lambdas allow us to pass expressions a _callbacks_ to filters, or save an expression to a variable for later evaluation.
+
+A lambda expression starts with an arguments list, followed by an arrow symbol (`->` or `=>`), then an expression. When evaluated - either as a filter callback or explicitly with the pipe (`|`) operator - the lambda's arguments are in scope, along with other variables from the scope in which the expression is "called". Lambdas capture nothing about the scope in which they are defined. They are not closures.
 
 ```liquid2
+{{ items | map: (item) -> (item.stock_count > 0) }}
+
 {% assign is_valid = (item) -> (item.price > 0 and item.in_stock) %}
+{{ items | map: is_valid }}
 ```
 
-## Conditionals and Fallbacks
-
-In addition to standard boolean logic, expressions support inline branching and fallback evaluation:
-
-- **Null Coalescing (`orElse`):** Returns the right-hand operand if the left-hand operand evaluates to null.
+When passed to a filter that expects an array input, lambdas will be evaluated at least once for each item in the input array, with the array item being passed as the first argument. The optional second argument to the lambda expression is the item's index.
 
 ```liquid2
-{{ custom_title orElse page.title orElse "Default Title" }}
+{{ items | map: (item, index) -> (item.stock_count > 0 and index < 10) }}
 ```
 
-- **Inline Conditionals (`if ... else`):** Evaluates ternary-style conditions directly within an expression.
+TODO: finish me
 
-```liquid2
-{{ "Active" if user.active else "Inactive" }}
+## Ternary expressions
+
 ```
+<expression> if <expression>[ else <expression>]
+```
+
+If the `else` branch is omitted and the condition evaluates to a falsy value, the entire ternary expression evaluates to the special value `Nothing` (This is a deviation from the spec. In practice it can be quite inconvenient to be forced to write `else null` after every inline condition).
+
+TODO: finish me
+
+## Short circuiting operators
+
+TODO:
