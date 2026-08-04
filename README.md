@@ -30,7 +30,7 @@
 Add `'luoma'` to your Gemfile:
 
 ```
-gem 'luoma', '~> 0.1.0'
+gem 'luoma', '~> 0.3.0'
 ```
 
 Or
